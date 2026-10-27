@@ -94,7 +94,7 @@ function Timeline({reduced}:{reduced:boolean}) {
     <SectionLabel number="02">The thread that connects it all</SectionLabel>
     <div className="process-heading editorial-reveal"><h2>From a thought.<br/><em>To a place.</em></h2><p>A continuous conversation<br/>between imagination and making.</p></div>
     <div className="process-stage">
-      <div ref={ref} className="process-sculpture" aria-hidden="true"><ArtBoundary fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}><Suspense fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}>{near&&<RibbonCanvas progress={progress} active={active} reduced={reduced} finish={finish}/>}</Suspense></ArtBoundary></div>
+      <div ref={ref} className="process-sculpture" aria-hidden="true"><ArtBoundary fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}><Suspense fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}>{<RibbonCanvas running={near} progress={progress} active={active} reduced={reduced} finish={finish}/>}</Suspense></ArtBoundary></div>
       {stages.map((stage,i)=><button key={stage.label} className={`process-step process-step-${i}${active===i?' is-active':''}`} onPointerEnter={()=>setHovered(i)} onPointerLeave={()=>setHovered(null)} onFocus={()=>setHovered(i)} onBlur={()=>setHovered(null)} onClick={()=>setHovered(i)} aria-pressed={active===i}>
         <span className="process-index">0{i+1}<span>{stage.label}</span></span><h3>{stage.title}</h3><p>{stage.body}</p><span className="process-rule"/>
       </button>)}
@@ -134,7 +134,7 @@ function Architecture({reduced}:{reduced:boolean}) {
     <div className="construction-bar"><span>THE ANATOMY OF A SPACE</span><div>{['01 / The drawing','02 / The form','03 / The vision'].map((label,i)=><button key={label} onClick={()=>goToPhase(i)} aria-current={phase===i?'step':undefined}>{label}</button>)}</div><span>SCROLL TO RESOLVE ↓</span></div>
     <div ref={ref} className="architecture-drawing">
       <img className="architecture-base" src="/images/redesign/architecture.jpg" alt="White architectural interior and blue furniture among construction lines"/>
-      <ArtBoundary fallback={null}><Suspense fallback={null}>{near&&<div className="architecture-canvas"><DrawingCanvas reveal={reveal} reduced={reduced}/></div>}</Suspense></ArtBoundary>
+      <ArtBoundary fallback={null}><Suspense fallback={null}>{<div className="architecture-canvas"><DrawingCanvas running={near} reveal={reveal} reduced={reduced}/></div>}</Suspense></ArtBoundary>
       <svg className="architecture-guides" viewBox="0 0 1672 1077" fill="none" aria-hidden="true"><path className="draw-line" d="M80 0V1050M1592 0V1050M10 960H1660M835 100V1020M240 960L835 230L1440 960M510 960V270H1150V960"/><circle cx="835" cy="540" r="155"/><path d="M60 1020H100M80 1000V1040M1572 1020H1612M1592 1000V1040" className="guide-accent"/></svg>
       <span className="drawing-coordinate">THEOS / STUDY 001<br/>FORM · PROPORTION · LIGHT</span>
       <div className="architecture-sweep" aria-hidden="true"><span>{phase<2?'TRACING FORM':'RESOLVING COLOUR'}</span></div>
@@ -195,7 +195,7 @@ export function AtelierOutro({reduced,onBeginning}:{reduced:boolean;onBeginning:
   return <footer ref={root} id="atelier-contact" className="atelier-outro">
     <div className="outro-top"><span>THEOS / BEYOND THE ORDINARY</span><span>A new perspective starts here.</span></div>
     <div className="outro-main"><div className="outro-copy"><h2 className="outro-title"><span>Make room</span><span>for <em>what’s next.</em></span></h2><a href="mailto:care@theos.co.in" className="outro-contact">Start a conversation <ArrowUpRight size={24}/></a><p>Interiors. Furniture. Imagination.</p></div>
-      <div ref={ref} className="outro-sculpture" aria-hidden="true"><svg className="outro-radial" viewBox="0 0 600 600" fill="none">{Array.from({length:48},(_,i)=><path key={i} d="M300 35V48" transform={`rotate(${i*7.5} 300 300)`}/>)}<circle cx="300" cy="300" r="268" strokeDasharray="1 12"/></svg><ArtBoundary fallback={<span className="outro-fallback">o</span>}><Suspense fallback={<span className="outro-fallback">o</span>}>{near&&<SignatureCanvas reduced={reduced}/>}</Suspense></ArtBoundary></div>
+      <div ref={ref} className="outro-sculpture" aria-hidden="true"><svg className="outro-radial" viewBox="0 0 600 600" fill="none">{Array.from({length:48},(_,i)=><path key={i} d="M300 35V48" transform={`rotate(${i*7.5} 300 300)`}/>)}<circle cx="300" cy="300" r="268" strokeDasharray="1 12"/></svg><ArtBoundary fallback={<span className="outro-fallback">o</span>}><Suspense fallback={<span className="outro-fallback">o</span>}>{<SignatureCanvas running={near} reduced={reduced}/>}</Suspense></ArtBoundary></div>
     </div>
     <div className="outro-bottom"><a href="mailto:care@theos.co.in">care@theos.co.in</a><span>Designed with purpose. Made personal.</span><button onClick={onBeginning}>Back to the beginning <ArrowUpRight size={15}/></button></div>
     <div className="outro-wordmark" aria-hidden="true">theos<span>.</span></div>

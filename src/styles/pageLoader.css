@@ -1,0 +1,14 @@
+html[data-loading] { overflow: hidden; }
+.page-loader { position:fixed; inset:0; z-index:10000; background:#202640; color:#f8f7f3; display:flex; flex-direction:column; justify-content:space-between; padding:40px 5vw 42px; font-family:Manrope,sans-serif; }
+.loader-top,.loader-meta { display:flex; align-items:center; justify-content:space-between; gap:24px; }
+.loader-top { font-size:10px; letter-spacing:.16em; }
+.loader-center { text-align:center; }
+.loader-center img { display:block; width:240px; height:auto; max-height:140px; object-fit:contain; margin:0 auto 38px; }
+.loader-center p { font:400 clamp(28px,3vw,52px)/1.2 'Bodoni Moda',serif; margin:0 0 18px; }
+.loader-center em { font-style:italic; }
+.loader-center > span,.loader-meta > span:first-child { font-size:11px; letter-spacing:.04em; opacity:.65; }
+.loader-number { font:400 64px/1 'Bodoni Moda',serif; font-variant-numeric:tabular-nums; }
+.loader-number small { font:12px Manrope,sans-serif; margin-left:8px; }
+.loader-track { height:1px; background:#f8f7f333; margin-top:20px; overflow:hidden; }
+.loader-track i { display:block; height:100%; background:#ce2c22; transform-origin:left; transition:transform .1s linear; }
+.loader-bottom button { display:block; margin:18px 0 0 auto; font-size:12px; border-bottom:1px solid currentColor; cursor:pointer; }

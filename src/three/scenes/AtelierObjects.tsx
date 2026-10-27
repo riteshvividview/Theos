@@ -1,7 +1,14 @@
+import { sceneReady } from '@/loading/readiness'
 import { useEffect, useMemo, useRef, Suspense, type MutableRefObject } from 'react'
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import { BufferGeometry, Float32BufferAttribute, DoubleSide, Group, MathUtils, ShaderMaterial, TextureLoader, SRGBColorSpace, Color, MeshPhysicalMaterial, PMREMGenerator } from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
+
+function Prepared({ name }: { name: string }) {
+  const done = useRef(false)
+  useFrame(() => { if (!done.current) { done.current = true; requestAnimationFrame(() => sceneReady(name)) } })
+  return null
+}
 
 function StudioEnvironment() {
   const {gl}=useThree()
@@ -58,8 +65,8 @@ function Ribbon({ progress, active, reduced, finish }: { progress: MutableRefObj
   </>
 }
 
-export function RibbonCanvas(props: { progress: MutableRefObject<number>; active: number; reduced: boolean; finish:string }) {
-  return <Canvas dpr={[1,1.5]} camera={{ position:[0,.1,10.5], fov:40 }} gl={{ alpha:true, antialias:true }} fallback={<img src="/images/redesign/spiral-reference.jpg" alt="Red spiral sculpture" />}><StudioEnvironment/><Ribbon {...props} /></Canvas>
+export function RibbonCanvas(props: { progress: MutableRefObject<number>; active: number; reduced: boolean; finish:string; running?:boolean }) {
+  return <Canvas frameloop={props.running ? 'always' : 'demand'} dpr={[1,1.5]} camera={{ position:[0,.1,10.5], fov:40 }} gl={{ alpha:true, antialias:true }} fallback={<img src="/images/redesign/spiral-reference.jpg" alt="Red spiral sculpture" />}><StudioEnvironment/><Ribbon {...props} /><Prepared name="ribbon"/></Canvas>
 }
 
 function Signature({reduced}:{reduced:boolean}) {
@@ -80,8 +87,8 @@ function Signature({reduced}:{reduced:boolean}) {
     </group></>
 }
 
-export function SignatureCanvas({reduced}:{reduced:boolean}) {
-  return <Canvas dpr={[1,1.5]} camera={{position:[0,0,6.8],fov:43}} gl={{alpha:true,antialias:true}}><Signature reduced={reduced}/></Canvas>
+export function SignatureCanvas({reduced,running}:{reduced:boolean;running?:boolean}) {
+  return <Canvas frameloop={running ? 'always' : 'demand'} dpr={[1,1.5]} camera={{position:[0,0,6.8],fov:43}} gl={{alpha:true,antialias:true}}><Signature reduced={reduced}/><Prepared name="signature"/></Canvas>
 }
 
 const vertex = `varying vec2 vUv; void main(){vUv=uv; gl_Position=vec4(position.xy,0.,1.);}`
@@ -123,6 +130,6 @@ function Drawing({ reveal, reduced }: { reveal: MutableRefObject<number>; reduce
   return <mesh><planeGeometry args={[2,2]} /><shaderMaterial ref={material} vertexShader={vertex} fragmentShader={fragment} uniforms={uniforms} depthTest={false} depthWrite={false} toneMapped={false} /></mesh>
 }
 
-export function DrawingCanvas(props: { reveal: MutableRefObject<number>; reduced:boolean }) {
-  return <Canvas flat dpr={[1,1.5]} gl={{alpha:true,antialias:false}} fallback={null}><Suspense fallback={null}><Drawing {...props} /></Suspense></Canvas>
+export function DrawingCanvas(props: { reveal: MutableRefObject<number>; reduced:boolean; running?:boolean }) {
+  return <Canvas frameloop={props.running ? 'always' : 'demand'} flat dpr={[1,1.5]} gl={{alpha:true,antialias:false}} fallback={null}><Suspense fallback={null}><Drawing {...props} /><Prepared name="drawing"/></Suspense></Canvas>
 }

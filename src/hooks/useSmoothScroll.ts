@@ -5,6 +5,12 @@ import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
 
 let currentLenis: Lenis | null = null
+let scrollLocked = true
+export function setScrollLocked(locked: boolean) {
+  scrollLocked = locked
+  if (locked) currentLenis?.stop()
+  else currentLenis?.start()
+}
 
 export function scrollPageTo(top: number, immediate = false, duration = 1.35) {
   if (currentLenis) currentLenis.scrollTo(top, { immediate, duration })
@@ -34,6 +40,7 @@ export function useSmoothScroll() {
       smoothWheel: true,
     })
     currentLenis = lenis
+    if (scrollLocked) lenis.stop()
 
     lenis.on('scroll', ScrollTrigger.update)
 

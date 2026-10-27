@@ -1,3 +1,4 @@
+import { sceneReady } from '@/loading/readiness'
 import { Suspense, useEffect, useMemo, useRef, type MutableRefObject } from 'react'
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import { MathUtils, NoColorSpace, ShaderMaterial, SRGBColorSpace, TextureLoader, Vector2 } from 'three'
@@ -16,6 +17,7 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
   const textures = useLoader(TextureLoader, cinematicWorlds.flatMap(world => [world.image, world.depth]))
   const material = useRef<ShaderMaterial>(null)
   const pointer = useRef(new Vector2())
+  const prepared = useRef(false)
   const { size } = useThree()
   const uniforms = useMemo(() => ({
     uCurrent: { value: textures[0] }, uNext: { value: textures[2] },
@@ -54,6 +56,7 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
 
   useFrame(({ clock }, delta) => {
     if (!material.current) return
+    if (!prepared.current) { prepared.current = true; requestAnimationFrame(() => sceneReady('hero')) }
     const frame = getHeroFrame(progress.current, reduced)
     const u = material.current.uniforms
     const world = cinematicWorlds[frame.index]
