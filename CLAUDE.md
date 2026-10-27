@@ -13,7 +13,8 @@ React + TypeScript + Vite; Three.js / React Three Fiber; GSAP + ScrollTrigger; o
 - Procedural 3D process ribbon with lacquer/metal/clay choices.
 - Sticky blueprint sequence: scroll raises and draws the blueprint, then pushes into the room; a cursor lens reveals the built interior and double-click (or the Blueprint / As built buttons) builds it all.
 - Animated SVG focus icons and expandable O-shaped visual stories.
-- Reflective 3D O closing scene and email CTA.
+- Cream → navy hand-over (`OutroRise` in `AtelierSections.tsx`): the navy rises over the stories section as the footer scrolls in, its top a crisp curved wave that drifts as it rises; at rest the footer meets the cream along that curve.
+- Closing scene: seven liquid drops ray-marched as metaballs (`LiquidDrops.tsx`): scroll gathers them into the theos O and its dot, drag throws a drop (spring physics), nearby drops shy from the cursor, click morphs the material (chrome, red lacquer, glass, pearl) under a procedural studio light. Half resolution, created only near the footer. The previous red O is kept in `docs/snapshots/outro-before/`. Email CTA.
 - Reduced motion, offscreen rendering pauses and graceful imagery fallbacks.
 
 The current project is desktop-focused. Actual client footage and quotes remain pending; visual studies are labelled accordingly.

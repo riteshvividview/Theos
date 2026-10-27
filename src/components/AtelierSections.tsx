@@ -1,4 +1,4 @@
-import { Component, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type CSSProperties, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react'
+import { Component, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type MutableRefObject, type ReactNode, type CSSProperties, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { ArrowUpRight, ArrowLeft, ArrowRight, X, Plus, Rotate3d } from 'lucide-react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -10,7 +10,7 @@ import '@/styles/atelierSections.css'
 const RibbonCanvas=lazy(()=>import('@/three/scenes/AtelierObjects').then(m=>({default:m.RibbonCanvas})))
 const BlueprintCanvas=lazy(()=>import('@/three/scenes/AtelierObjects').then(m=>({default:m.BlueprintCanvas})))
 const CollectionOrbitCanvas=lazy(()=>import('@/three/scenes/CollectionOrbit').then(m=>({default:m.CollectionOrbitCanvas})))
-const SignatureCanvas=lazy(()=>import('@/three/scenes/AtelierObjects').then(m=>({default:m.SignatureCanvas})))
+const SignatureCanvas=lazy(()=>import('@/three/scenes/LiquidDrops').then(m=>({default:m.SignatureCanvas})))
 gsap.registerPlugin(ScrollTrigger)
 
 class ArtBoundary extends Component<{children:ReactNode; fallback:ReactNode},{failed:boolean}> {
@@ -234,19 +234,69 @@ export function AtelierSections({reduced}:{reduced:boolean}) {
   return <div ref={root} className="atelier-editorial" style={{'--motion':reduced?'0s':'1s'} as CSSProperties}><ChapterRail reduced={reduced}/><Gallery reduced={reduced}/><Timeline reduced={reduced}/><Architecture reduced={reduced}/><FocusPoints/><Stories reduced={reduced}/></div>
 }
 
+// Cream → navy: the navy rises over the stories section as the footer scrolls in, its top a clean curved wave (a soft dip that
+// drifts as it rises). At rest the footer meets the cream along that same curve. Crisp edge, no fade; drawn only while on screen.
+const riseFragment=`precision highp float;
+uniform vec2 uRes;uniform float uLevel;
+void main(){
+ vec2 uv=gl_FragCoord.xy/uRes;float px=1.2/uRes.y;
+ float centre=.6-uLevel*.18;
+ float dip=1.-exp(-pow((uv.x-centre)/.34,2.));
+ float swell=.5+.5*cos((uv.x+uLevel*.4)*6.2832*.9);
+ float edge=uLevel*1.18+(.035+.03*(1.-uLevel))*dip+.012*swell;
+ float navy=1.-smoothstep(edge-px,edge+px,uv.y);
+ gl_FragColor=vec4(vec3(.078,.161,.259)*navy,navy);
+}`
+function OutroRise({level,reduced}:{level:MutableRefObject<number>;reduced:boolean}) {
+  const canvas=useRef<HTMLCanvasElement>(null)
+  useEffect(()=>{
+    const el=canvas.current,gl=el?.getContext('webgl',{premultipliedAlpha:true,antialias:false})
+    if(!el||!gl)return
+    const compile=(type:number,src:string)=>{const sh=gl.createShader(type)!;gl.shaderSource(sh,src);gl.compileShader(sh);return sh}
+    const program=gl.createProgram()!
+    gl.attachShader(program,compile(gl.VERTEX_SHADER,'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}'));gl.attachShader(program,compile(gl.FRAGMENT_SHADER,riseFragment));gl.linkProgram(program);gl.useProgram(program)
+    const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW)
+    const loc=gl.getAttribLocation(program,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0)
+    const u=(n:string)=>gl.getUniformLocation(program,n)
+    let frame=0,shown=-1,eased=level.current
+    // The story navigation floats above the navy; each part turns white once the edge has risen past it.
+    const riders=[...document.querySelectorAll<HTMLElement>('.story-navigation > *')]
+    const edgeAt=(x:number,lv:number)=>{const dip=1-Math.exp(-(((x-(.6-lv*.18))/.34)**2)),swell=.5+.5*Math.cos((x+lv*.4)*Math.PI*2*.9);return lv*1.18+(.035+.03*(1-lv))*dip+.012*swell}
+    const draw=()=>{
+      frame=requestAnimationFrame(draw)
+      const box=el.getBoundingClientRect();if(box.bottom<0||box.top>innerHeight)return
+      eased+=((reduced?(level.current>.5?1:0):level.current)-eased)*.18
+      riders.forEach(r=>{const b=r.getBoundingClientRect(),x=(b.left+b.width/2-box.left)/box.width,edgeY=box.bottom-edgeAt(x,eased)*box.height;r.toggleAttribute('data-on-navy',b.top+b.height/2>edgeY)})
+      const w=Math.round(el.clientWidth*Math.min(devicePixelRatio,1.5)),h=Math.round(el.clientHeight*Math.min(devicePixelRatio,1.5))
+      if(Math.abs(eased-shown)<.0002&&el.width===w&&el.height===h)return
+      shown=eased
+      if(el.width!==w||el.height!==h){el.width=w;el.height=h}
+      gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.uniform2f(u('uRes'),w,h);gl.uniform1f(u('uLevel'),eased)
+      gl.drawArrays(gl.TRIANGLES,0,3)
+    }
+    frame=requestAnimationFrame(draw)
+    return()=>{cancelAnimationFrame(frame);gl.deleteProgram(program);gl.deleteBuffer(buffer)}
+  },[level,reduced])
+  return <div className="outro-rise" aria-hidden="true"><canvas ref={canvas}/></div>
+}
+
 export function AtelierOutro({reduced,onBeginning}:{reduced:boolean;onBeginning:()=>void}) {
-  const {ref,near}=useNear(),root=useRef<HTMLElement>(null)
+  const {ref,near}=useNear(),root=useRef<HTMLElement>(null),roomProgress=useRef(reduced?1:0),riseLevel=useRef(0)
+  // The navy rises from the footer's top edge, covering the view by the time that edge is a quarter of the way down.
+  useLayoutEffect(()=>{if(!root.current)return;const st=ScrollTrigger.create({trigger:root.current,start:'top bottom',end:'top 25%',onUpdate:self=>{riseLevel.current=self.progress},onRefresh:self=>{riseLevel.current=self.progress}});return()=>st.kill()},[])
+  // The closing room assembles as the footer scrolls into view.
+  useLayoutEffect(()=>{if(!root.current)return;const st=ScrollTrigger.create({trigger:root.current,start:'top 85%',end:'bottom bottom',onUpdate:self=>{roomProgress.current=self.progress},onRefresh:self=>{roomProgress.current=self.progress}});return()=>st.kill()},[])
   useLayoutEffect(()=>{if(reduced||!root.current)return;const ctx=gsap.context(()=>{
     gsap.from('.outro-title > span',{yPercent:70,opacity:0,stagger:.14,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:root.current,start:'top 70%'}})
     gsap.from('.outro-wordmark',{yPercent:35,opacity:.15,ease:'none',scrollTrigger:{trigger:root.current,start:'top bottom',end:'bottom bottom',scrub:true}})
-    gsap.to('.outro-radial',{rotation:35,transformOrigin:'50% 50%',ease:'none',scrollTrigger:{trigger:root.current,start:'top bottom',end:'bottom top',scrub:true}})
   },root);return()=>ctx.revert()},[reduced])
-  return <footer ref={root} id="atelier-contact" className="atelier-outro">
+  return <><OutroRise level={riseLevel} reduced={reduced}/><footer ref={root} id="atelier-contact" className="atelier-outro">
     <div className="outro-top"><span>THEOS / BEYOND THE ORDINARY</span><span>A new perspective starts here.</span></div>
     <div className="outro-main"><div className="outro-copy"><h2 className="outro-title"><span>Make room</span><span>for <em>what’s next.</em></span></h2><a href="mailto:care@theos.co.in" className="outro-contact">Start a conversation <ArrowUpRight size={24}/></a><p>Interiors. Furniture. Imagination.</p></div>
-      <div ref={ref} className="outro-sculpture" aria-hidden="true"><svg className="outro-radial" viewBox="0 0 600 600" fill="none">{Array.from({length:48},(_,i)=><path key={i} d="M300 35V48" transform={`rotate(${i*7.5} 300 300)`}/>)}<circle cx="300" cy="300" r="268" strokeDasharray="1 12"/></svg><ArtBoundary fallback={<span className="outro-fallback">o</span>}><Suspense fallback={<span className="outro-fallback">o</span>}>{<SignatureCanvas running={near} reduced={reduced}/>}</Suspense></ArtBoundary></div>
+      <div ref={ref} className="outro-sculpture" role="group" aria-label="Liquid drops of material"><ArtBoundary fallback={<span className="outro-fallback">o</span>}><Suspense fallback={<span className="outro-fallback">o</span>}>{<SignatureCanvas running={near} reduced={reduced} progress={roomProgress}/>}</Suspense></ArtBoundary></div>
     </div>
     <div className="outro-bottom"><a href="mailto:care@theos.co.in">care@theos.co.in</a><span>Designed with purpose. Made personal.</span><button onClick={onBeginning}>Back to the beginning <ArrowUpRight size={15}/></button></div>
     <div className="outro-wordmark" aria-hidden="true">theos<span>.</span></div>
-  </footer>
+  </footer></>
 }

@@ -102,10 +102,10 @@ export function PageLoader({ onComplete }: { onComplete: () => void }) {
   const origin = useRef<[number, number]>([innerWidth / 2, innerHeight / 2]), mouse = useRef<[number, number]>([0, 0]), enter = useRef(0)
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
   useEffect(() => {
-    let alive = true, completed = 0, displayed = 1
+    let alive = true, completed = 0, displayed = 1, stalledSince = 0
     const tasks = [...images, '/theos-logo.avif'].map(loadImage)
     tasks.push(document.fonts.load('400 16px "Bodoni Moda"').then(() => {}), document.fonts.load('italic 400 16px "Bodoni Moda"').then(() => {}), document.fonts.load('400 16px Manrope').then(() => {}))
-    tasks.push(import('@/three/scenes/CinematicHero').then(() => {}), import('@/three/scenes/AtelierObjects').then(() => {}))
+    tasks.push(import('@/three/scenes/CinematicHero').then(() => {}), import('@/three/scenes/AtelierObjects').then(() => {}), import('@/three/scenes/LiquidDrops').then(() => {}))
     tasks.forEach(task => task.catch(() => {}).finally(() => { completed++ }))
     const total = tasks.length + 4
     const timer = window.setInterval(() => {
@@ -113,7 +113,10 @@ export function PageLoader({ onComplete }: { onComplete: () => void }) {
       const target = Math.floor((completed + readyScenes.size) / total * 100)
       displayed = Math.min(100, Math.max(displayed, Math.min(target, displayed + 2)))
       setProgress(displayed)
-      if (displayed === 100) { clearInterval(timer); setReady(true) }
+      // If a scene is slow to report, the last few percent are not allowed to hold the visitor back.
+      if (displayed >= 94 && stalledSince === 0) stalledSince = performance.now()
+      if (displayed >= 94 && performance.now() - stalledSince > 2500) displayed = 100
+      if (displayed === 100) { setProgress(100); clearInterval(timer); setReady(true) }
     }, 30)
     const timeout = window.setTimeout(() => setSlow(true), 18000)
     return () => { alive = false; clearInterval(timer); clearTimeout(timeout) }
