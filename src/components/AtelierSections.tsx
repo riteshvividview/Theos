@@ -1,12 +1,15 @@
-import { Component, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type CSSProperties } from 'react'
-import { ArrowUpRight, ArrowLeft, ArrowRight, X, Plus } from 'lucide-react'
+import { Component, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type CSSProperties, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react'
+import { ArrowUpRight, ArrowLeft, ArrowRight, X, Plus, Rotate3d } from 'lucide-react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { scrollPageTo } from '@/hooks/useSmoothScroll'
+import type { OrbitCard, OrbitControl } from '@/three/scenes/CollectionOrbit'
+import type { BlueprintLens, Finish } from '@/three/scenes/AtelierObjects'
 import '@/styles/atelierSections.css'
 
 const RibbonCanvas=lazy(()=>import('@/three/scenes/AtelierObjects').then(m=>({default:m.RibbonCanvas})))
-const DrawingCanvas=lazy(()=>import('@/three/scenes/AtelierObjects').then(m=>({default:m.DrawingCanvas})))
+const BlueprintCanvas=lazy(()=>import('@/three/scenes/AtelierObjects').then(m=>({default:m.BlueprintCanvas})))
+const CollectionOrbitCanvas=lazy(()=>import('@/three/scenes/CollectionOrbit').then(m=>({default:m.CollectionOrbitCanvas})))
 const SignatureCanvas=lazy(()=>import('@/three/scenes/AtelierObjects').then(m=>({default:m.SignatureCanvas})))
 gsap.registerPlugin(ScrollTrigger)
 
@@ -59,19 +62,64 @@ function ChapterRail({reduced}:{reduced:boolean}) {
   </nav>
 }
 
-function Gallery() {
+const orbitCards:OrbitCard[]=[...gallery,...[4,0,7,2,8,6].map(i=>gallery[i])].map(card=>({file:card.file,title:card.title,aspect:card.w*1.15/card.h,size:1.38}))
+
+function StaticCollection({open}:{open:(i:number)=>void}) {
+  return <>{gallery.map((card,i)=><button key={card.file} className={`collection-tile collection-tile-${i}`} style={{left:`${card.x}%`,top:`${card.y}%`,width:`${card.w}%`,height:`${card.h}%`}} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();e.currentTarget.style.setProperty('--pointer-x',`${e.clientX-r.left}px`);e.currentTarget.style.setProperty('--pointer-y',`${e.clientY-r.top}px`)}} onClick={()=>open(i)} aria-label={`Explore ${card.title}`}>
+    <div className="collection-image"><img src={`/images/redesign/gallery-${card.file}.jpg`} alt={card.title} loading="lazy" /><span className="collection-tint" /></div>
+    <span className="collection-caption"><span>{card.title}</span><Plus size={17}/></span>
+    <span className="collection-loupe" aria-hidden="true"><ArrowUpRight size={22}/></span>
+  </button>)}</>
+}
+
+function Gallery({reduced}:{reduced:boolean}) {
   const dialog=useRef<HTMLDialogElement>(null), [selected,setSelected]=useState(4)
+  const {ref,near}=useNear(), intro=useRef(0), [active,setActive]=useState(0), [pointing,setPointing]=useState(false), [dragging,setDragging]=useState(false)
+  const control=useRef<OrbitControl>({dragging:false,moved:0,pending:[0,0],velocity:[.12,0],nudge:0})
+  const azimuth=useRef<HTMLElement>(null), elevation=useRef<HTMLElement>(null), dial=useRef<HTMLDivElement>(null), meter=useRef<HTMLElement>(null)
+  const telemetry=(az:number,el:number,speed:number)=>{
+    const wrap=(az%360+360)%360, tiltDeg=((el+180)%360+360)%360-180
+    if(azimuth.current)azimuth.current.textContent=`${String(Math.round(wrap)%360).padStart(3,'0')}°`
+    if(elevation.current)elevation.current.textContent=`${tiltDeg<0?'−':'+'}${String(Math.abs(Math.round(tiltDeg))).padStart(2,'0')}°`
+    dial.current?.style.setProperty('--orbit-az',`${-wrap}deg`)
+    meter.current?.style.setProperty('--orbit-speed',speed.toFixed(3))
+  }
   const open=(i:number)=>{setSelected(i);dialog.current?.showModal()}
-  const item=gallery[selected]
+  const item=gallery[selected], front=gallery.findIndex(card=>card.file===orbitCards[active]?.file)
+  useLayoutEffect(()=>{if(!ref.current)return;const st=ScrollTrigger.create({trigger:ref.current,start:'top 90%',end:'top 25%',scrub:true,onUpdate:self=>{intro.current=self.progress},onRefresh:self=>{intro.current=self.progress}});return()=>st.kill()},[ref])
+  const startDrag=(e:ReactPointerEvent<HTMLDivElement>)=>{
+    if(e.button!==0)return
+    const c=control.current, width=e.currentTarget.clientWidth
+    let x=e.clientX, y=e.clientY
+    c.dragging=true;c.moved=0;setDragging(true)
+    const move=(ev:PointerEvent)=>{const dx=ev.clientX-x,dy=ev.clientY-y;x=ev.clientX;y=ev.clientY;c.moved+=Math.abs(dx)+Math.abs(dy);c.pending=[c.pending[0]+dx/width*Math.PI*1.3,c.pending[1]+dy/width*Math.PI*1.3]}
+    const end=()=>{c.dragging=false;setDragging(false);removeEventListener('pointermove',move);removeEventListener('pointerup',end);removeEventListener('pointercancel',end)}
+    addEventListener('pointermove',move);addEventListener('pointerup',end);addEventListener('pointercancel',end)
+  }
+  const keys=(e:ReactKeyboardEvent)=>{
+    if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();control.current.nudge+=(e.key==='ArrowLeft'?-1:1)*.35}
+    else if((e.key==='Enter'||e.key===' ')&&front>=0){e.preventDefault();open(front)}
+  }
   return <section id="collection" className="atelier-collection editorial-section">
     <SectionLabel number="01">A collection of perspectives</SectionLabel>
     <div className="collection-composition">
       <h2 className="collection-left editorial-reveal">bold<br/>when<br/><em>needed.</em></h2>
-      {gallery.map((card,i)=><button key={card.file} className={`collection-tile collection-tile-${i}`} style={{left:`${card.x}%`,top:`${card.y}%`,width:`${card.w}%`,height:`${card.h}%`}} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();e.currentTarget.style.setProperty('--pointer-x',`${e.clientX-r.left}px`);e.currentTarget.style.setProperty('--pointer-y',`${e.clientY-r.top}px`)}} onClick={()=>open(i)} aria-label={`Explore ${card.title}`}>
-        <div className="collection-image"><img src={`/images/redesign/gallery-${card.file}.jpg`} alt={card.title} loading="lazy" /><span className="collection-tint" /></div>
-        <span className="collection-caption"><span>{card.title}</span><Plus size={17}/></span>
-        <span className="collection-loupe" aria-hidden="true"><ArrowUpRight size={22}/></span>
-      </button>)}
+      <ArtBoundary fallback={<StaticCollection open={open}/>}>
+        <div ref={ref} className={`collection-orbit-stage${pointing?' is-pointing':''}${dragging?' is-dragging':''}`} onPointerDown={startDrag} onKeyDown={keys} tabIndex={0} role="group" aria-roledescription="carousel" aria-label="Visual collection. Drag or use the arrow keys to turn, Enter to open the image in front.">
+          <Suspense fallback={null}><CollectionOrbitCanvas running={near} cards={orbitCards} control={control} intro={intro} reduced={reduced} onSelect={i=>open(gallery.findIndex(card=>card.file===orbitCards[i].file))} onActive={setActive} onHover={setPointing} onTelemetry={telemetry}/></Suspense>
+        </div>
+        <div className="collection-orbit-caption" aria-live="polite"><span>{String(front+1).padStart(2,'0')} <i>/</i> 09</span><strong>{gallery[front]?.title}</strong><em><Rotate3d size={13}/>Drag to turn the collection</em></div>
+        <div className="orbit-hud" aria-hidden="true">
+          <span className="orbit-hud-title">THEOS / ORBIT STUDY</span>
+          <dl><div><dt>AZ</dt><dd ref={azimuth}>000°</dd></div><div><dt>EL</dt><dd ref={elevation}>+10°</dd></div><div><dt>FRAMES</dt><dd>15</dd></div></dl>
+          <span className="orbit-hud-meter"><i ref={meter}/></span>
+        </div>
+        <div ref={dial} className="orbit-dial" aria-hidden="true">
+          <svg viewBox="0 0 160 160" fill="none"><g className="orbit-dial-face">{Array.from({length:72},(_,i)=><line key={i} x1="80" y1={i%6?9:4} x2="80" y2={i%18?14:20} transform={`rotate(${i*5} 80 80)`}/>)}<text x="80" y="36">N</text><text x="80" y="132">S</text><text x="128" y="84">E</text><text x="32" y="84">W</text></g><circle cx="80" cy="80" r="58" strokeDasharray="1 5"/><path d="M80 80V30" className="orbit-dial-needle"/><circle cx="80" cy="80" r="3" className="orbit-dial-core"/></svg>
+          <span>Material<br/>Colour<br/>Form</span>
+        </div>
+        <span className="orbit-mark orbit-mark-tl"/><span className="orbit-mark orbit-mark-tr"/><span className="orbit-mark orbit-mark-bl"/><span className="orbit-mark orbit-mark-br"/>
+      </ArtBoundary>
       <p className="collection-right editorial-reveal">where<br/>space<br/>becomes<br/><em>narrative.</em></p>
       <svg className="collection-orbit" viewBox="0 0 1000 900" fill="none" aria-hidden="true"><path className="draw-line" d="M95 120C560 -140 1090 430 810 755S60 880 95 360"/><circle cx="95" cy="120" r="5" /></svg>
     </div>
@@ -84,62 +132,63 @@ function Gallery() {
   </section>
 }
 
+const finishOptions:[Finish,string][]=[['lacquer','Red lacquer'],['metal','Brushed metal'],['clay','Warm clay'],['brass','Aged brass'],['velvet','Cobalt velvet']]
+
 function Timeline({reduced}:{reduced:boolean}) {
   const {ref,near}=useNear(), section=useRef<HTMLElement>(null), progress=useRef(0)
   const [hovered,setHovered]=useState<number|null>(null),[current,setCurrent]=useState(0)
-  const [finish,setFinish]=useState('lacquer')
+  const [finish,setFinish]=useState<Finish>('lacquer'),[entered,setEntered]=useState(false)
+  // The spiral's entrance plays once, when a third of the sculpture is first on screen; it never plays in reverse.
+  useEffect(()=>{const el=ref.current;if(!el)return;const io=new IntersectionObserver(([e])=>{if(e.isIntersecting){setEntered(true);io.disconnect()}},{threshold:.32});io.observe(el);return()=>io.disconnect()},[ref])
   useLayoutEffect(()=>{if(!section.current)return;const st=ScrollTrigger.create({trigger:section.current,start:'top 65%',end:'bottom 35%',onUpdate:self=>{progress.current=self.progress;setCurrent(Math.min(3,Math.floor(self.progress*4)))}});return()=>st.kill()},[])
   const active=hovered??current
   return <section ref={section} id="process" className="atelier-process editorial-section">
     <SectionLabel number="02">The thread that connects it all</SectionLabel>
     <div className="process-heading editorial-reveal"><h2>From a thought.<br/><em>To a place.</em></h2><p>A continuous conversation<br/>between imagination and making.</p></div>
     <div className="process-stage">
-      <div ref={ref} className="process-sculpture" aria-hidden="true"><ArtBoundary fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}><Suspense fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}>{<RibbonCanvas running={near} progress={progress} active={active} reduced={reduced} finish={finish}/>}</Suspense></ArtBoundary></div>
+      <div ref={ref} className="process-sculpture" aria-hidden="true"><ArtBoundary fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}><Suspense fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}>{<RibbonCanvas running={near} progress={progress} active={active} reduced={reduced} finish={finish} entered={entered}/>}</Suspense></ArtBoundary></div>
       {stages.map((stage,i)=><button key={stage.label} className={`process-step process-step-${i}${active===i?' is-active':''}`} onPointerEnter={()=>setHovered(i)} onPointerLeave={()=>setHovered(null)} onFocus={()=>setHovered(i)} onBlur={()=>setHovered(null)} onClick={()=>setHovered(i)} aria-pressed={active===i}>
         <span className="process-index">0{i+1}<span>{stage.label}</span></span><h3>{stage.title}</h3><p>{stage.body}</p><span className="process-rule"/>
       </button>)}
       <div className="process-axis" aria-hidden="true"><span>IDEA</span><i/><span>EXPERIENCE</span></div>
     </div>
-    <div className="material-controls"><span>One form. Different feelings.</span><div>{[['lacquer','Red lacquer'],['metal','Brushed metal'],['clay','Warm clay']].map(([id,label])=><button key={id} onClick={()=>setFinish(id)} aria-pressed={finish===id}><i className={`material-swatch material-${id}`}/>{label}</button>)}</div></div>
+    <div className="material-controls"><span>One form. Different feelings.</span><div>{finishOptions.map(([id,label])=><button key={id} onClick={()=>setFinish(id)} aria-pressed={finish===id}><i className={`material-swatch material-${id}`}/>{label}</button>)}</div></div>
     <p className="process-note">Different disciplines. One considered journey.</p>
   </section>
 }
 
 function Architecture({reduced}:{reduced:boolean}) {
-  const {ref,near}=useNear(), reveal=useRef(0),sequence=useRef<HTMLDivElement>(null),trigger=useRef<ScrollTrigger|null>(null)
-  const [phase,setPhase]=useState(0)
+  const {ref,near}=useNear(), progress=useRef(0), sequence=useRef<HTMLDivElement>(null), cursor=useRef<HTMLDivElement>(null)
+  const lens=useRef<BlueprintLens>({x:.5,y:.5,inside:false,built:false,originX:.5,originY:.5})
+  const [built,setBuilt]=useState(false),[open,setOpen]=useState(reduced),[hovering,setHovering]=useState(false)
   useLayoutEffect(()=>{
-    const element=sequence.current;if(!element||reduced)return
-    const update=(p:number)=>{
-      const value=gsap.utils.clamp(0,1,(p-.18)/.64)
-      reveal.current=value
-      setPhase(value<.08?0:value<.57?1:2)
-      element.style.setProperty('--construction',String(value))
-      element.style.setProperty('--scan',`${(value<=.5?value*2:(value-.5)*2)*100}%`)
-      element.dataset.progress=value.toFixed(3)
-    }
-    const st=ScrollTrigger.create({id:'architecture-sequence',trigger:element,start:'top 8%',end:'bottom 92%',onUpdate:self=>update(self.progress),onRefresh:self=>update(self.progress)})
-    trigger.current=st;update(st.progress)
-    return()=>{st.kill();trigger.current=null}
+    const element=sequence.current;if(!element)return
+    if(reduced){progress.current=.3;element.style.setProperty('--open','1');setOpen(true);return}
+    // The stage opens from an inset frame to full bleed over the first part of the scroll.
+    const update=(p:number)=>{progress.current=p;element.style.setProperty('--open',gsap.utils.clamp(0,1,p/.3).toFixed(3));setOpen(p>.28)}
+    const st=ScrollTrigger.create({id:'architecture-sequence',trigger:element,start:'top bottom',end:'bottom bottom',onUpdate:self=>update(self.progress),onRefresh:self=>update(self.progress)})
+    update(st.progress)
+    return()=>st.kill()
   },[reduced])
-  const goToPhase=(index:number)=>{
-    if(reduced){reveal.current=index*.5;setPhase(index);sequence.current?.style.setProperty('--construction',String(index*.5));return}
-    const st=trigger.current;if(st)scrollPageTo(st.start+(st.end-st.start)*[.12,.5,.9][index],false,1.8)
+  const point=(e:ReactPointerEvent<HTMLDivElement>)=>{
+    const box=e.currentTarget.getBoundingClientRect(), x=(e.clientX-box.left)/box.width, y=(e.clientY-box.top)/box.height
+    Object.assign(lens.current,{x,y:1-y,inside:true})
+    cursor.current?.style.setProperty('--lx',`${x*100}%`);cursor.current?.style.setProperty('--ly',`${y*100}%`)
   }
+  // The build floods out from (or retreats into) the point that was double-clicked.
+  const build=(next:boolean,origin:[number,number]=[.5,.5])=>{const l=lens.current;l.originX=origin[0];l.originY=origin[1];l.built=next;setBuilt(next)}
   return <section id="philosophy" className="atelier-architecture editorial-section">
     <SectionLabel number="03">From the first line to the last detail</SectionLabel>
     <div className="architecture-heading editorial-reveal"><h2>Ordinary spaces.<br/><em>Extraordinary living.</em></h2><p>We see a space for what it can become.<br/>A place to gather. A place to pause.<br/>A place that feels entirely your own.</p></div>
-    <div ref={sequence} className="architecture-sequence" data-phase={phase}>
+    <div ref={sequence} className="architecture-sequence" data-built={built} data-open={open}>
     <div className="architecture-pin">
-    <div className="construction-bar"><span>THE ANATOMY OF A SPACE</span><div>{['01 / The drawing','02 / The form','03 / The vision'].map((label,i)=><button key={label} onClick={()=>goToPhase(i)} aria-current={phase===i?'step':undefined}>{label}</button>)}</div><span>SCROLL TO RESOLVE ↓</span></div>
-    <div ref={ref} className="architecture-drawing">
-      <img className="architecture-base" src="/images/redesign/architecture.jpg" alt="White architectural interior and blue furniture among construction lines"/>
-      <ArtBoundary fallback={null}><Suspense fallback={null}>{<div className="architecture-canvas"><DrawingCanvas running={near} reveal={reveal} reduced={reduced}/></div>}</Suspense></ArtBoundary>
-      <svg className="architecture-guides" viewBox="0 0 1672 1077" fill="none" aria-hidden="true"><path className="draw-line" d="M80 0V1050M1592 0V1050M10 960H1660M835 100V1020M240 960L835 230L1440 960M510 960V270H1150V960"/><circle cx="835" cy="540" r="155"/><path d="M60 1020H100M80 1000V1040M1572 1020H1612M1592 1000V1040" className="guide-accent"/></svg>
-      <span className="drawing-coordinate">THEOS / STUDY 001<br/>FORM · PROPORTION · LIGHT</span>
-      <div className="architecture-sweep" aria-hidden="true"><span>{phase<2?'TRACING FORM':'RESOLVING COLOUR'}</span></div>
-      <div className="drawing-status"><span>{['Everything begins with a line.','Proportion becomes presence.','Imagination finds its colour.'][phase]}</span><i><b/></i></div>
+    <div ref={ref} className="architecture-drawing" role="img" aria-label="Architectural study of a living room. Hover to see it built, double-click to reveal the finished interior." onPointerEnter={e=>{point(e);setHovering(true)}} onPointerMove={point} onPointerLeave={()=>{lens.current.inside=false;setHovering(false)}} onDoubleClick={()=>build(!built,[lens.current.x,lens.current.y])}>
+      <ArtBoundary fallback={<img className="architecture-base" src="/images/redesign/architecture-plan.jpg" alt=""/>}><Suspense fallback={<img className="architecture-base" src="/images/redesign/architecture-plan.jpg" alt=""/>}><div className="architecture-canvas"><BlueprintCanvas running={near} progress={progress} lens={lens} reduced={reduced}/></div></Suspense></ArtBoundary>
+      <div ref={cursor} className={`blueprint-cursor${hovering?' is-visible':''}`} aria-hidden="true"><span>{built?'The first line':'As built'}</span><small>{built?'Double-click to return':'Double-click to build it all'}</small></div>
     </div>
+    <div className="construction-bar"><span>THE ANATOMY OF A SPACE</span><div>{(['Blueprint','As built'] as const).map((label,i)=><button key={label} onClick={()=>build(i===1)} aria-pressed={built===(i===1)}>0{i+1} / {label}</button>)}</div><span>HOVER TO BUILD · DOUBLE-CLICK FOR ALL</span></div>
+    <span className="drawing-coordinate">THEOS / STUDY 001<br/>PLAN · SECTION · AS BUILT</span>
+    <div className="drawing-status"><span>{built?'Imagination, fully built.':open?'Proportion becomes presence.':'Everything begins with a line.'}</span><i><b/></i></div>
     </div>
     </div>
     <div className="architecture-foot"><span>Drawn with imagination.<br/>Resolved with intention.</span><p>Design and making belong together. From the architecture of a room to the furniture within it, we consider the whole experience — and the details that make it personal.</p></div>
@@ -182,7 +231,7 @@ export function AtelierSections({reduced}:{reduced:boolean}) {
     gsap.utils.toArray<HTMLElement>('.focus-point').forEach((el,i)=>{gsap.from(el,{y:65,opacity:0,duration:1,delay:i*.12,scrollTrigger:{trigger:'.focus-grid',start:'top 80%'}});gsap.from(el.querySelectorAll('svg > *'),{opacity:0,scale:.75,transformOrigin:'50% 50%',stagger:.045,duration:1.2,clearProps:'transform,opacity',ease:'power2.out',scrollTrigger:{trigger:el,start:'top 80%'}})})
     gsap.from('.story-aperture',{y:90,scale:.9,duration:1.4,ease:'power3.out',scrollTrigger:{trigger:'.stories-stage',start:'top 85%'}})
   },root);let alive=true;document.fonts.ready.then(()=>{if(alive)ScrollTrigger.refresh()});return()=>{alive=false;ctx.revert()}},[reduced])
-  return <div ref={root} className="atelier-editorial" style={{'--motion':reduced?'0s':'1s'} as CSSProperties}><ChapterRail reduced={reduced}/><Gallery/><Timeline reduced={reduced}/><Architecture reduced={reduced}/><FocusPoints/><Stories reduced={reduced}/></div>
+  return <div ref={root} className="atelier-editorial" style={{'--motion':reduced?'0s':'1s'} as CSSProperties}><ChapterRail reduced={reduced}/><Gallery reduced={reduced}/><Timeline reduced={reduced}/><Architecture reduced={reduced}/><FocusPoints/><Stories reduced={reduced}/></div>
 }
 
 export function AtelierOutro({reduced,onBeginning}:{reduced:boolean;onBeginning:()=>void}) {

@@ -14,7 +14,8 @@ export interface CinematicHeroProps {
 }
 
 function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps, 'onFailure'>) {
-  const textures = useLoader(TextureLoader, cinematicWorlds.flatMap(world => [world.image, world.depth]))
+  // The four worlds, then the eye world with its wall opened into an arch (used by the eye → bedroom passage).
+  const textures = useLoader(TextureLoader, [...cinematicWorlds.flatMap(world => [world.image, world.depth]), '/images/redesign/eye-portal.jpg', '/images/redesign/eye-portal-depth.png'])
   const material = useRef<ShaderMaterial>(null)
   const pointer = useRef(new Vector2())
   const prepared = useRef(false)
@@ -23,7 +24,7 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
     uCurrent: { value: textures[0] }, uNext: { value: textures[2] },
     uDepthCurrent: { value: textures[1] }, uDepthNext: { value: textures[3] },
     uResolution: { value: new Vector2(1, 1) }, uPointer: { value: new Vector2() },
-    uExit: { value: new Vector2() }, uProgress: { value: 0 }, uHold: { value: 0 },
+    uExit: { value: new Vector2() }, uEntry: { value: new Vector2() }, uPortalPass: { value: 0 }, uCloudPass: { value: 0 }, uOutro: { value: 0 }, uPortal: { value: textures[8] }, uPortalDepth: { value: textures[9] }, uProgress: { value: 0 }, uHold: { value: 0 },
     uFocusCurrent: { value: .5 }, uFocusNext: { value: .5 },
     uReduced: { value: 0 }, uTime: { value: 0 },
     uPoolCurrent: { value: 0 }, uPoolNext: { value: 0 },
@@ -67,6 +68,12 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
     u.uDepthNext.value = textures[frame.next * 2 + 1]
     u.uResolution.value.set(size.width, size.height)
     u.uExit.value.set(world.exit[0], 1 - world.exit[1])
+    u.uEntry.value.set(next.entry[0], 1 - next.entry[1])
+    // The eye → bedroom passage opens the wall and walks through it; the others keep the shared fly-through.
+    u.uPortalPass.value = frame.index === 1 ? 1 : 0
+    // Bedroom → pool rises through the clouds; past the pool, the water rises into the page below.
+    u.uCloudPass.value = frame.index === 2 ? 1 : 0
+    u.uOutro.value = frame.index === 3 && !reduced ? MathUtils.smoothstep(progress.current, 3.22, 3.62) : 0
     u.uProgress.value = frame.transition
     u.uHold.value = frame.local
     u.uFocusCurrent.value = world.portraitFocus
@@ -89,7 +96,7 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
 }
 
 export function CinematicHero(props: CinematicHeroProps) {
-  return <Canvas className="atelier-webgl" frameloop={props.running === false ? 'never' : 'always'} flat dpr={[1, 1.5]} gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }} fallback={null} onCreated={({ gl }) => {
+  return <Canvas className="atelier-webgl" frameloop={props.running === false ? 'never' : 'always'} flat dpr={[1, 1.25]} gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }} fallback={null} onCreated={({ gl }) => {
     gl.setClearAlpha(0)
     gl.domElement.addEventListener('webglcontextlost', props.onFailure, { once: true })
   }}>

@@ -116,3 +116,7 @@
   .atelier-journey { height: 400svh; }
   .atelier-canvas { transition: none; }
 }
+
+/* As the pool water rises into the cream of the next section, the stage overlays step back. */
+.atelier-shade { opacity: calc(1 - var(--hero-outro, 0)); }
+.atelier-titles, .atelier-bottom, .atelier-meters { opacity: calc(1 - var(--hero-outro, 0)); }

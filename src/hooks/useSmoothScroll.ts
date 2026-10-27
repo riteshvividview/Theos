@@ -12,6 +12,12 @@ export function setScrollLocked(locked: boolean) {
   else currentLenis?.start()
 }
 
+// Pin the scroll position instantly, cancelling any momentum (used to keep the page from outrunning the hero's animation).
+export function holdScrollAt(top: number) {
+  if (currentLenis) currentLenis.scrollTo(top, { immediate: true, force: true })
+  else window.scrollTo({ top, behavior: 'instant' })
+}
+
 export function scrollPageTo(top: number, immediate = false, duration = 1.35) {
   if (currentLenis) currentLenis.scrollTo(top, { immediate, duration })
   else window.scrollTo({ top, behavior: immediate || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
