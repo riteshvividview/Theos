@@ -297,6 +297,6 @@ export function AtelierOutro({reduced,onBeginning}:{reduced:boolean;onBeginning:
       <div ref={ref} className="outro-sculpture" role="group" aria-label="Liquid drops of material"><ArtBoundary fallback={<span className="outro-fallback">o</span>}><Suspense fallback={<span className="outro-fallback">o</span>}>{<SignatureCanvas running={near} reduced={reduced} progress={roomProgress}/>}</Suspense></ArtBoundary></div>
     </div>
     <div className="outro-bottom"><a href="mailto:care@theos.co.in">care@theos.co.in</a><span>Designed with purpose. Made personal.</span><button onClick={onBeginning}>Back to the beginning <ArrowUpRight size={15}/></button></div>
-    <div className="outro-wordmark" aria-hidden="true">theos<span>.</span></div>
+    <div className="outro-wordmark" aria-hidden="true"><img src="/theos-logo.avif" alt="" /></div>
   </footer></>
 }

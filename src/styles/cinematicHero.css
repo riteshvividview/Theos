@@ -20,7 +20,7 @@
 .atelier-shade { pointer-events: none; background: linear-gradient(180deg, #071b2e20, transparent 22%, transparent 78%, #0b223233); }
 .atelier-header { position: absolute; z-index: 5; top: 4.8%; left: 3.15%; right: 3.15%; height: 58px; border: 1px solid #fff9; display: flex; align-items: stretch; color: var(--atelier-ivory); }
 .atelier-logo { width: 195px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #fff9; font-size: 37px; font-weight: 650; line-height: 1; letter-spacing: -.055em; }
-.atelier-logo > span { color: var(--atelier-red); }
+.atelier-logo img { display: block; width: 116px; height: auto; }
 .atelier-desktop-nav { flex: 1; display: flex; justify-content: space-evenly; align-items: stretch; }
 .atelier-desktop-nav button,.atelier-factory { font-size: 11px; font-weight: 400; letter-spacing: .18em; text-transform: uppercase; }
 .atelier-desktop-nav button { position: relative; padding: 0 20px; cursor: pointer; }
@@ -82,7 +82,8 @@
   .atelier-journey { height: 500svh; }
   .atelier-stage { min-height: 420px; }
   .atelier-header { top: 24px; left: 20px; right: 20px; height: 52px; }
-  .atelier-logo { width: 130px; font-size: 31px; }
+  .atelier-logo { width: 130px; }
+  .atelier-logo img { width: 92px; }
   .atelier-desktop-nav { display: none; }
   .atelier-factory { width: auto; flex: 1; border: 0; font-size: 9px; gap: 9px; }
   .atelier-menu-toggle { display: grid; place-items: center; width: 52px; border-left: 1px solid #fff9; cursor: pointer; }

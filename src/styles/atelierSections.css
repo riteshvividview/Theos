@@ -158,7 +158,8 @@
 .outro-bottom > span { opacity:.6; }
 .outro-bottom button { display:flex; align-items:center; gap:15px; cursor:pointer; }
 .outro-wordmark { position:relative; z-index:0; font-family:Manrope,sans-serif; font-size:clamp(200px,29vw,540px); font-weight:600; line-height:.8; letter-spacing:-.07em; margin:50px 0 -1.5%; color:#f5f0e710; text-align:center; user-select:none; pointer-events:none; }
-.outro-wordmark > span { color:#c72b3544; }
+/* The logo, huge and faint, bleeding off the bottom of the page like the type it replaced. */
+.outro-wordmark img { display:block; width:min(94%,1500px); height:auto; margin:0 auto -4.5%; opacity:.09; }
 /* Orbit collection: the composition fits the viewport so the whole orbit reads at once. */
 .collection-composition:has(.collection-orbit-stage) { aspect-ratio:auto; max-width:1440px; height:clamp(720px,115vh,1100px); margin-bottom:120px; }
 .collection-composition:has(.collection-orbit-stage) .collection-left { left:2%; top:8%; }
