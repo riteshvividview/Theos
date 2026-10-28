@@ -175,18 +175,18 @@ function Architecture({reduced}:{reduced:boolean}) {
     Object.assign(lens.current,{x,y:1-y,inside:true})
     cursor.current?.style.setProperty('--lx',`${x*100}%`);cursor.current?.style.setProperty('--ly',`${y*100}%`)
   }
-  // The build floods out from (or retreats into) the point that was double-clicked.
+  // The build floods out from (or retreats into) the point that was clicked.
   const build=(next:boolean,origin:[number,number]=[.5,.5])=>{const l=lens.current;l.originX=origin[0];l.originY=origin[1];l.built=next;setBuilt(next)}
   return <section id="philosophy" className="atelier-architecture editorial-section">
     <SectionLabel number="03">From the first line to the last detail</SectionLabel>
     <div className="architecture-heading editorial-reveal"><h2>Ordinary spaces.<br/><em>Extraordinary living.</em></h2><p>We see a space for what it can become.<br/>A place to gather. A place to pause.<br/>A place that feels entirely your own.</p></div>
     <div ref={sequence} className="architecture-sequence" data-built={built} data-open={open}>
     <div className="architecture-pin">
-    <div ref={ref} className="architecture-drawing" role="img" aria-label="Architectural study of a living room. Hover to see it built, double-click to reveal the finished interior." onPointerEnter={e=>{point(e);setHovering(true)}} onPointerMove={point} onPointerLeave={()=>{lens.current.inside=false;setHovering(false)}} onDoubleClick={()=>build(!built,[lens.current.x,lens.current.y])}>
+    <div ref={ref} className="architecture-drawing" role="img" aria-label="Architectural study of a living room. Hover to see it built, click to reveal the finished interior." onPointerEnter={e=>{point(e);setHovering(true)}} onPointerMove={point} onPointerLeave={()=>{lens.current.inside=false;setHovering(false)}} onClick={()=>build(!built,[lens.current.x,lens.current.y])}>
       <ArtBoundary fallback={<img className="architecture-base" src="/images/redesign/architecture-plan.jpg" alt=""/>}><Suspense fallback={<img className="architecture-base" src="/images/redesign/architecture-plan.jpg" alt=""/>}><div className="architecture-canvas"><BlueprintCanvas running={near} progress={progress} lens={lens} reduced={reduced}/></div></Suspense></ArtBoundary>
-      <div ref={cursor} className={`blueprint-cursor${hovering?' is-visible':''}`} aria-hidden="true"><span>{built?'The first line':'As built'}</span><small>{built?'Double-click to return':'Double-click to build it all'}</small></div>
+      <div ref={cursor} className={`blueprint-cursor${hovering?' is-visible':''}`} aria-hidden="true"><span>{built?'The first line':'As built'}</span><small>{built?'Click to return':'Click to build it all'}</small></div>
     </div>
-    <div className="construction-bar"><span>THE ANATOMY OF A SPACE</span><div>{(['Blueprint','As built'] as const).map((label,i)=><button key={label} onClick={()=>build(i===1)} aria-pressed={built===(i===1)}>0{i+1} / {label}</button>)}</div><span>HOVER TO BUILD · DOUBLE-CLICK FOR ALL</span></div>
+    <div className="construction-bar"><span>THE ANATOMY OF A SPACE</span><div>{(['Blueprint','As built'] as const).map((label,i)=><button key={label} onClick={()=>build(i===1)} aria-pressed={built===(i===1)}>0{i+1} / {label}</button>)}</div><span>HOVER TO BUILD · CLICK FOR ALL</span></div>
     <span className="drawing-coordinate">THEOS / STUDY 001<br/>PLAN · SECTION · AS BUILT</span>
     <div className="drawing-status"><span>{built?'Imagination, fully built.':open?'Proportion becomes presence.':'Everything begins with a line.'}</span><i><b/></i></div>
     </div>
