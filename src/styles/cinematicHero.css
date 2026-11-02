@@ -121,3 +121,7 @@
 /* As the pool water rises into the cream of the next section, the stage overlays step back. */
 .atelier-shade { opacity: calc(1 - var(--hero-outro, 0)); }
 .atelier-titles, .atelier-bottom, .atelier-meters { opacity: calc(1 - var(--hero-outro, 0)); }
+
+/* Script lines are set in Parisienne: upright (the face is already cursive), no synthetic slant or bold, natural spacing so the letters join. */
+.atelier-line, .atelier-contact > a { font-family: 'Parisienne', 'Bodoni Moda', cursive; font-style: normal; font-weight: 400; font-synthesis: none; letter-spacing: 0; }
+.atelier-line { font-size: clamp(52px, 6vw, 112px); }

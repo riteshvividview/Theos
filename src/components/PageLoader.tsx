@@ -46,7 +46,7 @@ vec3 page(vec2 q){
   return c;
 }
 vec3 world(vec2 uv){
-  float imageAspect=1672./1077., screenAspect=uRes.x/uRes.y;
+  float imageAspect=1672./941., screenAspect=uRes.x/uRes.y;
   vec2 cover=screenAspect>imageAspect?vec2(1.,imageAspect/screenAspect):vec2(screenAspect/imageAspect,1.);
   return texture2D(uImage,clamp(.5+(uv-.5)*cover/1.025,vec2(.001),vec2(.999))).rgb;
 }

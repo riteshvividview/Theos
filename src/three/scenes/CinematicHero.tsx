@@ -29,6 +29,8 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
     uReduced: { value: 0 }, uTime: { value: 0 },
     uPoolCurrent: { value: 0 }, uPoolNext: { value: 0 },
     uPortraitCurrent: { value: 0 }, uPortraitNext: { value: 0 },
+    uAspectCurrent: { value: cinematicWorlds[0].aspect }, uAspectNext: { value: cinematicWorlds[1].aspect },
+    uDepthPass: { value: 0 },
   }), [textures])
 
   useEffect(() => {
@@ -69,6 +71,10 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
     u.uResolution.value.set(size.width, size.height)
     u.uExit.value.set(world.exit[0], 1 - world.exit[1])
     u.uEntry.value.set(next.entry[0], 1 - next.entry[1])
+    u.uAspectCurrent.value = world.aspect
+    u.uAspectNext.value = next.aspect
+    // Rhino → eye: a pane of fluted glass sweeps across.
+    u.uDepthPass.value = frame.index === 0 ? 1 : 0
     // The eye → bedroom passage opens the wall and walks through it; the others keep the shared fly-through.
     u.uPortalPass.value = frame.index === 1 ? 1 : 0
     // Bedroom → pool rises through the clouds; past the pool, the water rises into the page below.

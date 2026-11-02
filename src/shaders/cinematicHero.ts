@@ -32,20 +32,18 @@ uniform float uPoolCurrent;
 uniform float uPoolNext;
 uniform float uPortraitCurrent;
 uniform float uPortraitNext;
+uniform float uAspectCurrent;
+uniform float uAspectNext;
+uniform float uDepthPass;
 
-vec2 imageScale() {
+// The worlds are not all the same shape, so each is covered by its own aspect.
+vec2 imageScale(float imageAspect) {
   float screenAspect = uResolution.x / uResolution.y;
-  float imageAspect = 1672.0 / 1077.0;
   return vec2(min(1.0, screenAspect / imageAspect), min(1.0, imageAspect / screenAspect));
 }
 
 vec2 imageCenter(float focus) {
-  vec2 s = imageScale();
   return vec2(mix(.5, focus, 1.0 - smoothstep(.7, 1.2, uResolution.x / uResolution.y)), .5);
-}
-
-vec2 imageUV(vec2 screenUV, float focus, float zoom, vec2 center) {
-  return imageCenter(focus) + ((screenUV - .5) / zoom + center - .5) * imageScale();
 }
 
 vec4 photograph(sampler2D photo, sampler2D depthMap, vec2 uv, float pool, float portrait) {
@@ -143,7 +141,7 @@ float cloud(vec2 p, float drift, float cover, out float lit) {
 
 void main() {
   const float DEPTH = 9.0;
-  vec2 s = imageScale();
+  vec2 s = imageScale(uAspectCurrent), sB = imageScale(uAspectNext);
   vec2 aspect = vec2(uResolution.x / uResolution.y, 1.0);
   float holdZoom = mix(1.025, 1.045, smoothstep(0.0, .48, uHold)) * (1.0 - uReduced) + uReduced;
   float t = uProgress;
@@ -158,12 +156,48 @@ void main() {
   // Its matching entry detail (eye for eye, red for red, arch for arch) is what the camera is flying toward.
   const float ARRIVE = 1.025;
   vec2 centreB = imageCenter(uFocusNext);
-  vec2 entryFinal = .5 + (uEntry - centreB) * ARRIVE / s;
+  vec2 entryFinal = .5 + (uEntry - centreB) * ARRIVE / sB;
+
+  // Rhino → eye: a pane of fluted glass passes the camera. Reeded glass is a material the studio builds with: a tall pane sweeps
+  // across from right to left, each rib refracting the scene into its own vertical sliver, and what is seen through it changes
+  // from the rhino's world to the carved room. Once the pane has gone by, the room behind it is the new one.
+  if (uDepthPass > .5 && uProgress > .00001 && uProgress < .99999) {
+    float ease = t * t * (3.0 - 2.0 * t);
+    // A slow push in on the leaving world, a slight settle on the arriving one.
+    vec2 uvA = centreA + (vUv - .5) * s / (holdZoom * mix(1.0, 1.06, ease));
+    vec2 uvB = centreB + (vUv - .5) * sB / (ARRIVE * mix(1.06, 1.0, ease));
+    const float HALF = .3, RIBS = 46.0;
+    float pane = mix(1.0 + HALF + .02, -HALF - .02, ease);
+    float d = (vUv.x - pane) / HALF;
+    float inGlass = 1.0 - smoothstep(.97, 1.0, abs(d));
+    // Each rib is a small cylinder lens: it gathers a wider strip of the scene and lays it out mirrored across its width.
+    float rib = fract(vUv.x * RIBS) - .5;
+    vec2 bend = vec2(-rib * 2.6 / RIBS, 0.0) * inGlass * (1.0 - uReduced);
+    vec3 leaving = photograph(uCurrent, uDepthCurrent, clamp(uvA + bend * s, vec2(.001), vec2(.999)), 0.0, 0.0).rgb;
+    vec3 arriving = photograph(uNext, uDepthNext, clamp(uvB + bend * sB, vec2(.001), vec2(.999)), uPoolNext, uPortraitNext).rgb;
+    // Through the glass the change is gradual, rib by rib; outside it, the pane has either passed or not yet arrived.
+    float changed = vUv.x > pane ? 1.0 : 0.0;
+    float through = smoothstep(-.55, .55, d + (hash(vec2(floor(vUv.x * RIBS), 3.0)) - .5) * .35);
+    float arrived = mix(changed, through, inGlass);
+    vec3 shown = mix(leaving, arriving, arrived);
+    // Glass: rib edges darken a touch, each crest carries a thin highlight, and the pane is faintly cool and frosted.
+    float edge = pow(abs(rib) * 2.0, 3.0), crest = pow(1.0 - abs(rib) * 2.0, 10.0);
+    shown *= 1.0 - .16 * edge * inGlass;
+    shown += vec3(.95, .97, 1.0) * crest * .07 * inGlass;
+    shown = mix(shown, shown * vec3(.96, .98, 1.0) + .025, inGlass);
+    // A crisp frame line on either side of the pane and a soft shadow on the scene just behind its trailing edge.
+    shown += vec3(1.0) * exp(-pow((abs(d) - 1.0) * HALF / .0016, 2.0)) * .35;
+    float trail = (vUv.x - (pane + HALF)) / .05;
+    shown *= 1.0 - .2 * exp(-trail) * step(0.0, trail);
+    gl_FragColor = vec4(shown, 1.0);
+    #include <colorspace_fragment>
+    return;
+  }
   // It reaches full frame a little before the leaving world's zoom ends, so its own edges are never seen.
   float travelB = smoothstep(0.0, .82, t);
   float zoomB = ARRIVE * exp(log(DEPTH) * (travelB - 1.0));
   vec2 anchor = mix(exitScreen, entryFinal, smoothstep(.3, .82, t));
-  vec2 uvB = uEntry + (vUv - anchor) * s / zoomB;
+  vec2 uvB = uEntry + (vUv - anchor) * sB / zoomB;
 
   // Motion: streaks along the flight, strongest mid-flight.
   float rush = sin(t * 3.14159) * .045 * (1.0 - uReduced);
@@ -173,13 +207,13 @@ void main() {
   float inside = smoothstep(0.0, .03, uvB.x) * (1.0 - smoothstep(.97, 1.0, uvB.x)) * smoothstep(0.0, .03, uvB.y) * (1.0 - smoothstep(.97, 1.0, uvB.y));
 
   // It dissolves in from its entry detail outward along a soft, organic edge measured in the next world's own space.
-  float reach = length((uvB - uEntry) * vec2(1672.0 / 1077.0, 1.0));
+  float reach = length((uvB - uEntry) * vec2(uAspectNext, 1.0));
   float grain = fbm((uvB - uEntry) * 7.0 + uTime * .05) - .5;
   // The window stays well inside the miniature's frame until that frame has covered the screen, then opens fully.
   float radius = mix(.03, .42, smoothstep(.1, .72, t)) + smoothstep(.8, .97, t) * 1.6;
   // The edge is feathered by at least a fixed width on screen (converted into the next world's scale), so even the tiny
   // first glimpse inside the eye has a soft, blurred rim rather than a crisp ring.
-  float feather = max(radius * .55, .035 * s.y / max(zoomB, 1e-3));
+  float feather = max(radius * .55, .035 * sB.y / max(zoomB, 1e-3));
   float arrived = (1.0 - smoothstep(radius - feather, radius + feather * .35, reach + grain * radius * .45)) * inside * smoothstep(0.0, .14, t);
   if (uProgress <= .00001) arrived = 0.0;
   if (uProgress >= .99999) arrived = 1.0;
@@ -220,7 +254,7 @@ void main() {
     peak = peak * peak * (3.0 - 2.0 * peak);
     // Tilt up into the bedroom's sky; arrive at the pool from above, tilting down into its resting frame.
     vec2 upA = centreA + vec2(0.0, .2 * rise) + (vUv - .5) * s / (holdZoom * (1.0 + .3 * rise));
-    vec2 downB = centreB + vec2(0.0, .2 * (1.0 - descend)) + (vUv - .5) * s / (ARRIVE * (1.0 + .3 * (1.0 - descend)));
+    vec2 downB = centreB + vec2(0.0, .2 * (1.0 - descend)) + (vUv - .5) * sB /(ARRIVE * (1.0 + .3 * (1.0 - descend)));
     vec3 shown = t < .5 ? photograph(uCurrent, uDepthCurrent, clamp(upA, vec2(.001), vec2(.999)), uPoolCurrent, uPortraitCurrent).rgb
                         : photograph(uNext, uDepthNext, clamp(downB, vec2(.001), vec2(.999)), uPoolNext, uPortraitNext).rgb;
     // Three layers at different depths: as we fly forward each grows at its own rate, so they slide past with parallax.
@@ -250,7 +284,7 @@ void main() {
     const vec2 ARCH = vec2(.4925, .6), HER = vec2(.353, .42);
     vec2 archA = fromPortal(ARCH);
     vec2 archScreen = .5 + (archA - centreA) * holdZoom / s;
-    vec2 restScreen = .5 + (HER - centreB) * ARRIVE / s;
+    vec2 restScreen = .5 + (HER - centreB) * ARRIVE / sB;
     // Walking through the doorway: the hall and its arch rush past toward the camera while the far world barely moves.
     float zoomHall = exp(mix(log(holdZoom), log(6.5), walk * walk * (3.0 - 2.0 * walk)));
     vec2 aUv = archA + (vUv - archScreen) * s / zoomHall;
@@ -264,7 +298,7 @@ void main() {
     // Through the opening: her world, the woman centred in the arch at first, drifting to her resting place as we arrive.
     vec2 herScreen = mix(vec2(.49, .62), restScreen, walk);
     float zoomHer = exp(mix(log(1.1), log(ARRIVE), walk));
-    vec4 her = photograph(uNext, uDepthNext, clamp(HER + (vUv - herScreen) * s / zoomHer, vec2(.001), vec2(.999)), uPoolNext, uPortraitNext);
+    vec4 her = photograph(uNext, uDepthNext, clamp(HER + (vUv - herScreen) * sB / zoomHer, vec2(.001), vec2(.999)), uPoolNext, uPortraitNext);
     float opening = archOpening(pUv) * wall;
     vec3 beyond = mix(arch.rgb, her.rgb, opening);
 
