@@ -231,8 +231,8 @@
 .story-navigation > [data-on-navy] button { border-color:#f5f0e766; }
 .story-navigation > [data-on-navy] button:hover { background:#f5f0e7; color:#142942; }
 
-/* Script accents are set in Parisienne: upright (the face is already cursive), no synthetic slant or bold, natural spacing so the letters join.
+/* Script accents are set in Rouge Script: upright (the face is already cursive), no synthetic slant or bold, natural spacing so the letters join.
    It runs smaller than Bodoni at the same size, so emphasised words inside headings are enlarged to match. */
 .process-note, .drawing-status, .architecture-foot > span, .outro-passage-hint span,
-.atelier-editorial h2 em, .atelier-editorial h3 em, .focus-statement em, .outro-title em { font-family:'Parisienne','Bodoni Moda',cursive; font-style:normal; font-weight:400; font-synthesis:none; letter-spacing:0; }
+.atelier-editorial h2 em, .atelier-editorial h3 em, .focus-statement em, .outro-title em { font-family:'Rouge Script','Bodoni Moda',cursive; font-style:normal; font-weight:400; font-synthesis:none; letter-spacing:0; }
 .atelier-editorial h2 em, .atelier-editorial h3 em, .focus-statement em, .outro-title em { font-size:1.12em; }

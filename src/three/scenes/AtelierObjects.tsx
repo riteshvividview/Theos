@@ -21,7 +21,7 @@ function StudioEnvironment() {
   return <primitive object={environment.texture} attach="environment"/>
 }
 
-// The process sculpture: a ribbon spiral.
+// The process sculpture: a ribbon spiral with four figures.
 // The ribbon carries aT (0 at its top, .86 at its foot) so one shader can reveal it on scroll and
 // sweep a new finish down it with a glowing seam.
 export type Finish = 'lacquer' | 'metal' | 'clay' | 'brass' | 'velvet'
@@ -33,6 +33,7 @@ const finishes: Record<Finish, FinishLook> = {
   brass: { color: '#c99a4a', metalness: 1, roughness: .3, clearcoat: .4, sheen: 0, sheenColor: '#000000', glow: '#ffd27a' },
   velvet: { color: '#2337a8', metalness: 0, roughness: .9, clearcoat: 0, sheen: 1, sheenColor: '#7f9bff', glow: '#8aa2ff' },
 }
+const FIGURES = [.10, .32, .57, .81]
 
 function ribbonGeometry() {
   const positions: number[] = [], indices: number[] = [], along: number[] = []
@@ -110,8 +111,8 @@ function applyFinish(material: MeshPhysicalMaterial, look: FinishLook) {
   material.clearcoat = look.clearcoat; material.sheen = look.sheen; material.sheenColor.set(look.sheenColor)
 }
 
-function Ribbon({ progress, reduced, finish, entered }: { progress: MutableRefObject<number>; active: number; reduced: boolean; finish: Finish; entered: boolean }) {
-  const group = useRef<Group>(null), entrance = useRef(reduced ? 1 : 0)
+function Ribbon({ progress, active, reduced, finish, entered }: { progress: MutableRefObject<number>; active: number; reduced: boolean; finish: Finish; entered: boolean }) {
+  const group = useRef<Group>(null), entrance = useRef(reduced ? 1 : 0), people = useRef<(Group | null)[]>([])
   const shared = useMemo(() => ({ uReveal: { value: reduced ? 1 : 0 }, uSweep: { value: 0 }, uGlow: { value: new Color(finishes[finish].glow) } }), []) // eslint-disable-line react-hooks/exhaustive-deps
   const [outgoing, incoming] = useMemo(() => [sweepMaterial(0, shared), sweepMaterial(1, shared)], [shared])
   const geometry = useMemo(() => ribbonGeometry(), [])
@@ -139,6 +140,8 @@ function Ribbon({ progress, reduced, finish, entered }: { progress: MutableRefOb
       shared.uSweep.value = Math.min(1, shared.uSweep.value + dt / 1.3)
       if (shared.uSweep.value >= 1) { applyFinish(outgoing, finishes[shown.current]); shared.uSweep.value = 0 }
     }
+    // Each figure steps out once the fragment beneath it has landed.
+    people.current.forEach((figure, i) => { if (figure) figure.scale.setScalar(.12 * MathUtils.smoothstep((shared.uReveal.value * 1.33 - FIGURES[i] * 1.05) / .28, .85, 1)) })
     if (!group.current) return
     group.current.position.y = (1 - e) * -1.4
     group.current.scale.setScalar(.82 + .18 * e)
@@ -153,6 +156,14 @@ function Ribbon({ progress, reduced, finish, entered }: { progress: MutableRefOb
     <group ref={group} rotation={[0, -.25, 0]}>
       <mesh geometry={geometry} material={outgoing} />
       <mesh geometry={geometry} material={incoming} />
+      {FIGURES.map((t,i) => {
+        const a=t*Math.PI*6.6
+        return <group key={t} ref={el => { people.current[i] = el }} position={[Math.cos(a)*1.2, 3.1-t*6.2+.36, Math.sin(a)*1.2]} scale={.12}>
+          <mesh position={[0,.8,0]}><sphereGeometry args={[.19,12,8]} /><meshStandardMaterial color={active===i?'#f5e7cf':'#152232'} /></mesh>
+          <mesh position={[0,.35,0]}><capsuleGeometry args={[.15,.45,4,8]} /><meshStandardMaterial color={active===i?'#f5e7cf':'#152232'} /></mesh>
+          {[-1,1].map(side=><mesh key={side} position={[side*.12,-.15,0]} rotation={[0,0,side*.1]}><capsuleGeometry args={[.06,.42,4,6]} /><meshStandardMaterial color="#152232" /></mesh>)}
+        </group>
+      })}
     </group>
   </>
 }

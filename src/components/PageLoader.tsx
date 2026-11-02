@@ -138,7 +138,7 @@ export function PageLoader({ onComplete }: { onComplete: () => void }) {
   useEffect(() => {
     let alive = true, completed = 0, displayed = 1, stalledSince = 0
     const tasks = [...images, '/theos-logo.avif'].map(loadImage)
-    tasks.push(document.fonts.load('400 16px "Bodoni Moda"').then(() => {}), document.fonts.load('italic 400 16px "Bodoni Moda"').then(() => {}), document.fonts.load('400 16px Manrope').then(() => {}), document.fonts.load('400 16px Parisienne').then(() => {}))
+    tasks.push(document.fonts.load('400 16px "Bodoni Moda"').then(() => {}), document.fonts.load('italic 400 16px "Bodoni Moda"').then(() => {}), document.fonts.load('400 16px Manrope').then(() => {}), document.fonts.load('400 16px "Rouge Script"').then(() => {}))
     tasks.push(import('@/three/scenes/CinematicHero').then(() => {}), import('@/three/scenes/AtelierObjects').then(() => {}), import('@/three/scenes/LiquidDrops').then(() => {}))
     tasks.forEach(task => task.catch(() => {}).finally(() => { completed++ }))
     const total = tasks.length + 4

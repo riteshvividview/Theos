@@ -132,6 +132,26 @@
 .atelier-shade { opacity: calc(1 - var(--hero-outro, 0)); }
 .atelier-titles, .atelier-bottom, .atelier-meters { opacity: calc(1 - var(--hero-outro, 0)); }
 
-/* Script lines are set in Parisienne: upright (the face is already cursive), no synthetic slant or bold, natural spacing so the letters join. */
-.atelier-line, .atelier-contact > a { font-family: 'Parisienne', 'Bodoni Moda', cursive; font-style: normal; font-weight: 400; font-synthesis: none; letter-spacing: 0; }
+/* Script lines are set in Rouge Script: upright (the face is already cursive), no synthetic slant or bold, natural spacing so the letters join. */
+.atelier-line, .atelier-contact > a { font-family: 'Rouge Script', 'Bodoni Moda', cursive; font-style: normal; font-weight: 400; font-synthesis: none; letter-spacing: 0; }
 .atelier-line { font-size: clamp(52px, 6vw, 112px); }
+
+/* The first world is a pale interior, so while it shows the hero's text, header and controls turn to ink. */
+.atelier-header, .atelier-line, .atelier-bottom, .atelier-logo img, .atelier-desktop-nav, .atelier-nav-pill, .atelier-factory, .atelier-factory i, .atelier-meter-fill, .atelier-meters button::before { transition: color .6s ease, background-color .6s ease, border-color .6s ease, filter .6s ease, transform .7s cubic-bezier(.65,0,.15,1); }
+.atelier-stage.is-light .atelier-header,
+.atelier-stage.is-light .atelier-line,
+.atelier-stage.is-light .atelier-bottom { color: var(--atelier-ink); }
+.atelier-stage.is-light .atelier-line { text-shadow: 0 1px 18px #ffffff66; }
+/* The logo file is white: tint it to the ink navy. */
+.atelier-stage.is-light .atelier-logo img { filter: brightness(0) invert(13%) sepia(38%) saturate(1400%) hue-rotate(178deg) brightness(.92); }
+.atelier-stage.is-light .atelier-desktop-nav { background: #ffffff59; border-color: #17284026; box-shadow: inset 0 1px 0 #ffffff80, 0 12px 40px #1728401a; }
+.atelier-stage.is-light .atelier-nav-pill { background: var(--atelier-ink); }
+.atelier-stage.is-light .atelier-desktop-nav button[aria-current] { color: var(--atelier-ivory); }
+.atelier-stage.is-light .atelier-desktop-nav button[aria-current] small { color: #ff8a7e; }
+.atelier-stage.is-light .atelier-factory { background: #ffffff59; border-color: #17284033; }
+.atelier-stage.is-light .atelier-factory i { background: var(--atelier-ink); color: var(--atelier-ivory); }
+.atelier-stage.is-light .atelier-factory:hover { background: var(--atelier-ink); border-color: var(--atelier-ink); color: var(--atelier-ivory); }
+.atelier-stage.is-light .atelier-factory:hover i { background: #bf291b; color: #fff; }
+.atelier-stage.is-light .atelier-meters button::before { background: #1728402e; }
+.atelier-stage.is-light .atelier-meter-fill { background: var(--atelier-ink); }
+.atelier-stage.is-light .atelier-menu-toggle { border-color: #17284033; background: #ffffff59; color: var(--atelier-ink); }
