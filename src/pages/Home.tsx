@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { ArrowDown, ArrowUpRight, ArrowLeft, ArrowRight, Menu, X } from 'lucide-react'
 import { CinematicCanvas } from '@/three/SceneCanvas'
 import { cinematicWorlds } from '@/config/cinematicHero'
@@ -61,10 +61,11 @@ export function Home() {
 
         <header className="atelier-header">
           <a className="atelier-logo" href="#" onClick={e => { e.preventDefault(); navigate(0) }} aria-label="Theos home"><img src="/theos-logo.avif" alt="" /></a>
-          <nav className="atelier-desktop-nav" aria-label="Explore the worlds">
-            {cinematicWorlds.map((scene, i) => <button key={scene.id} onClick={() => navigate(i)} aria-current={active === i ? 'step' : undefined}>{scene.navigation}</button>)}
+          <nav className="atelier-desktop-nav" aria-label="Explore the worlds" style={{ '--active': active } as CSSProperties}>
+            <span className="atelier-nav-pill" aria-hidden="true" />
+            {cinematicWorlds.map((scene, i) => <button key={scene.id} onClick={() => navigate(i)} aria-current={active === i ? 'step' : undefined}><small>0{i + 1}</small>{scene.navigation}</button>)}
           </nav>
-          <a className="atelier-factory" href="https://theos.co.in/" target="_blank" rel="noreferrer">Factory <ArrowUpRight size={14} strokeWidth={1.25} /></a>
+          <a className="atelier-factory" href="https://theos.co.in/" target="_blank" rel="noreferrer"><span>Factory</span><i><ArrowUpRight size={14} strokeWidth={1.5} /></i></a>
           <button className="atelier-menu-toggle" ref={menuToggle} aria-expanded={menuOpen} aria-controls="atelier-mobile-menu" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={21} /> : <Menu size={21} />}</button>
         </header>
         {menuOpen && <nav id="atelier-mobile-menu" className="atelier-mobile-menu" aria-label="Explore the worlds">
