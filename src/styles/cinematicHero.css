@@ -45,6 +45,7 @@
 .atelier-line > span { display: block; }
 .atelier-line-first { left: 5.8%; top: 45%; }
 .atelier-line-second { right: 5.6%; top: 70.5%; }
+.atelier-title-0 .atelier-line-first { top: 28%; }
 .atelier-title-1 .atelier-line-first { top: 20%; left: 6%; }
 .atelier-title-1 .atelier-line-second { top: 73%; font-size: clamp(35px, 4.2vw, 78px); }
 .atelier-title-2 .atelier-line-first { left: 17%; top: 11%; }
