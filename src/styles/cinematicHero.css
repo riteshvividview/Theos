@@ -41,7 +41,7 @@
 .atelier-titles,.atelier-title { position: absolute; inset: 0; pointer-events: none; }
 .atelier-title { visibility: hidden; }
 .atelier-title-0 { visibility: visible; }
-.atelier-line { position: absolute; margin: 0; padding: .04em .07em .18em; overflow: hidden; font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-weight: 400; font-size: clamp(44px, 5.1vw, 96px); letter-spacing: -.04em; line-height: 1.09; text-shadow: 0 2px 20px #2337471c; }
+.atelier-line { position: absolute; margin: 0; padding: .04em .07em .18em; overflow: hidden; font-family: 'Raleway', sans-serif; font-style: italic; font-weight: 400; font-size: clamp(44px, 5.1vw, 96px); letter-spacing: -.04em; line-height: 1.09; text-shadow: 0 2px 20px #2337471c; }
 .atelier-line > span { display: block; }
 .atelier-line-first { left: 5.8%; top: 45%; }
 .atelier-line-second { right: 5.6%; top: 70.5%; }
@@ -73,7 +73,7 @@
 .atelier-meter-fill { background: var(--atelier-ivory); transform: scaleX(0); transform-origin: left; }
 .atelier-contact { padding: 95px 6% 35px; background: var(--atelier-ivory); color: var(--atelier-ink); }
 .atelier-contact-label { display: block; font-size: 10px; letter-spacing: .2em; }
-.atelier-contact > a { font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-size: clamp(40px,6vw,90px); line-height: 1.1; letter-spacing: -.04em; margin: 35px 0 65px; display: flex; justify-content: space-between; align-items: center; }
+.atelier-contact > a { font-family: 'Raleway', sans-serif; font-style: italic; font-size: clamp(40px,6vw,90px); line-height: 1.1; letter-spacing: -.04em; margin: 35px 0 65px; display: flex; justify-content: space-between; align-items: center; }
 .atelier-contact > a > svg { width: 75px; height: 75px; transition: transform .35s ease; }
 .atelier-contact > a:hover > svg { transform: translate(8px,-8px); }
 .atelier-contact > div { border-top: 1px solid #173e6733; padding-top: 24px; display: flex; justify-content: space-between; gap: 20px; font-size: 11px; }
@@ -133,7 +133,7 @@
 .atelier-titles, .atelier-bottom, .atelier-meters { opacity: calc(1 - var(--hero-outro, 0)); }
 
 /* Script lines are set in Rouge Script: upright (the face is already cursive), no synthetic slant or bold, natural spacing so the letters join. */
-.atelier-line, .atelier-contact > a { font-family: 'Rouge Script', 'Bodoni Moda', cursive; font-style: normal; font-weight: 400; font-synthesis: none; letter-spacing: 0; }
+.atelier-line, .atelier-contact > a { font-family: 'Rouge Script', 'Raleway', cursive; font-style: normal; font-weight: 400; font-synthesis: none; letter-spacing: 0; }
 .atelier-line { font-size: clamp(52px, 6vw, 112px); }
 
 /* The first world is a pale interior, so while it shows the hero's text, header and controls turn to ink. */

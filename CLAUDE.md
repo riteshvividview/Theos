@@ -12,6 +12,7 @@ React + TypeScript + Vite; Three.js / React Three Fiber; GSAP + ScrollTrigger; o
 - Draggable orbital gallery (15 frames on an invisible sphere, depth-dimmed) with native dialog previews; static tiles remain the WebGL fallback.
 - Procedural 3D process ribbon with lacquer/metal/clay choices.
 - Sticky blueprint sequence: scroll raises and draws the blueprint, then pushes into the room; a cursor lens reveals the built interior and a click (or the Blueprint / As built buttons) builds it all.
+- Display serif (headings, captions, numbers) is Raleway (Google Fonts, linked in `index.html`).
 - Script type (hero lines, heading accents, footer email) is set in Rouge Script (Google Fonts, linked in `index.html` with Raleway).
 - Animated SVG focus icons and expandable O-shaped visual stories.
 - Cream → navy hand-over (`OutroRise` in `AtelierSections.tsx`): the navy rises over the stories section as the footer scrolls in, its top a crisp curved wave that drifts as it rises; at rest the footer meets the cream along that curve.
