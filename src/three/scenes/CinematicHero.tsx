@@ -25,7 +25,7 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
     uDepthCurrent: { value: textures[1] }, uDepthNext: { value: textures[3] },
     uResolution: { value: new Vector2(1, 1) }, uPointer: { value: new Vector2() },
     uExit: { value: new Vector2() }, uEntry: { value: new Vector2() }, uPortalPass: { value: 0 }, uCloudPass: { value: 0 }, uOutro: { value: 0 }, uPortal: { value: textures[8] }, uPortalDepth: { value: textures[9] }, uProgress: { value: 0 }, uHold: { value: 0 },
-    uFocusCurrent: { value: .5 }, uFocusNext: { value: .5 },
+    uFocusCurrent: { value: .5 }, uFocusNext: { value: .5 }, uFocusYCurrent: { value: .5 }, uFocusYNext: { value: .5 },
     uReduced: { value: 0 }, uTime: { value: 0 },
     uPoolCurrent: { value: 0 }, uPoolNext: { value: 0 },
     uPortraitCurrent: { value: 0 }, uPortraitNext: { value: 0 },
@@ -84,6 +84,8 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
     u.uHold.value = frame.local
     u.uFocusCurrent.value = world.portraitFocus
     u.uFocusNext.value = next.portraitFocus
+    u.uFocusYCurrent.value = 1 - (world.verticalFocus ?? .5)
+    u.uFocusYNext.value = 1 - (next.verticalFocus ?? .5)
     u.uReduced.value = reduced ? 1 : 0
     u.uPoolCurrent.value = frame.index === 3 ? 1 : 0
     u.uPoolNext.value = frame.next === 3 ? 1 : 0

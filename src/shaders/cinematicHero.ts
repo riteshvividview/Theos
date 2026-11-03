@@ -26,6 +26,8 @@ uniform float uProgress;
 uniform float uHold;
 uniform float uFocusCurrent;
 uniform float uFocusNext;
+uniform float uFocusYCurrent;
+uniform float uFocusYNext;
 uniform float uReduced;
 uniform float uTime;
 uniform float uPoolCurrent;
@@ -42,8 +44,9 @@ vec2 imageScale(float imageAspect) {
   return vec2(min(1.0, screenAspect / imageAspect), min(1.0, imageAspect / screenAspect));
 }
 
-vec2 imageCenter(float focus) {
-  return vec2(mix(.5, focus, 1.0 - smoothstep(.7, 1.2, uResolution.x / uResolution.y)), .5);
+// focusY (y up) picks which band of a tall image a wide screen shows; it is held where the image still covers the screen.
+vec2 imageCenter(float focus, float focusY, vec2 scale) {
+  return vec2(mix(.5, focus, 1.0 - smoothstep(.7, 1.2, uResolution.x / uResolution.y)), clamp(focusY, scale.y * .5, 1.0 - scale.y * .5));
 }
 
 vec4 photograph(sampler2D photo, sampler2D depthMap, vec2 uv, float pool, float portrait) {
@@ -143,19 +146,20 @@ void main() {
   const float DEPTH = 9.0;
   vec2 s = imageScale(uAspectCurrent), sB = imageScale(uAspectNext);
   vec2 aspect = vec2(uResolution.x / uResolution.y, 1.0);
-  float holdZoom = mix(1.025, 1.045, smoothstep(0.0, .48, uHold)) * (1.0 - uReduced) + uReduced;
+  // Just enough over-scan that the cursor parallax never shows an edge: the images fill the width with almost nothing cropped.
+  float holdZoom = mix(1.012, 1.025, smoothstep(0.0, .48, uHold)) * (1.0 - uReduced) + uReduced;
   float t = uProgress;
   // The camera flies into the leaving world's exit detail on an exponential zoom, so the speed of travel feels constant.
   float travel = t * t * (3.0 - 2.0 * t);
   float zoomA = holdZoom * exp(log(DEPTH) * travel);
-  vec2 centreA = imageCenter(uFocusCurrent);
+  vec2 centreA = imageCenter(uFocusCurrent, uFocusYCurrent, s);
   vec2 exitScreen = clamp(.5 + (uExit - centreA) * holdZoom / s, vec2(.05), vec2(.95));
   vec2 uvA = uExit + (vUv - exitScreen) * s / zoomA;
 
   // The next world already lives inside that detail, a miniature at the same point, growing with the zoom until it is the frame.
   // Its matching entry detail (eye for eye, red for red, arch for arch) is what the camera is flying toward.
-  const float ARRIVE = 1.025;
-  vec2 centreB = imageCenter(uFocusNext);
+  const float ARRIVE = 1.012;
+  vec2 centreB = imageCenter(uFocusNext, uFocusYNext, sB);
   vec2 entryFinal = .5 + (uEntry - centreB) * ARRIVE / sB;
 
   // Rhino → eye: a pane of fluted glass passes the camera. Reeded glass is a material the studio builds with: a tall pane sweeps
@@ -281,7 +285,7 @@ void main() {
     // Slow and legible: the wall breaks away over the first half, the view through the arch holds, then we walk through.
     float crumble = smoothstep(0.0, .5, t), walk = smoothstep(.6, 1.0, t);
     // Only the carved wall changes. The figures, foxes, platform and floor stay from eye.jpg throughout, so nothing ghosts.
-    const vec2 ARCH = vec2(.4925, .6), HER = vec2(.353, .42);
+    const vec2 ARCH = vec2(.4925, .6), HER = vec2(.335, .45);
     vec2 archA = fromPortal(ARCH);
     vec2 archScreen = .5 + (archA - centreA) * holdZoom / s;
     vec2 restScreen = .5 + (HER - centreB) * ARRIVE / sB;

@@ -19,6 +19,7 @@ function loadImage(url: string) {
 // liquid glass while the page lifts away, landing at exactly the hero's framing.
 const fragment = `precision highp float;
 uniform sampler2D uImage, uLogo;
+uniform float uImageAspect;
 uniform vec2 uRes;
 uniform vec4 uMark;          // the logo's box on screen: centre (px, y up) and half-size (px)
 uniform float uTime, uProgress, uEnter, uReady;
@@ -44,9 +45,10 @@ vec3 page(vec2 q){
   return c;
 }
 vec3 world(vec2 uv){
-  float imageAspect=2172./724., screenAspect=uRes.x/uRes.y;
+  // The image's own proportions (set when it loads), so the loader lands exactly on the hero's framing.
+  float imageAspect=uImageAspect, screenAspect=uRes.x/uRes.y;
   vec2 cover=screenAspect>imageAspect?vec2(1.,imageAspect/screenAspect):vec2(screenAspect/imageAspect,1.);
-  return texture2D(uImage,clamp(.5+(uv-.5)*cover/1.025,vec2(.001),vec2(.999))).rgb;
+  return texture2D(uImage,clamp(.5+(uv-.5)*cover/1.012,vec2(.001),vec2(.999))).rgb;
 }
 void main(){
   vec2 frag=gl_FragCoord.xy, uv=frag/uRes;
@@ -98,18 +100,19 @@ function Stage({ mark, progress, enter, ready }: { mark: { current: [number, num
     const buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
     const loc = gl.getAttribLocation(program, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
     const u = (n: string) => gl.getUniformLocation(program, n)
-    const textures = ['/images/redesign/rhino2.jpg', '/theos-logo.avif'].map((src, i) => {
+    const textures = ['/images/redesign/section1.jpg', '/theos-logo.avif'].map((src, i) => {
       const texture = gl.createTexture()!, image = new Image()
       gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, texture)
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(i === 1 ? [0, 0, 0, 0] : [11, 22, 40, 255]))
       ;[gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(k => gl.texParameteri(gl.TEXTURE_2D, k, gl.CLAMP_TO_EDGE)); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
       image.onload = () => {
         gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, texture); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
+        if (i === 0) gl.uniform1f(u('uImageAspect'), image.naturalWidth / image.naturalHeight)
       }
       image.src = src
       return texture
     })
-    gl.uniform1i(u('uImage'), 0); gl.uniform1i(u('uLogo'), 1)
+    gl.uniform1i(u('uImage'), 0); gl.uniform1i(u('uLogo'), 1); gl.uniform1f(u('uImageAspect'), 16 / 9)
     let frame = 0, drawn = 0, last = performance.now()
     const draw = (t: number) => {
       const dpr = Math.min(devicePixelRatio, 1.5), w = Math.round(el.clientWidth * dpr), h = Math.round(el.clientHeight * dpr)
@@ -138,7 +141,7 @@ export function PageLoader({ onComplete }: { onComplete: () => void }) {
   useEffect(() => {
     let alive = true, completed = 0, displayed = 1, stalledSince = 0
     const tasks = [...images, '/theos-logo.avif'].map(loadImage)
-    tasks.push(document.fonts.load('400 16px Raleway').then(() => {}), document.fonts.load('400 16px Manrope').then(() => {}), document.fonts.load('400 16px "Rouge Script"').then(() => {}))
+    tasks.push(document.fonts.load('400 16px "Altheria Mystique"').then(() => {}), document.fonts.load('400 16px Maveryn').then(() => {}), document.fonts.load('300 16px Poppins').then(() => {}))
     tasks.push(import('@/three/scenes/CinematicHero').then(() => {}), import('@/three/scenes/AtelierObjects').then(() => {}), import('@/three/scenes/LiquidDrops').then(() => {}))
     tasks.forEach(task => task.catch(() => {}).finally(() => { completed++ }))
     const total = tasks.length + 4

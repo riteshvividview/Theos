@@ -1,4 +1,8 @@
-@font-face { font-family: 'Manrope'; src: url('/fonts/manrope.ttf') format('truetype'); font-weight: 200 800; font-style: normal; font-display: swap; }
+/* Type: Altheria Mystique for display lines, Maveryn for short bold titles, Poppins (Google Fonts, index.html) for UI,
+   with Poppins Light for sublines and paragraphs. */
+@font-face { font-family: 'Altheria Mystique'; src: url('/fonts/altheriamystique.regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Maveryn'; src: url('/fonts/Maveryn.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+:root { --font-display: 'Altheria Mystique', 'Poppins', serif; --font-title: 'Maveryn', 'Poppins', sans-serif; --font-body: 'Poppins', sans-serif; }
 
 .atelier-home {
   --atelier-ivory: #f6f3eb;
@@ -6,7 +10,7 @@
   --atelier-ink: #172c40;
   --atelier-red: #d33125;
   background: var(--atelier-ivory);
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-body);
   color: var(--atelier-ivory);
 }
 .atelier-journey { position: relative; height: 915svh; margin-bottom: -100svh; }
@@ -45,14 +49,20 @@
 .atelier-line > span { display: block; }
 .atelier-line-first { left: 5.8%; top: 45%; }
 .atelier-line-second { right: 5.6%; top: 70.5%; }
-.atelier-title-0 .atelier-line-first { top: 28%; }
-.atelier-title-1 .atelier-line-first { top: 20%; left: 6%; }
-.atelier-title-1 .atelier-line-second { top: 73%; font-size: clamp(35px, 4.2vw, 78px); }
-.atelier-title-2 .atelier-line-first { left: 17%; top: 11%; }
-.atelier-title-2 .atelier-line-second { right: 17%; top: 71%; }
+/* World 1: both lines sit in white inside the plain navy niche, top right, clear of the seated woman. */
+.atelier-title-0 .atelier-line-first { left: auto; right: 4%; top: 15%; max-width: 34vw; text-align: right; }
+.atelier-title-0 .atelier-line-second { right: 4.2%; top: 35%; }
+/* World 2: ink, top left over the shaded side wall and the plain plaster above the carved eye, clear of the figures. */
+.atelier-title-1 .atelier-line-first { top: 14%; left: 14%; max-width: 32vw; }
+.atelier-title-1 .atelier-line-second { left: 14.3%; right: auto; top: 35%; }
+.atelier-title-1 .atelier-line { color: var(--atelier-ink); text-shadow: 0 1px 16px #ffffff40; }
+/* World 3: ink on the plain white back wall, right of the woman's hat and above the sofa. */
+.atelier-title-2 .atelier-line-first { left: 38%; top: 14%; max-width: 33vw; }
+.atelier-title-2 .atelier-line-second { left: 38.3%; right: auto; top: 35%; }
+/* World 4: white on the open blue sky, the subline directly under the headline, clear of the bather. */
 .atelier-title-3 .atelier-line-first { top: 21%; left: 6%; }
-.atelier-title-3 .atelier-line-second { top: 69%; right: 5%; }
-.atelier-title-1 .atelier-line-second,.atelier-title-3 .atelier-line-second { color: var(--atelier-ink); text-shadow: 0 1px 16px #ffffff30; }
+.atelier-title-3 .atelier-line-second { left: 6.3%; right: auto; top: 31%; }
+.atelier-title-2 .atelier-line-second { color: var(--atelier-ink); text-shadow: 0 1px 16px #ffffff30; }
 .atelier-bottom { text-shadow: 0 1px 6px #071b2eb3; }
 .atelier-bottom { position: absolute; z-index: 3; left: 3.2%; right: 3.2%; bottom: 4.3%; display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
 .atelier-world-caption { display: flex; gap: 14px; align-items: center; font-size: 10px; letter-spacing: .11em; text-transform: uppercase; line-height: 1.8; }
@@ -133,8 +143,10 @@
 .atelier-titles, .atelier-bottom, .atelier-meters { opacity: calc(1 - var(--hero-outro, 0)); }
 
 /* Script lines are set in Rouge Script: upright (the face is already cursive), no synthetic slant or bold, natural spacing so the letters join. */
-.atelier-line, .atelier-contact > a { font-family: 'Rouge Script', 'Raleway', cursive; font-style: normal; font-weight: 400; font-synthesis: none; letter-spacing: 0; }
-.atelier-line { font-size: clamp(52px, 6vw, 112px); }
+/* Hero: the headline in Altheria Mystique, its subline in Poppins Light. */
+.atelier-line, .atelier-contact > a { font-family: var(--font-display); font-style: normal; font-weight: 400; font-synthesis: none; letter-spacing: 0; }
+.atelier-line { font-size: clamp(40px, 4.2vw, 80px); }
+.atelier-line-second, .atelier-title-1 .atelier-line-second, .atelier-title-3 .atelier-line-second { font-family: var(--font-body); font-weight: 300; font-size: clamp(17px, 1.55vw, 28px); letter-spacing: .02em; line-height: 1.4; }
 
 /* The first world is a pale interior, so while it shows the hero's text, header and controls turn to ink. */
 .atelier-header, .atelier-line, .atelier-bottom, .atelier-logo img, .atelier-desktop-nav, .atelier-nav-pill, .atelier-factory, .atelier-factory i, .atelier-meter-fill, .atelier-meters button::before { transition: color .6s ease, background-color .6s ease, border-color .6s ease, filter .6s ease, transform .7s cubic-bezier(.65,0,.15,1); }
@@ -142,6 +154,10 @@
 .atelier-stage.is-light .atelier-line,
 .atelier-stage.is-light .atelier-bottom { color: var(--atelier-ink); }
 .atelier-stage.is-light .atelier-line { text-shadow: 0 1px 18px #ffffff66; }
+/* …except the first world's lines, which sit on its navy niche. */
+.atelier-stage.is-light .atelier-title-0 .atelier-line { color: var(--atelier-ivory); text-shadow: 0 1px 14px #06122633; }
+.atelier-title-0 .atelier-line-first { top: 13%; font-size: clamp(38px, 3.8vw, 72px); }
+.atelier-title-0 .atelier-line-second { top: 33.5%; }
 /* The logo file is white: tint it to the ink navy. */
 .atelier-stage.is-light .atelier-logo img { filter: brightness(0) invert(13%) sepia(38%) saturate(1400%) hue-rotate(178deg) brightness(.92); }
 .atelier-stage.is-light .atelier-desktop-nav { background: #ffffff59; border-color: #17284026; box-shadow: inset 0 1px 0 #ffffff80, 0 12px 40px #1728401a; }

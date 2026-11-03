@@ -4,13 +4,14 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { scrollPageTo } from '@/hooks/useSmoothScroll'
 import type { OrbitCard, OrbitControl } from '@/three/scenes/CollectionOrbit'
-import type { BlueprintLens, Finish } from '@/three/scenes/AtelierObjects'
+import type { Finish } from '@/three/scenes/AtelierObjects'
+import type { PavilionRoomId } from '@/three/scenes/Pavilion'
 import '@/styles/atelierSections.css'
 
 const RibbonCanvas=lazy(()=>import('@/three/scenes/AtelierObjects').then(m=>({default:m.RibbonCanvas})))
-const BlueprintCanvas=lazy(()=>import('@/three/scenes/AtelierObjects').then(m=>({default:m.BlueprintCanvas})))
 const CollectionOrbitCanvas=lazy(()=>import('@/three/scenes/CollectionOrbit').then(m=>({default:m.CollectionOrbitCanvas})))
 const SignatureCanvas=lazy(()=>import('@/three/scenes/LiquidDrops').then(m=>({default:m.SignatureCanvas})))
+const PavilionCanvas=lazy(()=>import('@/three/scenes/Pavilion').then(m=>({default:m.PavilionCanvas})))
 gsap.registerPlugin(ScrollTrigger)
 
 class ArtBoundary extends Component<{children:ReactNode; fallback:ReactNode},{failed:boolean}> {
@@ -31,10 +32,10 @@ const gallery = [
   {file:'stair', title:'A line through space', detail:'Architecture as movement. Red as punctuation.', x:50,y:84,w:15,h:21},
 ]
 const stages=[
-  {title:'A conversation.', label:'Discover', body:'We begin with the way you live. Your rituals, your objects, the things a space should make possible.'},
-  {title:'A point of view.', label:'Imagine', body:'Ideas find a language in sketches, materials and proportion. A clear vision takes shape.'},
-  {title:'Made with intent.', label:'Craft', body:'Design meets the hands that make it. Every junction, surface and finish becomes part of the story.'},
-  {title:'Room to belong.', label:'Live', body:'The vision becomes a place. Personal, considered, and ready for the everyday moments that make it yours.'},
+  {title:'A study of you.', label:'Discover', body:'Every project begins with understanding your way of living. Your preferences, sensibilities and aspirations set the foundation for everything that follows.'},
+  {title:'A vision, precisely defined.', label:'Design', body:'Ideas take shape through thoughtful layouts, considered materials and refined proportions. Every detail contributes to a cohesive whole.'},
+  {title:'No compromise on the vision.', label:'Execute', body:'Design and execution remain under one roof. Every detail is managed in-house, with no outsourcing, no delays and no compromise on craftsmanship.'},
+  {title:'A place of your own.', label:'Experience', body:'The completed space brings design and living into harmony. Distinctive in character, considered in every detail and made entirely your own.'},
 ]
 
 function useNear() {
@@ -45,7 +46,7 @@ function useNear() {
 
 function SectionLabel({number,children}:{number:string;children:ReactNode}) {return <div className="editorial-label"><span>{number}</span><span>{children}</span><span className="editorial-label-line" /></div>}
 
-const chapters=[['collection','Collection'],['process','Process'],['philosophy','Philosophy'],['focus','Focus'],['stories','Stories']]
+const chapters=[['collection','Gallery'],['process','Process'],['philosophy','About'],['focus','Essence'],['stories','Stories']]
 function ChapterRail({reduced}:{reduced:boolean}) {
   const [chapter,setChapter]=useState(-1)
   useEffect(()=>{
@@ -101,9 +102,10 @@ function Gallery({reduced}:{reduced:boolean}) {
     else if((e.key==='Enter'||e.key===' ')&&front>=0){e.preventDefault();open(front)}
   }
   return <section id="collection" className="atelier-collection editorial-section">
-    <SectionLabel number="01">A collection of perspectives</SectionLabel>
+    <SectionLabel number="01">Gallery</SectionLabel>
     <div className="collection-composition">
-      <h2 className="collection-left editorial-reveal">bold<br/>when<br/><em>needed.</em></h2>
+      {/* Copy on one side; the rest of the composition is given to the work. */}
+      <h2 className="collection-left editorial-reveal">The Theos<br/>Promise<span className="collection-subline">Our Work. Your Inspiration.</span></h2>
       <ArtBoundary fallback={<StaticCollection open={open}/>}>
         <div ref={ref} className={`collection-orbit-stage${pointing?' is-pointing':''}${dragging?' is-dragging':''}`} onPointerDown={startDrag} onKeyDown={keys} tabIndex={0} role="group" aria-roledescription="carousel" aria-label="Visual collection. Drag or use the arrow keys to turn, Enter to open the image in front.">
           <Suspense fallback={null}><CollectionOrbitCanvas running={near} cards={orbitCards} control={control} intro={intro} reduced={reduced} onSelect={i=>open(gallery.findIndex(card=>card.file===orbitCards[i].file))} onActive={setActive} onHover={setPointing} onTelemetry={telemetry}/></Suspense>
@@ -120,10 +122,9 @@ function Gallery({reduced}:{reduced:boolean}) {
         </div>
         <span className="orbit-mark orbit-mark-tl"/><span className="orbit-mark orbit-mark-tr"/><span className="orbit-mark orbit-mark-bl"/><span className="orbit-mark orbit-mark-br"/>
       </ArtBoundary>
-      <p className="collection-right editorial-reveal">where<br/>space<br/>becomes<br/><em>narrative.</em></p>
       <svg className="collection-orbit" viewBox="0 0 1000 900" fill="none" aria-hidden="true"><path className="draw-line" d="M95 120C560 -140 1090 430 810 755S60 880 95 360"/><circle cx="95" cy="120" r="5" /></svg>
     </div>
-    <div className="collection-foot"><span>Material / Colour / Form</span><p>Nine perspectives.<br/>Infinite ways to feel at home.</p><span>Explore a detail <ArrowUpRight size={15}/></span></div>
+    <div className="collection-foot"><span>Material / Colour / Form</span><span>Explore a detail <ArrowUpRight size={15}/></span></div>
     <dialog ref={dialog} className="collection-dialog" onClick={e=>{if(e.target===e.currentTarget)dialog.current?.close()}}>
       <button className="dialog-close" onClick={()=>dialog.current?.close()} aria-label="Close image"><X/></button>
       <img src={`/images/redesign/gallery-${item.file}.jpg`} alt={item.title}/>
@@ -143,55 +144,33 @@ function Timeline({reduced}:{reduced:boolean}) {
   useLayoutEffect(()=>{if(!section.current)return;const st=ScrollTrigger.create({trigger:section.current,start:'top 65%',end:'bottom 35%',onUpdate:self=>{progress.current=self.progress;setCurrent(Math.min(3,Math.floor(self.progress*4)))}});return()=>st.kill()},[])
   const active=hovered??current
   return <section ref={section} id="process" className="atelier-process editorial-section">
-    <SectionLabel number="02">The thread that connects it all</SectionLabel>
-    <div className="process-heading editorial-reveal"><h2>From a thought.<br/><em>To a place.</em></h2><p>A continuous conversation<br/>between imagination and making.</p></div>
+    <SectionLabel number="02">The process flow</SectionLabel>
+    <div className="process-heading editorial-reveal"><h2>The Journey from<br/>Vision to Living.</h2></div>
     <div className="process-stage">
       <div ref={ref} className="process-sculpture" aria-hidden="true"><ArtBoundary fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}><Suspense fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}>{<RibbonCanvas running={near} progress={progress} active={active} reduced={reduced} finish={finish} entered={entered}/>}</Suspense></ArtBoundary></div>
       {stages.map((stage,i)=><button key={stage.label} className={`process-step process-step-${i}${active===i?' is-active':''}`} onPointerEnter={()=>setHovered(i)} onPointerLeave={()=>setHovered(null)} onFocus={()=>setHovered(i)} onBlur={()=>setHovered(null)} onClick={()=>setHovered(i)} aria-pressed={active===i}>
-        <span className="process-index">0{i+1}<span>{stage.label}</span></span><h3>{stage.title}</h3><p>{stage.body}</p><span className="process-rule"/>
+        <span className="process-index">0{i+1}<span>— {stage.label}</span></span><h3>{stage.title}</h3><p>{stage.body}</p><span className="process-rule"/>
       </button>)}
       <div className="process-axis" aria-hidden="true"><span>IDEA</span><i/><span>EXPERIENCE</span></div>
     </div>
     <div className="material-controls"><span>One form. Different feelings.</span><div>{finishOptions.map(([id,label])=><button key={id} onClick={()=>setFinish(id)} aria-pressed={finish===id}><i className={`material-swatch material-${id}`}/>{label}</button>)}</div></div>
-    <p className="process-note">Different disciplines. One considered journey.</p>
   </section>
 }
 
+// The blueprint → as-built stage is kept in docs/snapshots/blueprint-section/ (BlueprintCanvas still lives in AtelierObjects).
+const pavilionRooms:Record<PavilionRoomId,string>={lounge_west:'West lounge',kitchen:'Kitchen',dining:'Dining',living:'Living',lounge_east:'East lounge',bedroom:'Bedroom'}
 function Architecture({reduced}:{reduced:boolean}) {
-  const {ref,near}=useNear(), progress=useRef(0), sequence=useRef<HTMLDivElement>(null), cursor=useRef<HTMLDivElement>(null)
-  const lens=useRef<BlueprintLens>({x:.5,y:.5,inside:false,built:false,originX:.5,originY:.5})
-  const [built,setBuilt]=useState(false),[open,setOpen]=useState(reduced),[hovering,setHovering]=useState(false)
-  useLayoutEffect(()=>{
-    const element=sequence.current;if(!element)return
-    if(reduced){progress.current=.3;element.style.setProperty('--open','1');setOpen(true);return}
-    // The stage opens from an inset frame to full bleed over the first part of the scroll.
-    const update=(p:number)=>{progress.current=p;element.style.setProperty('--open',gsap.utils.clamp(0,1,p/.3).toFixed(3));setOpen(p>.28)}
-    const st=ScrollTrigger.create({id:'architecture-sequence',trigger:element,start:'top bottom',end:'bottom bottom',onUpdate:self=>update(self.progress),onRefresh:self=>update(self.progress)})
-    update(st.progress)
-    return()=>st.kill()
-  },[reduced])
-  const point=(e:ReactPointerEvent<HTMLDivElement>)=>{
-    const box=e.currentTarget.getBoundingClientRect(), x=(e.clientX-box.left)/box.width, y=(e.clientY-box.top)/box.height
-    Object.assign(lens.current,{x,y:1-y,inside:true})
-    cursor.current?.style.setProperty('--lx',`${x*100}%`);cursor.current?.style.setProperty('--ly',`${y*100}%`)
-  }
-  // The build floods out from (or retreats into) the point that was clicked.
-  const build=(next:boolean,origin:[number,number]=[.5,.5])=>{const l=lens.current;l.originX=origin[0];l.originY=origin[1];l.built=next;setBuilt(next)}
+  const {ref,near}=useNear(),[room,setRoom]=useState<PavilionRoomId|null>(null)
+  const still=<img className="pavilion-still" src="/models/pavilion/preview_front_3q.png" alt=""/>
   return <section id="philosophy" className="atelier-architecture editorial-section">
-    <SectionLabel number="03">From the first line to the last detail</SectionLabel>
-    <div className="architecture-heading editorial-reveal"><h2>Ordinary spaces.<br/><em>Extraordinary living.</em></h2><p>We see a space for what it can become.<br/>A place to gather. A place to pause.<br/>A place that feels entirely your own.</p></div>
-    <div ref={sequence} className="architecture-sequence" data-built={built} data-open={open}>
-    <div className="architecture-pin">
-    <div ref={ref} className="architecture-drawing" role="img" aria-label="Architectural study of a living room. Hover to see it built, click to reveal the finished interior." onPointerEnter={e=>{point(e);setHovering(true)}} onPointerMove={point} onPointerLeave={()=>{lens.current.inside=false;setHovering(false)}} onClick={()=>build(!built,[lens.current.x,lens.current.y])}>
-      <ArtBoundary fallback={<img className="architecture-base" src="/images/redesign/architecture-plan.jpg" alt=""/>}><Suspense fallback={<img className="architecture-base" src="/images/redesign/architecture-plan.jpg" alt=""/>}><div className="architecture-canvas"><BlueprintCanvas running={near} progress={progress} lens={lens} reduced={reduced}/></div></Suspense></ArtBoundary>
-      <div ref={cursor} className={`blueprint-cursor${hovering?' is-visible':''}`} aria-hidden="true"><span>{built?'The first line':'As built'}</span><small>{built?'Click to return':'Click to build it all'}</small></div>
+    <SectionLabel number="03">About Theos</SectionLabel>
+    <div className="architecture-heading editorial-reveal"><h2>Theos. A better standard<br/>of living, <em>by design.</em></h2></div>
+    <div ref={ref} className="pavilion-stage" data-room={room??undefined} role="img" aria-label="A glass pavilion study. Hover a room to light it and draw its curtains.">
+      <span className="pavilion-word" aria-hidden="true">Interior</span>
+      <ArtBoundary fallback={still}><Suspense fallback={still}><PavilionCanvas running={near} reduced={reduced} onRoom={setRoom}/></Suspense></ArtBoundary>
+      <div className="pavilion-caption" aria-live="polite"><span>THEOS / PAVILION 001 · VISUAL STUDY</span><strong>{room?pavilionRooms[room]:'Hover a room'}</strong></div>
     </div>
-    <div className="construction-bar"><span>THE ANATOMY OF A SPACE</span><div>{(['Blueprint','As built'] as const).map((label,i)=><button key={label} onClick={()=>build(i===1)} aria-pressed={built===(i===1)}>0{i+1} / {label}</button>)}</div><span>HOVER TO BUILD · CLICK FOR ALL</span></div>
-    <span className="drawing-coordinate">THEOS / STUDY 001<br/>PLAN · SECTION · AS BUILT</span>
-    <div className="drawing-status"><span>{built?'Imagination, fully built.':open?'Proportion becomes presence.':'Everything begins with a line.'}</span><i><b/></i></div>
-    </div>
-    </div>
-    <div className="architecture-foot"><span>Drawn with imagination.<br/>Resolved with intention.</span><p>Design and making belong together. From the architecture of a room to the furniture within it, we consider the whole experience — and the details that make it personal.</p></div>
+    <div className="architecture-foot"><p>At Theos, we believe exceptional interiors should never come at the cost of quality, time or value. With design at the heart of everything we do, we bring together an experienced team, in-house manufacturing and end-to-end execution to shape spaces with precision and purpose. Rooted in craftsmanship and driven by innovation, we bring together thoughtful design, uncompromising quality and timely delivery.</p></div>
   </section>
 }
 
@@ -200,8 +179,8 @@ function FocusIcon({index}:{index:number}) {
 }
 
 function FocusPoints() {
-  const points=[['Design','with Purpose','We imagine spaces that inspire better living, blending function, art and emotion.'],['Spaces','that Belong','Every space is a reflection of people, place and possibility — crafted to feel timeless.'],['Crafted','by People','A passionate team that brings together design, detail and dedication to create spaces with soul.']]
-  return <section id="focus" className="atelier-focus editorial-section"><SectionLabel number="04">What stays with us</SectionLabel><div className="focus-grid">{points.map((point,i)=><article key={point[0]} className="focus-point" tabIndex={0}><FocusIcon index={i}/><h2>{point[0]}<br/><em>{point[1]}</em></h2><p>{point[2]}</p><span className="focus-number">(0{i+1})</span></article>)}</div><p className="focus-statement editorial-reveal">Not just a space to look at.<br/><em>A place to feel.</em></p></section>
+  const points=[['Design','With Distinction','An experienced design team combines design knowledge, spatial understanding and expertise to create interiors defined by character and refined luxury.'],['Craft','Under One Roof','With our own manufacturing facility, design and production come together, ensuring greater control, consistency and precision at every stage.'],['Quality','Without Compromise','From carefully selected materials to refined finishes, every detail reflects our commitment to exceptional quality and lasting elegance.']]
+  return <section id="focus" className="atelier-focus editorial-section"><SectionLabel number="04">The Essence of Theos</SectionLabel><div className="focus-grid">{points.map((point,i)=><article key={point[0]} className="focus-point" tabIndex={0}><FocusIcon index={i}/><h2>{point[0]}<br/><em>{point[1]}</em></h2><p>{point[2]}</p><span className="focus-number">(0{i+1})</span></article>)}</div><p className="focus-statement editorial-reveal">Not just a vision of luxury.<br/><em>A home that feels yours.</em></p></section>
 }
 
 const stories=[{image:'gallery-salon.jpg',title:'A little theatre.',text:'Colour, character and a room with something to say.',category:'Expression / Visual study'}, {image:'gallery-cobalt.jpg',title:'A different rhythm.',text:'Sculptural forms in conversation with light and space.',category:'Form / Visual study'}, {image:'pool.jpg',title:'Room to exhale.',text:'Open skies. Still water. A slower way to inhabit a space.',category:'Atmosphere / Visual study'}]

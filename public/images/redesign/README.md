@@ -7,4 +7,4 @@ Original reference documents remain in the local cleanup recovery archive. Detai
 
 `rhino.png` is the opening world (a bright modern living room, supplied by the user; the file keeps its old name); `rhino.jpg` is its 1920×1080 compressed copy used by the site, and `rhino-depth.png` was made locally with Depth Anything V2 (base). The previous opening image and its depth map are kept in `docs/snapshots/hero-before/`.
 
-`rhino2.png` is the current opening world, a wide (3:1) view of the same living room, supplied by the user; `rhino2.jpg` is its compressed copy and `rhino2-depth.png` its depth map, made locally with Depth Anything V2 (base).
+`section1-img.png` is the current opening world (a navy and ivory dining bar) and `section3-img.png` the third world (a white colonnaded salon), both supplied by the user. `section1.jpg` and `section3.jpg` are their compressed copies used by the site; `section1-depth.png` and `section3-depth.png` are Magnific depth maps (Depth Anything 3, near is dark), reduced to 768px. They replace `rhino2` and `bedroom` (the bedroom files remain here but are no longer used).

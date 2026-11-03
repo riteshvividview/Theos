@@ -52,9 +52,9 @@ export function Home() {
   return <main className="atelier-home">
     <a href="#atelier-contact" className="atelier-skip">Skip the visual journey</a>
     <section ref={root} className="atelier-journey" aria-label="Theos — beyond the ordinary" data-world={world.id}>
-      <div className={`atelier-stage${ready && !failed ? ' is-ready' : ''}${active === 1 ? ' is-ivory' : ''}${active === 0 ? ' is-light' : ''}`}>
+      <div className={`atelier-stage${ready && !failed ? ' is-ready' : ''}${active === 1 ? ' is-ivory' : ''}${active === 0 || active === 2 ? ' is-light' : ''}`}>
         <div className="atelier-poster" aria-hidden="true">
-          {cinematicWorlds.map((scene, i) => <img key={scene.id} src={scene.image} alt="" fetchPriority={i === 0 ? 'high' : 'auto'} className={active === i ? 'is-current' : ''} style={{ objectPosition: `${scene.portraitFocus * 100}% center` }} />)}
+          {cinematicWorlds.map((scene, i) => <img key={scene.id} src={scene.image} alt="" fetchPriority={i === 0 ? 'high' : 'auto'} className={active === i ? 'is-current' : ''} style={{ objectPosition: `${scene.portraitFocus * 100}% ${(scene.verticalFocus ?? .5) * 100}%` }} />)}
         </div>
         {!failed && <div className="atelier-canvas" aria-hidden="true"><CinematicCanvas progress={progress} reduced={reduced} onReady={onReady} onFailure={onFailure} running={heroVisible} /></div>}
         <div className="atelier-shade" aria-hidden="true" />

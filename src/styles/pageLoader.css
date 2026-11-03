@@ -1,7 +1,7 @@
 html[data-loading] { overflow: hidden; }
 /* The loader is the logo filling with ivory on navy, drawn by the stage shader; the HTML is a box marking where, a hairline progress
    rule along the foot, and a fallback button. */
-.page-loader { position:fixed; inset:0; z-index:10000; background:#0b1628; color:#f6f3eb; font-family:Manrope,sans-serif; overflow:hidden; }
+.page-loader { position:fixed; inset:0; z-index:10000; background:#0b1628; color:#f6f3eb; font-family:'Poppins',sans-serif; overflow:hidden; }
 .loader-stage { position:absolute; inset:0; width:100%; height:100%; }
 .loader-mark { position:absolute; left:50%; top:50%; width:clamp(300px,30vw,520px); aspect-ratio:3; transform:translate(-50%,-50%); cursor:default; }
 .page-loader.is-ready .loader-mark { cursor:pointer; }

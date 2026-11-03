@@ -11,7 +11,7 @@
 .editorial-label > span:first-child { color:#bf291b; font-variant-numeric:tabular-nums; }
 .editorial-label-line { flex:1; height:1px; background:#29355125; margin-left:28px; }
 .editorial-kicker { font-size:10px; text-transform:uppercase; letter-spacing:.17em; }
-.atelier-editorial h2,.atelier-editorial h3,.collection-right { font-family:'Raleway',sans-serif; font-weight:400; letter-spacing:normal; }
+.atelier-editorial h2,.atelier-editorial h3,.collection-right { font-family:var(--font-display); font-weight:400; letter-spacing:normal; }
 .atelier-editorial em { font-weight:400; }
 .atelier-editorial button { cursor:pointer; }
 .atelier-editorial button:focus-visible,.focus-point:focus-visible { outline:2px solid #bf291b; outline-offset:6px; }
@@ -68,7 +68,7 @@
 .process-step.is-active h3 { color:#ba261b; }
 .process-axis { position:absolute; right:0; top:6%; bottom:4%; display:flex; flex-direction:column; align-items:center; font-size:8px; letter-spacing:.2em; opacity:.4; writing-mode:vertical-rl; gap:15px; transform:translateX(50px); }
 .process-axis i { height:100%; width:1px; background:#29355155; }
-.process-note { text-align:center; font-family:'Raleway',sans-serif; font-style:italic; font-size:25px; margin:0 0 35px; }
+.process-note { text-align:center; font-family:var(--font-display); font-style:italic; font-size:25px; margin:0 0 35px; }
 .material-controls { display:flex; flex-direction:column; align-items:center; gap:18px; margin:0 auto 40px; }
 .material-controls > span { text-transform:uppercase; font-size:8px; letter-spacing:.18em; opacity:.65; }
 .material-controls > div { display:flex; gap:25px; }
@@ -79,7 +79,7 @@
 .material-metal { background:linear-gradient(130deg,#626d7c,#f6f6f4 42%,#8d9aab 50%,#eef0f1 64%,#5f6a7a); }
 .material-clay { background:radial-gradient(circle at 30% 25%,#efc6a9,#c97554 65%); }
 .atelier-architecture { padding-top:40px; background:linear-gradient(#faf9f5,#fff 30%,#faf9f5); }
-.architecture-heading { display:flex; align-items:flex-end; justify-content:space-between; margin:65px 0 40px; }
+.architecture-heading { display:flex; align-items:flex-end; justify-content:space-between; margin:65px 0 48px; }
 .architecture-heading h2 { font-size:clamp(50px,5.1vw,82px); line-height:1.07; }
 .architecture-heading p { max-width:300px; font-size:13px; line-height:1.9; padding-bottom:10px; }
 .architecture-drawing { position:relative; width:100%; aspect-ratio:1672/1077; margin:25px 0; isolation:isolate; }
@@ -90,7 +90,7 @@
 .construction-bar button { font-size:10px; padding:12px 0; letter-spacing:normal; opacity:.4; border-bottom:1px solid transparent; transition:opacity .3s; }
 .construction-bar button[aria-current] { opacity:1; border-color:#bd2b20; color:#bd2b20; }
 .architecture-pin .architecture-drawing { position:absolute; inset:0; width:auto; height:auto; aspect-ratio:auto; margin:0; }
-.drawing-status { position:absolute; bottom:4%; left:4%; right:4%; display:flex; justify-content:space-between; align-items:center; gap:25px; font-family:'Raleway',sans-serif; font-style:italic; font-size:22px; }
+.drawing-status { position:absolute; bottom:4%; left:4%; right:4%; display:flex; justify-content:space-between; align-items:center; gap:25px; font-family:var(--font-display); font-style:italic; font-size:22px; }
 .drawing-status > i { width:150px; height:1px; background:#27365330; }
 .drawing-status b { display:block; width:100%; height:1px; background:#bd2b20; transform:scaleX(var(--open)); transform-origin:left; }
 .architecture-base,.architecture-canvas { position:absolute; inset:0; width:100%; height:100%; }
@@ -100,8 +100,18 @@
 .drawing-toggle { position:absolute; bottom:8%; left:4%; padding:14px 21px; border:1px solid #27365366; border-radius:30px; display:flex; align-items:center; gap:28px; font-size:11px; background:#faf9f5df; backdrop-filter:blur(10px); }
 .drawing-toggle svg { transition:transform .5s; }
 .drawing-toggle[aria-pressed=true] svg { transform:rotate(45deg); }
+.pavilion-stage { position:relative; aspect-ratio:2.3/1; margin:0 0 48px; overflow:hidden; background:transparent; cursor:crosshair; }
+.pavilion-stage[data-room] { cursor:pointer; }
+.pavilion-stage canvas { display:block; }
+/* The backdrop word: plain type behind the transparent canvas (it comes first, so the canvas paints over it). */
+.pavilion-stage { container-type:inline-size; }
+.pavilion-word { position:absolute; left:50%; top:10%; transform:translateX(-50%); font-family:var(--font-body); font-weight:600; font-size:18cqw; line-height:1; letter-spacing:-.01em; color:#e6e6e6; white-space:nowrap; pointer-events:none; user-select:none; }
+.pavilion-still { width:100%; height:100%; object-fit:cover; }
+.pavilion-caption { position:absolute; left:30px; bottom:26px; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+.pavilion-caption span { font-size:10px; letter-spacing:.24em; opacity:.55; }
+.pavilion-caption strong { font-family:var(--font-display); font-size:27px; font-weight:400; font-style:italic; transition:opacity .4s; }
 .architecture-foot { display:flex; justify-content:space-between; align-items:flex-start; border-top:1px solid #29355128; padding-top:28px; }
-.architecture-foot > span { font-family:'Raleway',sans-serif; font-size:29px; line-height:1.25; font-style:italic; }
+.architecture-foot > span { font-family:var(--font-display); font-size:29px; line-height:1.25; font-style:italic; }
 .architecture-foot > p { max-width:450px; font-size:13px; line-height:1.9; }
 .atelier-focus { padding-top:56px; }
 .focus-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0; margin:80px 0 100px; }
@@ -115,7 +125,7 @@
 .focus-point h2 { font-size:42px; line-height:1.02; margin-bottom:22px; }
 .focus-point > p { font-size:13px; line-height:1.8; max-width:250px; opacity:.7; min-height:100px; }
 .focus-number { display:block; font-size:10px; margin-top:30px; color:#ad2c23; }
-.focus-statement { text-align:center; font-family:'Raleway',sans-serif; font-size:clamp(58px,6.5vw,106px); line-height:1.08; letter-spacing:normal; padding:24px 0 44px; }
+.focus-statement { text-align:center; font-family:var(--font-display); font-size:clamp(58px,6.5vw,106px); line-height:1.08; letter-spacing:normal; padding:24px 0 44px; }
 .focus-statement em { color:#bd2b20; }
 .atelier-stories { background:#eeece7; padding-top:50px; padding-bottom:32px; }
 .stories-stage { position:relative; min-height:790px; margin-top:45px; }
@@ -145,7 +155,7 @@
 .outro-top { display:flex; justify-content:space-between; font-size:9px; letter-spacing:.16em; border-bottom:1px solid #f5f0e72b; padding-bottom:25px; }
 .outro-main { position:relative; min-height:650px; display:flex; align-items:center; }
 .outro-copy { position:relative; z-index:2; width:58%; pointer-events:none; }
-.outro-title { font-family:'Raleway',sans-serif; font-size:clamp(65px,6.3vw,110px); line-height:1.03; letter-spacing:normal; font-weight:400; }
+.outro-title { font-family:var(--font-display); font-size:clamp(65px,6.3vw,110px); line-height:1.03; letter-spacing:normal; font-weight:400; }
 .outro-title > span { display:block; }
 .outro-title em { font-weight:400; }
 .outro-contact { display:flex; justify-content:space-between; align-items:center; width:260px; border-bottom:1px solid #f5f0e777; padding:20px 0; margin-top:35px; font-size:13px; pointer-events:auto; }
@@ -154,11 +164,11 @@
 .outro-copy > p { font-size:9px; letter-spacing:.16em; text-transform:uppercase; margin-top:28px; opacity:.6; }
 .outro-sculpture { position:absolute; right:-5%; top:0; width:58%; height:100%; }
 .outro-sculpture > div { position:relative; z-index:1; }
-.outro-fallback { display:grid; place-items:center; height:100%; font-size:500px; font-family:'Raleway',sans-serif; color:#bc2735; }
+.outro-fallback { display:grid; place-items:center; height:100%; font-size:500px; font-family:var(--font-display); color:#bc2735; }
 .outro-bottom { position:relative; z-index:2; display:flex; justify-content:space-between; align-items:center; font-size:10px; border-top:1px solid #f5f0e72b; padding:25px 0 0; }
 .outro-bottom > span { opacity:.6; }
 .outro-bottom button { display:flex; align-items:center; gap:15px; cursor:pointer; }
-.outro-wordmark { position:relative; z-index:0; font-family:Manrope,sans-serif; font-size:clamp(200px,29vw,540px); font-weight:600; line-height:.8; letter-spacing:-.07em; margin:50px 0 -1.5%; color:#f5f0e710; text-align:center; user-select:none; pointer-events:none; }
+.outro-wordmark { position:relative; z-index:0; font-family:var(--font-body); font-size:clamp(200px,29vw,540px); font-weight:600; line-height:.8; letter-spacing:-.07em; margin:50px 0 -1.5%; color:#f5f0e710; text-align:center; user-select:none; pointer-events:none; }
 /* The logo, huge and faint, bleeding off the bottom of the page like the type it replaced. */
 /* The logo at the size of the type it replaced, cut off by the bottom of the page: a fixed-height strip shows its upper part. */
 .outro-wordmark:has(img) { height:clamp(150px,21vw,380px); overflow:hidden; margin:10px 0 0; line-height:0; }
@@ -175,13 +185,13 @@
 .collection-orbit-caption { position:absolute; left:50%; bottom:-78px; z-index:3; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
 .collection-orbit-caption > span { font-size:10px; letter-spacing:.19em; color:#bf291b; font-variant-numeric:tabular-nums; }
 .collection-orbit-caption > span i { color:#24334f66; font-style:normal; }
-.collection-orbit-caption strong { font-family:'Raleway',sans-serif; font-weight:400; font-size:24px; letter-spacing:normal; }
+.collection-orbit-caption strong { font-family:var(--font-display); font-weight:400; font-size:24px; letter-spacing:normal; }
 .collection-orbit-caption em { display:flex; align-items:center; gap:8px; font-style:normal; font-size:9px; letter-spacing:.17em; text-transform:uppercase; opacity:.55; }
 .orbit-hud { position:absolute; top:7%; right:2%; z-index:3; display:flex; flex-direction:column; gap:14px; width:190px; font-size:9px; letter-spacing:.17em; text-transform:uppercase; }
 .orbit-hud-title { color:#bf291b; }
 .orbit-hud dl { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid #29355128; border-bottom:1px solid #29355128; padding:12px 0; }
 .orbit-hud dt { opacity:.5; margin-bottom:6px; }
-.orbit-hud dd { font-family:'Raleway',sans-serif; font-size:17px; letter-spacing:normal; font-variant-numeric:tabular-nums; }
+.orbit-hud dd { font-family:var(--font-display); font-size:17px; letter-spacing:normal; font-variant-numeric:tabular-nums; }
 .orbit-hud-meter { position:relative; height:2px; background:#29355118; overflow:hidden; }
 .orbit-hud-meter i { position:absolute; inset:0; background:linear-gradient(90deg,#2b3a6b,#bf291b); transform-origin:left; transform:scaleX(calc(.06 + var(--orbit-speed,0) * .94)); transition:transform .25s; }
 .orbit-dial { position:absolute; left:2%; bottom:7%; z-index:3; display:flex; align-items:flex-end; gap:18px; }
@@ -216,7 +226,7 @@
 .outro-passage { position:absolute; inset:0; width:100%; height:100%; display:block; cursor:grab; touch-action:pan-y; }
 .outro-passage.is-dragging { cursor:grabbing; }
 .outro-passage-hint { position:absolute; left:50%; bottom:9%; transform:translateX(-50%); z-index:2; display:flex; flex-direction:column; align-items:center; gap:7px; pointer-events:none; text-align:center; color:#f2ede4; }
-.outro-passage-hint span { font-family:'Raleway',sans-serif; font-style:italic; font-size:22px; }
+.outro-passage-hint span { font-family:var(--font-display); font-style:italic; font-size:22px; }
 .outro-passage-hint em { font-style:normal; font-size:9px; letter-spacing:.17em; text-transform:uppercase; opacity:.6; }
 .outro-sculpture > div { height:100%; }
 /* The cream → navy hand-over: a zero-height anchor above the footer holds a canvas reaching up over the stories section. */
@@ -232,8 +242,17 @@
 .story-navigation > [data-on-navy] button { border-color:#f5f0e766; }
 .story-navigation > [data-on-navy] button:hover { background:#f5f0e7; color:#142942; }
 
-/* Script accents are set in Rouge Script: upright (the face is already cursive), no synthetic slant or bold, natural spacing so the letters join.
-   It runs smaller than Raleway at the same size, so emphasised words inside headings are enlarged to match. */
-.process-note, .drawing-status, .architecture-foot > span, .outro-passage-hint span,
-.atelier-editorial h2 em, .atelier-editorial h3 em, .focus-statement em, .outro-title em { font-family:'Rouge Script','Raleway',cursive; font-style:normal; font-weight:400; font-synthesis:none; letter-spacing:0; }
-.atelier-editorial h2 em, .atelier-editorial h3 em, .focus-statement em, .outro-title em { font-size:1.12em; }
+/* Type roles: Altheria Mystique for display lines (and the accents inside them), Maveryn for short bold titles, Poppins for
+   UI, Poppins Light for sublines and paragraphs. The faces have no italics, so nothing is slanted or bolded synthetically. */
+.atelier-editorial, .atelier-outro, .collection-dialog { font-family:var(--font-body); }
+.atelier-editorial p:not(.focus-statement), .atelier-outro p, .collection-dialog p, .collection-subline, .process-step h3 { font-family:var(--font-body); font-weight:300; }
+.process-note, .drawing-status, .architecture-foot > span, .outro-passage-hint span, .pavilion-caption strong,
+.atelier-editorial h2 em, .atelier-editorial h3 em, .focus-statement em, .outro-title em { font-family:var(--font-display); font-style:normal; font-weight:400; font-synthesis:none; letter-spacing:0; }
+.atelier-editorial h2, .focus-statement, .outro-title, .collection-dialog h3, .story-description h2 { font-synthesis:none; }
+.collection-left .collection-subline { display:block; margin-top:22px; font-size:clamp(15px,1.25vw,20px); line-height:1.5; letter-spacing:.01em; opacity:.75; }
+.process-index > span, .focus-point h2 { font-family:var(--font-title); font-weight:400; }
+.process-index > span { font-size:15px; letter-spacing:.08em; }
+.process-step h3 { font-size:24px; line-height:1.35; color:#5d6274; }
+.focus-point h2 { font-size:46px; }
+.focus-point h2 em { display:block; margin-top:8px; font-size:.62em; }
+.architecture-foot > p { max-width:640px; }
