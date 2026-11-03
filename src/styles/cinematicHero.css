@@ -9,7 +9,7 @@
   font-family: 'Manrope', sans-serif;
   color: var(--atelier-ivory);
 }
-.atelier-journey { position: relative; height: 820svh; }
+.atelier-journey { position: relative; height: 915svh; margin-bottom: -100svh; }
 .atelier-stage { position: sticky; top: 0; height: 100svh; min-height: 480px; overflow: hidden; isolation: isolate; background: var(--atelier-blue); }
 .atelier-poster,.atelier-canvas,.atelier-shade { position: absolute; inset: 0; }
 .atelier-poster img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
@@ -89,7 +89,7 @@
   .atelier-line-second { top: 66%; }
 }
 @media (max-width: 760px) {
-  .atelier-journey { height: 500svh; }
+  .atelier-journey { height: 597svh; }
   .atelier-stage { min-height: 420px; }
   .atelier-header { top: 20px; left: 16px; right: 16px; height: 46px; gap: 10px; }
   .atelier-logo img { width: 92px; }
@@ -124,7 +124,7 @@
   .atelier-contact > div > span { max-width: 46%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .atelier-journey { height: 400svh; }
+  .atelier-journey { height: 498svh; }
   .atelier-canvas { transition: none; }
 }
 

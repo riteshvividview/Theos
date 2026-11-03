@@ -23,7 +23,8 @@ export function useCinematicJourney(root: RefObject<HTMLElement | null>, reduced
       // so a hard flick still plays every passage at the same speed.
       const MAX_SPEED = .32
       // The eye → bedroom and bedroom → pool passages are the slowest, so the crumble, the walk and the clouds read clearly.
-      const speedAt = (p: number) => (p > 1.4 && p < 2.05) || (p > 2.4 && p < 3.05) ? .2 : MAX_SPEED
+      // The flood past the pool rises and drains at the same calm, even pace in both directions.
+      const speedAt = (p: number) => p > 3.2 ? .3 : (p > 1.4 && p < 2.05) || (p > 2.4 && p < 3.05) ? .2 : MAX_SPEED
       // However hard the page is scrolled, it may run at most LEAD worlds ahead of (or behind) the animation; past that it is
       // held, so every passage plays in full and nothing is skipped. Programmatic navigation (the world buttons) is exempt.
       const LEAD = .25
@@ -46,10 +47,12 @@ export function useCinematicJourney(root: RefObject<HTMLElement | null>, reduced
         })
         meters.forEach((meter, i) => gsap.set(meter, { scaleX: gsap.utils.clamp(0, 1, p - i) }))
         const lastMeter = meters[3]
-        if (lastMeter) gsap.set(lastMeter, { scaleX: gsap.utils.clamp(0, 1, (p - 3) / .64) })
+        if (lastMeter) gsap.set(lastMeter, { scaleX: gsap.utils.clamp(0, 1, (p - 3) / (HERO_END - 3)) })
       }
       const timeline = gsap.to(target, { value: HERO_END, ease: 'none', onUpdate: () => { if (reduced) { shown.value = target.value; render() } },
-        scrollTrigger: { id: 'theos-cinematic-hero', trigger: element, start: 'top top', end: 'bottom bottom', scrub: true, invalidateOnRefresh: true },
+        // The journey ends one screen before the section does: that last screen is where the next section slides up over the
+        // flooded (cream) stage, so no empty screen is left between them.
+        scrollTrigger: { id: 'theos-cinematic-hero', trigger: element, start: 'top top', end: () => `+=${element.offsetHeight - 2 * innerHeight}`, scrub: true, invalidateOnRefresh: true },
       })
       trigger.current = timeline.scrollTrigger ?? null
       shown.value = target.value

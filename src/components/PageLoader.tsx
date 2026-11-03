@@ -44,7 +44,7 @@ vec3 page(vec2 q){
   return c;
 }
 vec3 world(vec2 uv){
-  float imageAspect=1672./941., screenAspect=uRes.x/uRes.y;
+  float imageAspect=2172./724., screenAspect=uRes.x/uRes.y;
   vec2 cover=screenAspect>imageAspect?vec2(1.,imageAspect/screenAspect):vec2(screenAspect/imageAspect,1.);
   return texture2D(uImage,clamp(.5+(uv-.5)*cover/1.025,vec2(.001),vec2(.999))).rgb;
 }
@@ -98,7 +98,7 @@ function Stage({ mark, progress, enter, ready }: { mark: { current: [number, num
     const buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
     const loc = gl.getAttribLocation(program, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
     const u = (n: string) => gl.getUniformLocation(program, n)
-    const textures = ['/images/redesign/rhino.jpg', '/theos-logo.avif'].map((src, i) => {
+    const textures = ['/images/redesign/rhino2.jpg', '/theos-logo.avif'].map((src, i) => {
       const texture = gl.createTexture()!, image = new Image()
       gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, texture)
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(i === 1 ? [0, 0, 0, 0] : [11, 22, 40, 255]))
