@@ -6,6 +6,7 @@ import { scrollPageTo } from '@/hooks/useSmoothScroll'
 import type { OrbitCard, OrbitControl } from '@/three/scenes/CollectionOrbit'
 import type { Finish } from '@/three/scenes/AtelierObjects'
 import type { PavilionRoomId } from '@/three/scenes/Pavilion'
+import { TestimonialFilm } from '@/components/TestimonialFilm'
 import '@/styles/atelierSections.css'
 
 const RibbonCanvas=lazy(()=>import('@/three/scenes/AtelierObjects').then(m=>({default:m.RibbonCanvas})))
@@ -46,7 +47,7 @@ function useNear() {
 
 function SectionLabel({number,children}:{number:string;children:ReactNode}) {return <div className="editorial-label"><span>{number}</span><span>{children}</span><span className="editorial-label-line" /></div>}
 
-const chapters=[['collection','Gallery'],['process','Process'],['philosophy','About'],['focus','Essence'],['stories','Stories']]
+const chapters=[['collection','Gallery'],['process','Process'],['philosophy','About'],['focus','Essence'],['stories','Client stories']]
 function ChapterRail({reduced}:{reduced:boolean}) {
   const [chapter,setChapter]=useState(-1)
   useEffect(()=>{
@@ -183,17 +184,34 @@ function FocusPoints() {
   return <section id="focus" className="atelier-focus editorial-section"><SectionLabel number="04">The Essence of Theos</SectionLabel><div className="focus-grid">{points.map((point,i)=><article key={point[0]} className="focus-point" tabIndex={0}><FocusIcon index={i}/><h2>{point[0]}<br/><em>{point[1]}</em></h2><p>{point[2]}</p><span className="focus-number">(0{i+1})</span></article>)}</div><p className="focus-statement editorial-reveal">Not just a vision of luxury.<br/><em>A home that feels yours.</em></p></section>
 }
 
-const stories=[{image:'gallery-salon.jpg',title:'A little theatre.',text:'Colour, character and a room with something to say.',category:'Expression / Visual study'}, {image:'gallery-cobalt.jpg',title:'A different rhythm.',text:'Sculptural forms in conversation with light and space.',category:'Form / Visual study'}, {image:'pool.jpg',title:'Room to exhale.',text:'Open skies. Still water. A slower way to inhabit a space.',category:'Atmosphere / Visual study'}]
+// PLACEHOLDER testimonials (names, projects and words are invented). Replace with real client quotes before launch.
+// `person` is a transparent PNG of the client resting inside the ring; it stays hidden until the file exists.
+const stories=[
+  {film:'/videos/testimonial-1.mp4',poster:'/videos/testimonial-1.jpg',person:'/images/testimonials/person-1.webp',quote:'Theos understood how we live before they drew a single line. Our home feels calm, generous and completely ours.',name:'Ananya & Rohan Mehta',project:'Residence / Bandra, Mumbai'},
+  {film:'/videos/testimonial-2.mp4',poster:'/videos/testimonial-2.jpg',person:'/images/testimonials/person-2.webp',quote:'Design, furniture and execution under one roof, delivered on the day they promised. Rare, and worth every rupee.',name:'Vikram Reddy',project:'Villa / Jubilee Hills, Hyderabad'},
+  {film:'/videos/testimonial-3.mp4',poster:'/videos/testimonial-3.jpg',person:'/images/testimonials/person-3.webp',quote:'Every material was chosen with us, not for us. Years on, guests still ask who designed our apartment.',name:'Priya Nair',project:'Apartment / Indiranagar, Bengaluru'},
+]
+const storyFilms=stories.map(story=>({src:story.film,poster:story.poster}))
+
+function StoryPerson({src,shown}:{src:string;shown:boolean}) {
+  const [missing,setMissing]=useState(false)
+  if(missing)return null
+  return <img className={`story-person-img${shown?' is-current':''}`} src={src} alt="" onError={()=>setMissing(true)}/>
+}
 
 function Stories({reduced}:{reduced:boolean}) {
   const section=useRef<HTMLElement>(null), [active,setActive]=useState(0),[expanded,setExpanded]=useState(false)
+  const {ref:filmArea,near}=useNear()
   const story=stories[active]
-  useLayoutEffect(()=>{if(!section.current)return;const ctx=gsap.context(()=>{gsap.fromTo('.story-image',{scale:1.12,opacity:0},{scale:1,opacity:1,duration:reduced?0:1.2,ease:'power2.out'});gsap.fromTo('.story-description',{y:20,opacity:0},{y:0,opacity:1,duration:reduced?0:.65})},section);return()=>ctx.revert()},[active,reduced])
-  return <section ref={section} id="stories" className={`atelier-stories editorial-section${expanded?' is-expanded':''}`}><SectionLabel number="05">Spaces with stories</SectionLabel><div className="stories-stage">
-    <div className="story-description"><span className="editorial-kicker">{story.category}</span><h2>{story.title}</h2><p>{story.text}</p><button className="story-expand" onClick={()=>setExpanded(!expanded)} aria-expanded={expanded}>{expanded?'Close the view':'Step inside'}<ArrowUpRight size={20}/></button></div>
-    <button className="story-aperture" onClick={()=>setExpanded(!expanded)} aria-label={expanded?'Close expanded study':'Expand visual study'}><div className="story-image" key={story.image} style={{backgroundImage:`url(/images/redesign/${story.image})`}}/><span className="story-ring"/><span className="story-aperture-label">THEOS <span>°</span></span></button>
-    <span className="story-side-note">A perspective worth sharing.</span>
-    <div className="story-navigation"><div><button aria-label="Previous story" onClick={()=>setActive((active+2)%3)}><ArrowLeft size={18}/></button><span>0{active+1} <i>/</i> 03</span><button aria-label="Next story" onClick={()=>setActive((active+1)%3)}><ArrowRight size={18}/></button></div><span>Interiors. Objects. Atmospheres.</span></div>
+  useLayoutEffect(()=>{if(!section.current)return;const ctx=gsap.context(()=>{gsap.fromTo('.story-description',{y:20,opacity:0},{y:0,opacity:1,duration:reduced?0:.65})},section);return()=>ctx.revert()},[active,reduced])
+  return <section ref={section} id="stories" className={`atelier-stories editorial-section${expanded?' is-expanded':''}`}><SectionLabel number="05">Client stories</SectionLabel><div className="stories-stage">
+    <div className="story-description"><span className="editorial-kicker">{story.project}</span><blockquote><p>“{story.quote}”</p></blockquote><span className="story-client">{story.name}</span><button className="story-expand" onClick={()=>setExpanded(!expanded)} aria-expanded={expanded}>{expanded?'Close the view':'See the space'}<ArrowUpRight size={20}/></button></div>
+    <div ref={filmArea} className="story-ring-stage">
+      <button className="story-aperture" onClick={()=>setExpanded(!expanded)} aria-label={expanded?'Close the film':'Expand the film'}><TestimonialFilm films={storyFilms} active={active} running={near} reduced={reduced}/><span className="story-ring"/></button>
+      <div className="story-person" aria-hidden="true">{stories.map((s,i)=><StoryPerson key={s.person} src={s.person} shown={i===active}/>)}</div>
+    </div>
+    <span className="story-side-note">In their words.</span>
+    <div className="story-navigation"><div><button aria-label="Previous testimonial" onClick={()=>setActive((active+2)%3)}><ArrowLeft size={18}/></button><span>0{active+1} <i>/</i> 03</span><button aria-label="Next testimonial" onClick={()=>setActive((active+1)%3)}><ArrowRight size={18}/></button></div><span>Interiors. Objects. Atmospheres.</span></div>
     </div></section>
 }
 
