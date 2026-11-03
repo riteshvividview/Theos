@@ -13,7 +13,7 @@
   font-family: var(--font-body);
   color: var(--atelier-ivory);
 }
-.atelier-journey { position: relative; height: 915svh; margin-bottom: -100svh; }
+.atelier-journey { position: relative; height: 717svh; margin-bottom: -100svh; }
 .atelier-stage { position: sticky; top: 0; height: 100svh; min-height: 480px; overflow: hidden; isolation: isolate; background: var(--atelier-blue); }
 .atelier-poster,.atelier-canvas,.atelier-shade { position: absolute; inset: 0; }
 .atelier-poster img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
@@ -28,7 +28,7 @@
 .atelier-logo { display: flex; align-items: center; height: 100%; padding: 0 6px; }
 .atelier-logo img { display: block; width: 112px; height: auto; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
 .atelier-logo:hover img { transform: translateY(-2px); }
-.atelier-desktop-nav { --active: 0; position: relative; display: grid; grid-template-columns: repeat(4, 150px); height: 100%; padding: 5px; border-radius: 999px; background: #0b1f381f; border: 1px solid #ffffff38; box-shadow: inset 0 1px 0 #ffffff30, 0 12px 40px #04122230; backdrop-filter: blur(16px) saturate(1.5); -webkit-backdrop-filter: blur(16px) saturate(1.5); }
+.atelier-desktop-nav { --active: 0; position: relative; display: grid; grid-template-columns: repeat(3, 150px); height: 100%; padding: 5px; border-radius: 999px; background: #0b1f381f; border: 1px solid #ffffff38; box-shadow: inset 0 1px 0 #ffffff30, 0 12px 40px #04122230; backdrop-filter: blur(16px) saturate(1.5); -webkit-backdrop-filter: blur(16px) saturate(1.5); }
 .atelier-nav-pill { position: absolute; top: 5px; bottom: 5px; left: 5px; width: 150px; border-radius: 999px; background: var(--atelier-ivory); box-shadow: 0 6px 18px #04122238; transform: translateX(calc(var(--active) * 100%)); transition: transform .7s cubic-bezier(.65,0,.15,1); }
 .atelier-desktop-nav button,.atelier-factory { font-size: 11px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; }
 .atelier-desktop-nav button { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 9px; border-radius: 999px; cursor: pointer; color: inherit; transition: color .45s ease .1s, opacity .3s; opacity: .82; }
@@ -55,7 +55,8 @@
 /* World 2: ink, top left over the shaded side wall and the plain plaster above the carved eye, clear of the figures. */
 .atelier-title-1 .atelier-line-first { top: 14%; left: 14%; max-width: 32vw; }
 .atelier-title-1 .atelier-line-second { left: 14.3%; right: auto; top: 35%; }
-.atelier-title-1 .atelier-line { color: var(--atelier-ink); text-shadow: 0 1px 16px #ffffff40; }
+/* White, lifted off the pale plaster by a soft dark halo so it stays legible. */
+.atelier-title-1 .atelier-line { color: var(--atelier-ivory); text-shadow: 0 1px 3px #0b162866, 0 2px 22px #0b162873; }
 /* World 3: ink on the plain white back wall, right of the woman's hat and above the sofa. */
 .atelier-title-2 .atelier-line-first { left: 38%; top: 14%; max-width: 33vw; }
 .atelier-title-2 .atelier-line-second { left: 38.3%; right: auto; top: 35%; }
@@ -99,7 +100,7 @@
   .atelier-line-second { top: 66%; }
 }
 @media (max-width: 760px) {
-  .atelier-journey { height: 597svh; }
+  .atelier-journey { height: 487svh; }
   .atelier-stage { min-height: 420px; }
   .atelier-header { top: 20px; left: 16px; right: 16px; height: 46px; gap: 10px; }
   .atelier-logo img { width: 92px; }
@@ -134,13 +135,13 @@
   .atelier-contact > div > span { max-width: 46%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .atelier-journey { height: 498svh; }
+  .atelier-journey { height: 416svh; }
   .atelier-canvas { transition: none; }
 }
 
 /* As the pool water rises into the cream of the next section, the stage overlays step back. */
 .atelier-shade { opacity: calc(1 - var(--hero-outro, 0)); }
-.atelier-titles, .atelier-bottom, .atelier-meters { opacity: calc(1 - var(--hero-outro, 0)); }
+.atelier-bottom, .atelier-meters { opacity: calc(1 - var(--hero-outro, 0)); }
 
 /* Script lines are set in Rouge Script: upright (the face is already cursive), no synthetic slant or bold, natural spacing so the letters join. */
 /* Hero: the headline in Altheria Mystique, its subline in Poppins Light. */

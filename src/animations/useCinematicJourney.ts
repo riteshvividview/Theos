@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { HERO_END, TRANSITION_START, cinematicWorlds } from '@/config/cinematicHero'
+import { HERO_END, LAST_WORLD, TRANSITION_START, cinematicWorlds } from '@/config/cinematicHero'
 import { holdScrollAt, scrollPageTo } from '@/hooks/useSmoothScroll'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -22,9 +22,10 @@ export function useCinematicJourney(root: RefObject<HTMLElement | null>, reduced
       // Scroll sets where the journey should be; the journey travels there at its own calm pace (MAX_SPEED worlds per second),
       // so a hard flick still plays every passage at the same speed.
       const MAX_SPEED = .32
-      // The eye → bedroom and bedroom → pool passages are the slowest, so the crumble, the walk and the clouds read clearly.
-      // The flood past the pool rises and drains at the same calm, even pace in both directions.
-      const speedAt = (p: number) => p > 3.2 ? .3 : (p > 1.4 && p < 2.05) || (p > 2.4 && p < 3.05) ? .2 : MAX_SPEED
+      // The wall-opening and cloud passages are the slowest, so the crumble, the walk and the clouds read clearly.
+      // The flood past the last world rises and drains at the same calm, even pace in both directions.
+      const slow = cinematicWorlds.flatMap((world, i) => world.passage === 'portal' || world.passage === 'clouds' ? [i] : [])
+      const speedAt = (p: number) => p > LAST_WORLD + .2 ? .3 : slow.some(i => p > i + .4 && p < i + 1.05) ? .2 : MAX_SPEED
       // However hard the page is scrolled, it may run at most LEAD worlds ahead of (or behind) the animation; past that it is
       // held, so every passage plays in full and nothing is skipped. Programmatic navigation (the world buttons) is exempt.
       const LEAD = .25
@@ -32,22 +33,26 @@ export function useCinematicJourney(root: RefObject<HTMLElement | null>, reduced
       const render = () => {
         const p = shown.value
         progress.current = p
-        const current = Math.min(3, Math.floor(p + .08))
+        const current = Math.min(LAST_WORLD, Math.floor(p + .08))
         setActive(old => old === current ? old : current)
         element.dataset.world = cinematicWorlds[current].id
         element.style.setProperty('--journey-progress', String(p / HERO_END))
-        // Past the pool the water rises into the page below; the stage's overlays fade with it.
-        element.style.setProperty('--hero-outro', gsap.utils.clamp(0, 1, (p - 3.22) / .4).toFixed(3))
+        // Past the last world the floor floods into the page below; the stage's overlays fade with it.
+        element.style.setProperty('--hero-outro', gsap.utils.clamp(0, 1, (p - LAST_WORLD - .22) / .4).toFixed(3))
         titles.forEach((title, i) => {
           const local = p - i
           const enter = i === 0 ? 1 : gsap.utils.clamp(0, 1, local / .12)
-          const exit = i === 3 ? 1 : 1 - gsap.utils.clamp(0, 1, (local - (TRANSITION_START - .16)) / .16)
+          const last = i === LAST_WORLD
+          const exit = last ? 1 : 1 - gsap.utils.clamp(0, 1, (local - (TRANSITION_START - .16)) / .16)
           const visible = local >= 0 && local < 1 ? enter * exit : 0
-          gsap.set(title, { autoAlpha: reduced ? Number(current === i) : visible, y: reduced ? 0 : (1 - enter) * 28 - (1 - exit) * 18 })
+          // The last world's lines never fade: as the floor floods into the next section they rise with it, solid,
+          // and leave over the top of the screen.
+          const lift = last ? gsap.utils.clamp(0, 1, (local - .22) / .4) : 0
+          gsap.set(title, { autoAlpha: reduced ? Number(current === i) : visible, y: reduced ? 0 : (1 - enter) * 28 - (1 - exit) * 18 - lift * lift * innerHeight * .85 })
         })
         meters.forEach((meter, i) => gsap.set(meter, { scaleX: gsap.utils.clamp(0, 1, p - i) }))
-        const lastMeter = meters[3]
-        if (lastMeter) gsap.set(lastMeter, { scaleX: gsap.utils.clamp(0, 1, (p - 3) / (HERO_END - 3)) })
+        const lastMeter = meters[LAST_WORLD]
+        if (lastMeter) gsap.set(lastMeter, { scaleX: gsap.utils.clamp(0, 1, (p - LAST_WORLD) / (HERO_END - LAST_WORLD)) })
       }
       const timeline = gsap.to(target, { value: HERO_END, ease: 'none', onUpdate: () => { if (reduced) { shown.value = target.value; render() } },
         // The journey ends one screen before the section does: that last screen is where the next section slides up over the

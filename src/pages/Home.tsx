@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { ArrowDown, ArrowUpRight, ArrowLeft, ArrowRight, Menu, X } from 'lucide-react'
 import { CinematicCanvas } from '@/three/SceneCanvas'
-import { cinematicWorlds } from '@/config/cinematicHero'
+import { LAST_WORLD, cinematicWorlds } from '@/config/cinematicHero'
 import { useCinematicJourney } from '@/animations/useCinematicJourney'
 import { scrollPageTo } from '@/hooks/useSmoothScroll'
 import { AtelierSections, AtelierOutro } from '@/components/AtelierSections'
@@ -83,11 +83,11 @@ export function Home() {
 
         <div className="atelier-bottom">
           <div className="atelier-world-caption"><span className="atelier-star" aria-hidden="true">✳</span><span>Beyond the ordinary<br /><small>Interiors · Furniture · Imagination</small></span></div>
-          <button className="atelier-scroll" onClick={() => active < 3 ? navigate(active + 1) : goToContact()}><span>{active < 3 ? 'Scroll to discover' : 'Explore our perspectives'}</span><ArrowDown size={17} strokeWidth={1.25} /></button>
+          <button className="atelier-scroll" onClick={() => active < LAST_WORLD ? navigate(active + 1) : goToContact()}><span>{active < LAST_WORLD ? 'Scroll to discover' : 'Explore our perspectives'}</span><ArrowDown size={17} strokeWidth={1.25} /></button>
           <div className="atelier-scene-controls">
             <button aria-label="Previous world" disabled={active === 0} onClick={() => navigate(active - 1)}><ArrowLeft size={16} strokeWidth={1.3} /></button>
-            <span aria-live="polite" aria-atomic="true">0{active + 1}<span className="atelier-count-divider">/</span>04<span className="sr-only"> — {world.name}</span></span>
-            <button aria-label="Next world" disabled={active === 3} onClick={() => navigate(active + 1)}><ArrowRight size={16} strokeWidth={1.3} /></button>
+            <span aria-live="polite" aria-atomic="true">0{active + 1}<span className="atelier-count-divider">/</span>{String(cinematicWorlds.length).padStart(2, '0')}<span className="sr-only"> — {world.name}</span></span>
+            <button aria-label="Next world" disabled={active === LAST_WORLD} onClick={() => navigate(active + 1)}><ArrowRight size={16} strokeWidth={1.3} /></button>
           </div>
         </div>
         <div className="atelier-meters" aria-label="Choose a scene">
