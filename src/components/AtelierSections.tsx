@@ -11,7 +11,6 @@ import '@/styles/atelierSections.css'
 
 const RibbonCanvas=lazy(()=>import('@/three/scenes/AtelierObjects').then(m=>({default:m.RibbonCanvas})))
 const CollectionOrbitCanvas=lazy(()=>import('@/three/scenes/CollectionOrbit').then(m=>({default:m.CollectionOrbitCanvas})))
-const SignatureCanvas=lazy(()=>import('@/three/scenes/LiquidDrops').then(m=>({default:m.SignatureCanvas})))
 const PavilionCanvas=lazy(()=>import('@/three/scenes/Pavilion').then(m=>({default:m.PavilionCanvas})))
 gsap.registerPlugin(ScrollTrigger)
 
@@ -203,15 +202,15 @@ function Stories({reduced}:{reduced:boolean}) {
   const section=useRef<HTMLElement>(null), [active,setActive]=useState(0),[expanded,setExpanded]=useState(false)
   const {ref:filmArea,near}=useNear()
   const story=stories[active]
-  useLayoutEffect(()=>{if(!section.current)return;const ctx=gsap.context(()=>{gsap.fromTo('.story-description',{y:20,opacity:0},{y:0,opacity:1,duration:reduced?0:.65})},section);return()=>ctx.revert()},[active,reduced])
+  useLayoutEffect(()=>{if(!section.current)return;const ctx=gsap.context(()=>{gsap.fromTo('.story-description',{y:20,opacity:0},{y:0,opacity:1,duration:reduced?0:.65,clearProps:'transform,opacity'})},section);return()=>ctx.revert()},[active,reduced])
   return <section ref={section} id="stories" className={`atelier-stories editorial-section${expanded?' is-expanded':''}`}><SectionLabel number="05">Client stories</SectionLabel><div className="stories-stage">
-    <div className="story-description"><span className="editorial-kicker">{story.project}</span><blockquote><p>“{story.quote}”</p></blockquote><span className="story-client">{story.name}</span><button className="story-expand" onClick={()=>setExpanded(!expanded)} aria-expanded={expanded}>{expanded?'Close the view':'See the space'}<ArrowUpRight size={20}/></button></div>
+    <div className="story-description"><span className="editorial-kicker">{story.project}</span><blockquote><p>“{story.quote}”</p></blockquote><span className="story-client">{story.name}</span><button className="story-expand" onClick={()=>setExpanded(!expanded)} aria-expanded={expanded}>{expanded?'Close the view':'See the space'}<ArrowUpRight size={20}/></button>
+      <div className="story-navigation"><div><button aria-label="Previous testimonial" onClick={()=>setActive((active+2)%3)}><ArrowLeft size={18}/></button><span>0{active+1} <i>/</i> 03</span><button aria-label="Next testimonial" onClick={()=>setActive((active+1)%3)}><ArrowRight size={18}/></button></div></div></div>
     <div ref={filmArea} className="story-ring-stage">
       <button className="story-aperture" onClick={()=>setExpanded(!expanded)} aria-label={expanded?'Close the film':'Expand the film'}><TestimonialFilm films={storyFilms} active={active} running={near} reduced={reduced}/><span className="story-ring"/></button>
       <div className="story-person" aria-hidden="true">{stories.map((s,i)=><StoryPerson key={s.person} src={s.person} shown={i===active}/>)}</div>
     </div>
     <span className="story-side-note">In their words.</span>
-    <div className="story-navigation"><div><button aria-label="Previous testimonial" onClick={()=>setActive((active+2)%3)}><ArrowLeft size={18}/></button><span>0{active+1} <i>/</i> 03</span><button aria-label="Next testimonial" onClick={()=>setActive((active+1)%3)}><ArrowRight size={18}/></button></div><span>Interiors. Objects. Atmospheres.</span></div>
     </div></section>
 }
 
@@ -257,7 +256,7 @@ function OutroRise({level,reduced}:{level:MutableRefObject<number>;reduced:boole
     const u=(n:string)=>gl.getUniformLocation(program,n)
     let frame=0,shown=-1,eased=level.current
     // The story navigation floats above the navy; each part turns white once the edge has risen past it.
-    const riders=[...document.querySelectorAll<HTMLElement>('.story-navigation > *')]
+    const riders=[...document.querySelectorAll<HTMLElement>('.story-navigation > *, .story-expand')]
     const edgeAt=(x:number,lv:number)=>{const dip=1-Math.exp(-(((x-(.6-lv*.18))/.34)**2)),swell=.5+.5*Math.cos((x+lv*.4)*Math.PI*2*.9);return lv*1.18+(.035+.03*(1-lv))*dip+.012*swell}
     const draw=()=>{
       frame=requestAnimationFrame(draw)
@@ -278,12 +277,46 @@ function OutroRise({level,reduced}:{level:MutableRefObject<number>;reduced:boole
   return <div className="outro-rise" aria-hidden="true"><canvas ref={canvas}/></div>
 }
 
+// The footer index: every part of the page from the brief, as large links. Hovering one lifts it and shows a preview of
+// that section in a round frame that trails the cursor; clicking glides to the section. Studio and social links are
+// placeholders (#) until their pages exist. The liquid drops that sat here are kept in docs/snapshots/outro-liquid/.
+const footerIndex=[
+  {label:'Home',note:'Designed Around Real Living',target:'top',image:'/images/redesign/section1.jpg'},
+  {label:'Gallery',note:'The Theos Promise',target:'collection',image:'/images/redesign/gallery-salon.jpg'},
+  {label:'The process flow',note:'From vision to living',target:'process',image:'/images/redesign/spiral-reference.jpg'},
+  {label:'About Theos',note:'A better standard of living',target:'philosophy',image:'/models/pavilion/preview_front_3q.png'},
+  {label:'The Essence of Theos',note:'Design, craft, quality',target:'focus',image:'/images/redesign/gallery-material.jpg'},
+  {label:'Client stories',note:'In their words',target:'stories',image:'/videos/testimonial-1.jpg'},
+]
+const footerColumns:[string,[string,string][]][]=[
+  ['Studio',[['Factory','#'],['Projects','#'],['Careers','#'],['Press','#']]],
+  ['Connect',[['Instagram','#'],['Pinterest','#'],['LinkedIn','#'],['care@theos.co.in','mailto:care@theos.co.in']]],
+]
+function FooterIndex({reduced,onBeginning}:{reduced:boolean;onBeginning:()=>void}) {
+  const area=useRef<HTMLDivElement>(null),lens=useRef<HTMLDivElement>(null),[hover,setHover]=useState<number|null>(null)
+  // The preview trails the cursor with a soft lag.
+  useEffect(()=>{
+    const el=area.current,frame=lens.current;if(!el||!frame)return
+    let x=0,y=0,tx=0,ty=0,raf=0
+    const move=(e:PointerEvent)=>{const b=el.getBoundingClientRect();tx=e.clientX-b.left;ty=e.clientY-b.top}
+    const tick=()=>{raf=requestAnimationFrame(tick);x+=(tx-x)*(reduced?1:.14);y+=(ty-y)*(reduced?1:.14);frame.style.transform=`translate(${x}px,${y}px) translate(-50%,-50%)`}
+    el.addEventListener('pointermove',move);raf=requestAnimationFrame(tick)
+    return()=>{el.removeEventListener('pointermove',move);cancelAnimationFrame(raf)}
+  },[reduced])
+  const go=(target:string)=>{if(target==='top'){onBeginning();return}const el=document.getElementById(target);if(el)scrollPageTo(el.getBoundingClientRect().top+scrollY,reduced)}
+  return <div ref={area} className={`footer-index${hover!==null?' is-hovering':''}`} onPointerLeave={()=>setHover(null)}>
+    <nav className="footer-links" aria-label="On this page">{footerIndex.map((item,i)=><button key={item.label} className={hover===i?'is-active':''} onPointerEnter={()=>setHover(i)} onFocus={()=>setHover(i)} onBlur={()=>setHover(null)} onClick={()=>go(item.target)}>
+      <span className="footer-link-number">0{i+1}</span><span className="footer-link-label">{item.label}</span><span className="footer-link-note">{item.note}</span><ArrowUpRight className="footer-link-arrow" size={26} strokeWidth={1.2}/>
+    </button>)}</nav>
+    <div className="footer-columns">{footerColumns.map(([title,links])=><div key={title}><span>{title}</span>{links.map(([label,href])=><a key={label} href={href}>{label}</a>)}</div>)}</div>
+    <div ref={lens} className="footer-lens" aria-hidden="true">{footerIndex.map((item,i)=><img key={item.label} src={item.image} alt="" className={hover===i?'is-current':''} loading="lazy"/>)}</div>
+  </div>
+}
+
 export function AtelierOutro({reduced,onBeginning}:{reduced:boolean;onBeginning:()=>void}) {
-  const {ref,near}=useNear(),root=useRef<HTMLElement>(null),roomProgress=useRef(reduced?1:0),riseLevel=useRef(0)
+  const root=useRef<HTMLElement>(null),riseLevel=useRef(0)
   // The navy rises from the footer's top edge, covering the view by the time that edge is a quarter of the way down.
   useLayoutEffect(()=>{if(!root.current)return;const st=ScrollTrigger.create({trigger:root.current,start:'top bottom',end:'top 25%',onUpdate:self=>{riseLevel.current=self.progress},onRefresh:self=>{riseLevel.current=self.progress}});return()=>st.kill()},[])
-  // The closing room assembles as the footer scrolls into view.
-  useLayoutEffect(()=>{if(!root.current)return;const st=ScrollTrigger.create({trigger:root.current,start:'top 85%',end:'bottom bottom',onUpdate:self=>{roomProgress.current=self.progress},onRefresh:self=>{roomProgress.current=self.progress}});return()=>st.kill()},[])
   useLayoutEffect(()=>{if(reduced||!root.current)return;const ctx=gsap.context(()=>{
     gsap.from('.outro-title > span',{yPercent:70,opacity:0,stagger:.14,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:root.current,start:'top 70%'}})
     gsap.from('.outro-wordmark',{yPercent:35,opacity:.15,ease:'none',scrollTrigger:{trigger:root.current,start:'top bottom',end:'bottom bottom',scrub:true}})
@@ -291,7 +324,7 @@ export function AtelierOutro({reduced,onBeginning}:{reduced:boolean;onBeginning:
   return <><OutroRise level={riseLevel} reduced={reduced}/><footer ref={root} id="atelier-contact" className="atelier-outro">
     <div className="outro-top"><span>THEOS / BEYOND THE ORDINARY</span><span>A new perspective starts here.</span></div>
     <div className="outro-main"><div className="outro-copy"><h2 className="outro-title"><span>Make room</span><span>for <em>what’s next.</em></span></h2><a href="mailto:care@theos.co.in" className="outro-contact">Start a conversation <ArrowUpRight size={24}/></a><p>Interiors. Furniture. Imagination.</p></div>
-      <div ref={ref} className="outro-sculpture" role="group" aria-label="Liquid drops of material"><ArtBoundary fallback={<span className="outro-fallback">o</span>}><Suspense fallback={<span className="outro-fallback">o</span>}>{<SignatureCanvas running={near} reduced={reduced} progress={roomProgress}/>}</Suspense></ArtBoundary></div>
+      <FooterIndex reduced={reduced} onBeginning={onBeginning}/>
     </div>
     <div className="outro-bottom"><a href="mailto:care@theos.co.in">care@theos.co.in</a><span>Designed with purpose. Made personal.</span><button onClick={onBeginning}>Back to the beginning <ArrowUpRight size={15}/></button></div>
     <div className="outro-wordmark" aria-hidden="true"><img src="/theos-logo.avif" alt="" /></div>

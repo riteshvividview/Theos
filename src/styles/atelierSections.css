@@ -179,6 +179,30 @@
 .outro-contact:hover svg { transform:translate(5px,-5px); }
 .outro-copy > p { font-size:9px; letter-spacing:.16em; text-transform:uppercase; margin-top:28px; opacity:.6; }
 .outro-sculpture { position:absolute; right:-5%; top:0; width:58%; height:100%; }
+/* Footer index: large page links with a cursor-trailing preview, then studio and social columns. */
+/* Side by side: the title on the left, the links taking the rest of the width. */
+.outro-main:has(.footer-index) { align-items:flex-start; gap:5%; padding:70px 0 60px; min-height:0; }
+.outro-main:has(.footer-index) .outro-copy { width:32%; flex:none; padding-top:12px; }
+.footer-index { position:relative; flex:1; min-width:0; }
+.footer-links { display:flex; flex-direction:column; border-top:1px solid #f5f0e72b; }
+.footer-links > button { position:relative; display:grid; grid-template-columns:52px 1fr auto 34px; align-items:center; gap:18px; padding:20px 4px; border-bottom:1px solid #f5f0e72b; color:inherit; text-align:left; cursor:pointer; transition:opacity .45s, padding .5s cubic-bezier(.2,.7,.2,1); }
+.footer-links > button.is-active { padding-left:22px; }
+.footer-link-number { font-size:11px; letter-spacing:.16em; color:#e0473a; font-variant-numeric:tabular-nums; }
+.footer-link-label { font-family:var(--font-display); font-size:clamp(30px,2.8vw,48px); line-height:1.05; }
+.footer-link-note { font-size:11px; letter-spacing:.12em; text-transform:uppercase; opacity:.55; }
+.footer-link-arrow { justify-self:end; transition:transform .5s cubic-bezier(.2,.7,.2,1), color .3s; }
+.footer-links > button.is-active .footer-link-arrow { transform:rotate(45deg) scale(1.15); color:#e0473a; }
+.footer-columns { display:grid; grid-template-columns:repeat(2,1fr); gap:70px; margin-top:44px; }
+.footer-columns > div { display:flex; flex-direction:column; gap:10px; font-size:13px; }
+.footer-columns > div > span { font-size:9px; letter-spacing:.2em; text-transform:uppercase; opacity:.5; margin-bottom:6px; }
+.footer-columns a { position:relative; width:fit-content; opacity:.8; transition:opacity .3s; }
+.footer-columns a::after { content:''; position:absolute; left:0; right:0; bottom:-3px; height:1px; background:currentColor; transform:scaleX(0); transform-origin:left; transition:transform .45s cubic-bezier(.2,.7,.2,1); }
+.footer-columns a:hover { opacity:1; }
+.footer-columns a:hover::after { transform:scaleX(1); }
+.footer-lens { position:absolute; left:0; top:0; z-index:3; width:230px; aspect-ratio:1; border-radius:50%; overflow:hidden; pointer-events:none; opacity:0; scale:.6; transition:opacity .4s, scale .55s cubic-bezier(.2,.7,.2,1); box-shadow:0 24px 60px #02081a73; border:6px solid #b31e2d; }
+.footer-index.is-hovering .footer-lens { opacity:1; scale:1; }
+.footer-lens img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; scale:1.15; transition:opacity .45s, scale .9s cubic-bezier(.2,.7,.2,1); }
+.footer-lens img.is-current { opacity:1; scale:1; }
 .outro-sculpture > div { position:relative; z-index:1; }
 .outro-fallback { display:grid; place-items:center; height:100%; font-size:500px; font-family:var(--font-display); color:#bc2735; }
 .outro-bottom { position:relative; z-index:2; display:flex; justify-content:space-between; align-items:center; font-size:10px; border-top:1px solid #f5f0e72b; padding:25px 0 0; }
@@ -257,6 +281,14 @@
 .story-navigation > [data-on-navy] { color:#f5f0e7; }
 .story-navigation > [data-on-navy] button { border-color:#f5f0e766; }
 .story-navigation > [data-on-navy] button:hover { background:#f5f0e7; color:#142942; }
+/* The testimonial controls sit under the quote and "See the space", where they are seen with it. */
+.story-description .story-navigation { position:relative; display:flex; justify-content:flex-start; border:0; padding:0; margin:52px 0 0 -14px; pointer-events:auto; }
+/* Above the rising navy; it turns ivory once the navy edge has risen past it (OutroRise marks it data-on-navy).
+   The description itself stays out of the stacking order (z-index auto) so the controls can sit above the navy. */
+.atelier-stories .story-description { z-index:auto; }
+.story-description .story-navigation { z-index:6; }
+.story-description .story-expand { position:relative; z-index:6; transition:color .35s ease, border-color .35s ease; }
+.story-description .story-expand[data-on-navy] { color:#f5f0e7; border-color:#f5f0e766; }
 
 /* Type roles: Altheria Mystique for display lines (and the accents inside them), Maveryn for short bold titles, Poppins for
    UI, Poppins Light for sublines and paragraphs. The faces have no italics, so nothing is slanted or bolded synthetically. */

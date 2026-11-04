@@ -16,7 +16,7 @@ React + TypeScript + Vite; Three.js / React Three Fiber; GSAP + ScrollTrigger; o
 - Copy follows `public/Theos Website Content.pdf` (hero headlines and sublines, Gallery, process flow, About Theos, Essence of Theos, closing statement). The stories section and footer are not covered by it.
 - Animated SVG focus icons and expandable O-shaped visual stories.
 - Cream → navy hand-over (`OutroRise` in `AtelierSections.tsx`): the navy rises over the stories section as the footer scrolls in, its top a crisp curved wave that drifts as it rises; at rest the footer meets the cream along that curve.
-- Closing scene: seven liquid drops ray-marched as metaballs (`LiquidDrops.tsx`): scroll gathers them into the theos O and its dot, drag throws a drop (spring physics), nearby drops shy from the cursor, click morphs the material (chrome, red lacquer, glass, pearl) under a procedural studio light. Half resolution, created only near the footer. The previous red O is kept in `docs/snapshots/outro-before/`. Email CTA.
+- Footer: an interactive index of the page (from the brief) with a cursor-trailing round preview, plus studio and social columns (placeholder links). The liquid-drops closing scene was removed and is kept in `docs/snapshots/outro-liquid/` for reuse; the older red O is in `docs/snapshots/outro-before/`. Email CTA.
 - Reduced motion, offscreen rendering pauses and graceful imagery fallbacks.
 
 The current project is desktop-focused. Actual client footage and quotes remain pending; visual studies are labelled accordingly.

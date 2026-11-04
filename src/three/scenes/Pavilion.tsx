@@ -13,7 +13,8 @@ import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUnifo
 export type PavilionRoomId = 'lounge_west' | 'kitchen' | 'dining' | 'living' | 'lounge_east' | 'bedroom'
 type Cloth = {
   mesh: Mesh; dir: number; target: Vector3; velocity: Vector3
-  uniforms: { uTime: { value: number }; uWave: { value: number }; uSwing: { value: number }; uTop: { value: number }; uBottom: { value: number }; uGrab: { value: Vector3 }; uPull: { value: Vector3 } }
+  uniforms: { uTime: { value: number }; uWave: { value: number }; uSwing: { value: number }; uTop: { value: number }; uBottom: { value: number }; uGrab: { value: Vector3 }; uPull: { value: Vector3 }
+    uWindDir: { value: number } }
 }
 type Room = {
   id: PavilionRoomId; hit: Mesh; light?: PointLight; lamp?: PointLight; bulb?: MeshStandardMaterial; wash?: RectAreaLight; spill?: RectAreaLight
@@ -45,6 +46,8 @@ const FINISH: Record<string, { color: string; roughness: number; metalness?: num
 const TARGET = new Vector3(0, 2.5, 0), VIEW = new Vector3(0, .06, 1).normalize(), HALF_WIDTH = 18.4
 const TURN = .2, ZOOM = .1, PAN = 1.2
 // Cloth: a resting breeze, how much a pull makes the fabric ripple and lag, and how far a drag (in screen widths) pulls.
+// WIND: how far (metres) the gusts carry the hem.
+const WIND = .8
 const BREEZE = .006, RIPPLE = .09, SWING = .12, DRAG = 6
 // Stretch: the grabbed fabric follows the hand within REACH metres around the grip, up to PULL_MAX, springing back
 // underdamped (a little wobble) on release. Sideways motion mostly goes into drawing the curtain, so it is damped.
@@ -62,13 +65,15 @@ function makeCloth(mesh: Mesh): Cloth {
   let top = -Infinity, bottom = Infinity, shift = 0
   for (let i = 0; i < base.count; i++) { const y = base.getY(i); top = Math.max(top, y); bottom = Math.min(bottom, y) }
   if (open) for (let i = 0; i < open.count; i++) shift += open.getX(i)
-  const uniforms = { uTime: { value: 0 }, uWave: { value: BREEZE }, uSwing: { value: 0 }, uTop: { value: top }, uBottom: { value: bottom }, uGrab: { value: new Vector3() }, uPull: { value: new Vector3() } }
+  // The wind blows from the right onto every curtain, carrying the fabric to the left.
+  const windDir = -1
+  const uniforms = { uTime: { value: 0 }, uWave: { value: BREEZE }, uSwing: { value: 0 }, uTop: { value: top }, uBottom: { value: bottom }, uGrab: { value: new Vector3() }, uPull: { value: new Vector3() }, uWindDir: { value: windDir } }
   const material = (mesh.material as MeshStandardMaterial).clone()
   material.side = DoubleSide
   material.onBeforeCompile = shader => {
     Object.assign(shader.uniforms, uniforms)
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nuniform float uTime, uWave, uSwing, uTop, uBottom;\nuniform vec3 uGrab, uPull;')
+      .replace('#include <common>', '#include <common>\nuniform float uTime, uWave, uSwing, uTop, uBottom, uWindDir;\nuniform vec3 uGrab, uPull;')
       .replace('#include <displacementmap_vertex>', `#include <displacementmap_vertex>
         vec3 fromGrip = transformed - uGrab;
         float grip = exp(-dot(fromGrip, fromGrip) / ${(GRIP * GRIP).toFixed(4)}) * (1. - smoothstep(uTop - .7, uTop - .05, transformed.y));
@@ -79,7 +84,11 @@ function makeCloth(mesh: Mesh): Cloth {
         float hang = clamp((uTop - position.y) / max(uTop - uBottom, 1e-3), 0., 1.);
         float ripple = sin(position.x * 7.3 - uTime * 1.7 + position.y * 1.3) * .6 + sin(position.x * 3.1 + uTime * 1.1 - position.y * 2.2) * .4;
         transformed += objectNormal * ripple * uWave * (.25 + hang * hang);
-        transformed.x -= uSwing * hang * hang;`)
+        transformed.x -= uSwing * hang * hang;
+        // A gusting wind: the hem drifts with it and the fabric billows softly, travelling across the pleats.
+        float gust = (.55 + .45 * sin(uTime * .63 + position.y * .7)) * (.65 + .35 * sin(uTime * 1.71 + position.x * 2.3));
+        transformed.x += uWindDir * gust * ${WIND.toFixed(3)} * hang * hang;
+        transformed.z += gust * ${(WIND * .7).toFixed(3)} * hang * (.5 + .5 * sin(position.x * 5.5 - uWindDir * uTime * 1.4));`)
   }
   // One key per curtain: a shared key would reuse the first curtain's program without wiring this one's uniforms.
   material.customProgramCacheKey = () => `pavilion-cloth-${mesh.name}`
