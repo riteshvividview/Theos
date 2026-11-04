@@ -269,6 +269,9 @@
 .process-index > span, .focus-point h2 { font-family:var(--font-title); font-weight:400; }
 .process-index > span { font-size:15px; letter-spacing:.08em; }
 .process-step h3 { font-size:24px; line-height:1.35; color:#5d6274; }
-.focus-point h2 { font-size:46px; }
+/* Lighter than Maveryn (which has a single heavy weight): the titles in Altheria Mystique, like their accent line. */
+.focus-point h2 { font-size:48px; font-family:var(--font-display); font-weight:400; letter-spacing:0; }
+/* The accent line under each title is a subline: Poppins Light, a little smaller than before. */
+.atelier-editorial .focus-point h2 em { font-family:var(--font-body); font-weight:300; font-size:.42em; letter-spacing:.01em; }
 .focus-point h2 em { display:block; margin-top:8px; font-size:.62em; }
 .architecture-foot > p { max-width:640px; }
