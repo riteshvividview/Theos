@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 
 // The testimonial films inside the stories ring. One WebGL canvas plays the current film; changing testimonial runs a
-// liquid hand-over: a noise-edged front sweeps across, the two films ripple apart along it with a slight colour split
-// and a soft light on the seam. Films play only while on screen; reduced motion swaps instantly.
+// fluted-glass sweep (as in the hero): glass ribs turn left to right, refracting the old film into the next. Films play only while on
+// screen; reduced motion swaps instantly.
 const fragment = `precision highp float;
 uniform sampler2D uFrom, uTo;
 uniform vec2 uRes;
@@ -18,18 +18,23 @@ vec3 film(sampler2D t,vec2 uv,float split){
   return vec3(texture2D(t,cover(uv+vec2(split,0.))).r,texture2D(t,cover(uv)).g,texture2D(t,cover(uv-vec2(split,0.))).b);
 }
 void main(){
-  float m=uMix, wave=sin(m*3.14159);
-  // The front runs from lower left to upper right, its edge torn by drifting noise.
-  float n=fbm(vUv*3.2+vec2(uTime*.12,-uTime*.08));
-  float front=dot(vUv-.5,normalize(vec2(1.,.7)))*.9+.5+(n-.5)*.55;
-  float level=m*1.5-.25;
-  float edge=smoothstep(level-.06,level+.06,front);
-  vec2 push=vec2(n-.5,fbm(vUv*3.2+9.)-.5)*.09*wave;
-  vec3 a=film(uFrom,vUv+push*(1.-edge),.006*wave);
-  vec3 b=film(uTo,vUv-push*edge*.6+(1.-m)*vec2(-.02,.015),.006*wave);
-  vec3 c=mix(b,a,edge);
-  float seam=exp(-pow((front-level)/.035,2.))*wave;
-  c+=vec3(1.,.93,.86)*seam*.22;
+  // Fluted glass, as in the hero: the frame breaks into tall glass ribs that turn one after another from left to right.
+  // Each rib refracts the outgoing film as it turns edge-on, then shows the next film behind it; a highlight runs down
+  // every rib while it turns.
+  const float RIBS=11.;
+  float m=uMix;
+  float rib=floor(vUv.x*RIBS), f=fract(vUv.x*RIBS);
+  float turn=clamp(m*1.7-rib/RIBS*.7,0.,1.);
+  float t=turn*turn*(3.-2.*turn);
+  float bend=sin(t*3.14159);
+  float lens=(f-.5)*bend;
+  vec2 ua=vec2((rib+.5+(f-.5)*(1.-t*.9))/RIBS+lens*.05,vUv.y);
+  vec2 ub=vec2((rib+.5+(f-.5)*(.1+t*.9))/RIBS-lens*.05,vUv.y);
+  vec3 a=film(uFrom,ua,.004*bend);
+  vec3 b=film(uTo,ub,.004*bend);
+  vec3 c=mix(a,b,step(.5,t));
+  c*=1.-.28*bend*smoothstep(.0,.5,abs(f-.5));
+  c+=vec3(1.,.96,.9)*exp(-pow((f-(1.-t))/.06,2.))*bend*.35;
   gl_FragColor=vec4(c,1.);
 }`
 
@@ -77,7 +82,7 @@ export function TestimonialFilm({ films, active, running, reduced }: { films: { 
     const draw = (now: number) => {
       frame = requestAnimationFrame(draw)
       const s = state.current
-      if (s.mix < 1) s.mix = Math.min(1, (now - s.start) / 1500)
+      if (s.mix < 1) s.mix = Math.min(1, (now - s.start) / 1800)
       const eased = s.mix * s.mix * (3 - 2 * s.mix)
       ;[s.from, s.to].forEach(i => {
         const v = videos.current[i]

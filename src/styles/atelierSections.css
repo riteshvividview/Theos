@@ -100,7 +100,7 @@
 .drawing-toggle { position:absolute; bottom:8%; left:4%; padding:14px 21px; border:1px solid #27365366; border-radius:30px; display:flex; align-items:center; gap:28px; font-size:11px; background:#faf9f5df; backdrop-filter:blur(10px); }
 .drawing-toggle svg { transition:transform .5s; }
 .drawing-toggle[aria-pressed=true] svg { transform:rotate(45deg); }
-.pavilion-stage { position:relative; aspect-ratio:2.3/1; margin:0 0 48px; overflow:hidden; background:transparent; cursor:crosshair; }
+.pavilion-stage { position:relative; aspect-ratio:2.3/1; margin:0; overflow:hidden; background:transparent; cursor:crosshair; }
 .pavilion-stage[data-room] { cursor:pointer; }
 .pavilion-stage canvas { display:block; }
 /* The backdrop word: plain type behind the transparent canvas (it comes first, so the canvas paints over it). */
@@ -108,6 +108,7 @@
 .pavilion-word { position:absolute; left:50%; top:10%; transform:translateX(-50%); font-family:var(--font-body); font-weight:600; font-size:18cqw; line-height:1; letter-spacing:-.01em; color:#e6e6e6; white-space:nowrap; pointer-events:none; user-select:none; }
 .pavilion-still { width:100%; height:100%; object-fit:cover; }
 .pavilion-caption { position:absolute; left:30px; bottom:26px; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+.atelier-editorial .pavilion-about { position:absolute; right:30px; bottom:22px; width:min(46%,560px); font-size:13px; line-height:1.85; pointer-events:none; }
 .pavilion-caption span { font-size:10px; letter-spacing:.24em; opacity:.55; }
 .pavilion-caption strong { font-family:var(--font-display); font-size:27px; font-weight:400; font-style:italic; transition:opacity .4s; }
 .architecture-foot { display:flex; justify-content:space-between; align-items:flex-start; border-top:1px solid #29355128; padding-top:28px; }
@@ -146,7 +147,7 @@
 .story-film-fallback.is-current { opacity:1; }
 /* The client rests inside the ring: a cut-out over its lower part, clipped to the ring's outer edge. */
 .story-person { position:absolute; inset:0; z-index:7; pointer-events:none; clip-path:circle(50% at 50% 50%); transition:opacity .8s; }
-.story-person-img { position:absolute; left:50%; bottom:1.5%; width:44%; height:auto; transform:translate(-50%,8%); opacity:0; transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.7,.2,1); }
+.story-person-img { position:absolute; left:50%; bottom:1.5%; width:56%; height:auto; transform:translate(-50%,8%); opacity:0; transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.7,.2,1); }
 .story-person-img.is-current { opacity:1; transform:translate(-50%,0); }
 .is-expanded .story-person { opacity:0; }
 .story-aperture { position:absolute; inset:0; width:100%; overflow:hidden; border-radius:50%; clip-path:circle(50% at 50% 50%); transition:clip-path 1.2s cubic-bezier(.2,.7,.2,1),border-radius 1.2s,width 1.2s; isolation:isolate; background:#dedbd6; }
@@ -307,3 +308,11 @@
 .atelier-editorial .focus-point h2 em { font-family:var(--font-body); font-weight:300; font-size:.42em; letter-spacing:.01em; }
 .focus-point h2 em { display:block; margin-top:8px; font-size:.62em; }
 .architecture-foot > p { max-width:640px; }
+.atelier-architecture { padding-bottom:16px; }
+/* Testimonial ring at rest: the film dimmed under a soft dark wash and a lighter, thinner ring, so the client stands out.
+   "See the space" (is-expanded) clears all of it and shows the film plainly. */
+.story-dim { position:absolute; inset:0; background:radial-gradient(circle at 50% 45%,#0b162859,#0b1628a6); pointer-events:none; transition:opacity 1s; }
+.is-expanded .story-dim { opacity:0; }
+.atelier-stories .story-ring { border-width:clamp(34px,4.2vw,72px); border-color:#d95560; border-top-color:#e06872; border-left-color:#dc5d68; border-bottom-color:#c4434f; border-right-color:#d4505b; box-shadow:inset 8px 5px 18px #5a10202e,inset -3px -3px 8px #ffc2c533; }
+.atelier-stories.is-expanded .story-ring { border-width:0; opacity:0; }
+.atelier-outro { padding-bottom:28px; }

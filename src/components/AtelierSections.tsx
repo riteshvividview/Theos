@@ -169,8 +169,9 @@ function Architecture({reduced}:{reduced:boolean}) {
       <span className="pavilion-word" aria-hidden="true">Interior</span>
       <ArtBoundary fallback={still}><Suspense fallback={still}><PavilionCanvas running={near} reduced={reduced} onRoom={setRoom}/></Suspense></ArtBoundary>
       <div className="pavilion-caption" aria-live="polite"><span>THEOS / PAVILION 001 · VISUAL STUDY</span><strong>{room?pavilionRooms[room]:'Hover a room'}</strong></div>
+      {/* About Theos sits beside the caption, in the stage's lower right, instead of in a block of its own below. */}
+      <p className="pavilion-about">At Theos, we believe exceptional interiors should never come at the cost of quality, time or value. With design at the heart of everything we do, we bring together an experienced team, in-house manufacturing and end-to-end execution to shape spaces with precision and purpose. Rooted in craftsmanship and driven by innovation, we bring together thoughtful design, uncompromising quality and timely delivery.</p>
     </div>
-    <div className="architecture-foot"><p>At Theos, we believe exceptional interiors should never come at the cost of quality, time or value. With design at the heart of everything we do, we bring together an experienced team, in-house manufacturing and end-to-end execution to shape spaces with precision and purpose. Rooted in craftsmanship and driven by innovation, we bring together thoughtful design, uncompromising quality and timely delivery.</p></div>
   </section>
 }
 
@@ -207,7 +208,7 @@ function Stories({reduced}:{reduced:boolean}) {
     <div className="story-description"><span className="editorial-kicker">{story.project}</span><blockquote><p>“{story.quote}”</p></blockquote><span className="story-client">{story.name}</span><button className="story-expand" onClick={()=>setExpanded(!expanded)} aria-expanded={expanded}>{expanded?'Close the view':'See the space'}<ArrowUpRight size={20}/></button>
       <div className="story-navigation"><div><button aria-label="Previous testimonial" onClick={()=>setActive((active+2)%3)}><ArrowLeft size={18}/></button><span>0{active+1} <i>/</i> 03</span><button aria-label="Next testimonial" onClick={()=>setActive((active+1)%3)}><ArrowRight size={18}/></button></div></div></div>
     <div ref={filmArea} className="story-ring-stage">
-      <button className="story-aperture" onClick={()=>setExpanded(!expanded)} aria-label={expanded?'Close the film':'Expand the film'}><TestimonialFilm films={storyFilms} active={active} running={near} reduced={reduced}/><span className="story-ring"/></button>
+      <button className="story-aperture" onClick={()=>setExpanded(!expanded)} aria-label={expanded?'Close the film':'Expand the film'}><TestimonialFilm films={storyFilms} active={active} running={near} reduced={reduced}/><span className="story-dim"/><span className="story-ring"/></button>
       <div className="story-person" aria-hidden="true">{stories.map((s,i)=><StoryPerson key={s.person} src={s.person} shown={i===active}/>)}</div>
     </div>
     <span className="story-side-note">In their words.</span>
@@ -319,7 +320,6 @@ export function AtelierOutro({reduced,onBeginning}:{reduced:boolean;onBeginning:
   useLayoutEffect(()=>{if(!root.current)return;const st=ScrollTrigger.create({trigger:root.current,start:'top bottom',end:'top 25%',onUpdate:self=>{riseLevel.current=self.progress},onRefresh:self=>{riseLevel.current=self.progress}});return()=>st.kill()},[])
   useLayoutEffect(()=>{if(reduced||!root.current)return;const ctx=gsap.context(()=>{
     gsap.from('.outro-title > span',{yPercent:70,opacity:0,stagger:.14,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:root.current,start:'top 70%'}})
-    gsap.from('.outro-wordmark',{yPercent:35,opacity:.15,ease:'none',scrollTrigger:{trigger:root.current,start:'top bottom',end:'bottom bottom',scrub:true}})
   },root);return()=>ctx.revert()},[reduced])
   return <><OutroRise level={riseLevel} reduced={reduced}/><footer ref={root} id="atelier-contact" className="atelier-outro">
     <div className="outro-top"><span>THEOS / BEYOND THE ORDINARY</span><span>A new perspective starts here.</span></div>
@@ -327,6 +327,5 @@ export function AtelierOutro({reduced,onBeginning}:{reduced:boolean;onBeginning:
       <FooterIndex reduced={reduced} onBeginning={onBeginning}/>
     </div>
     <div className="outro-bottom"><a href="mailto:care@theos.co.in">care@theos.co.in</a><span>Designed with purpose. Made personal.</span><button onClick={onBeginning}>Back to the beginning <ArrowUpRight size={15}/></button></div>
-    <div className="outro-wordmark" aria-hidden="true"><img src="/theos-logo.avif" alt="" /></div>
   </footer></>
 }
