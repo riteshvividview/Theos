@@ -39,9 +39,9 @@ const stages=[
   {title:'A place of your own.', label:'Experience', body:'The completed space brings design and living into harmony. Distinctive in character, considered in every detail and made entirely your own.'},
 ]
 
-function useNear() {
+function useNear(margin='350px') {
   const ref=useRef<HTMLDivElement>(null), [near,setNear]=useState(false)
-  useEffect(()=>{const el=ref.current;if(!el)return;const observer=new IntersectionObserver(([entry])=>setNear(entry.isIntersecting),{rootMargin:'350px'});observer.observe(el);return()=>observer.disconnect()},[])
+  useEffect(()=>{const el=ref.current;if(!el)return;const observer=new IntersectionObserver(([entry])=>setNear(entry.isIntersecting),{rootMargin:margin});observer.observe(el);return()=>observer.disconnect()},[])
   return {ref,near}
 }
 
@@ -76,7 +76,7 @@ function StaticCollection({open}:{open:(i:number)=>void}) {
 
 function Gallery({reduced}:{reduced:boolean}) {
   const dialog=useRef<HTMLDialogElement>(null), [selected,setSelected]=useState(4)
-  const {ref,near}=useNear(), intro=useRef(0), [active,setActive]=useState(0), [pointing,setPointing]=useState(false), [dragging,setDragging]=useState(false)
+  const {ref,near}=useNear('0px'), intro=useRef(0), [active,setActive]=useState(0), [pointing,setPointing]=useState(false), [dragging,setDragging]=useState(false)
   const control=useRef<OrbitControl>({dragging:false,moved:0,pending:[0,0],velocity:[.12,0],nudge:0})
   const azimuth=useRef<HTMLElement>(null), elevation=useRef<HTMLElement>(null), dial=useRef<HTMLDivElement>(null), meter=useRef<HTMLElement>(null)
   const telemetry=(az:number,el:number,speed:number)=>{
@@ -161,7 +161,7 @@ function Timeline({reduced}:{reduced:boolean}) {
 // The blueprint → as-built stage is kept in docs/snapshots/blueprint-section/ (BlueprintCanvas still lives in AtelierObjects).
 const pavilionRooms:Record<PavilionRoomId,string>={lounge_west:'West lounge',kitchen:'Kitchen',dining:'Dining',living:'Living',lounge_east:'East lounge',bedroom:'Bedroom'}
 function Architecture({reduced}:{reduced:boolean}) {
-  const {ref,near}=useNear(),[room,setRoom]=useState<PavilionRoomId|null>(null)
+  const {ref,near}=useNear('0px'),[room,setRoom]=useState<PavilionRoomId|null>(null)
   const still=<img className="pavilion-still" src="/models/pavilion/preview_front_3q.png" alt=""/>
   return <section id="philosophy" className="atelier-architecture editorial-section">
     <SectionLabel number="03">About Theos</SectionLabel>

@@ -142,9 +142,12 @@ export function PageLoader({ onComplete }: { onComplete: () => void }) {
     let alive = true, completed = 0, displayed = 1, stalledSince = 0
     const tasks = [...images, '/theos-logo.avif'].map(loadImage)
     tasks.push(document.fonts.load('400 16px "Altheria Mystique"').then(() => {}), document.fonts.load('400 16px Maveryn').then(() => {}), document.fonts.load('300 16px Poppins').then(() => {}))
-    tasks.push(import('@/three/scenes/CinematicHero').then(() => {}), import('@/three/scenes/AtelierObjects').then(() => {}), import('@/three/scenes/LiquidDrops').then(() => {}))
+    tasks.push(import('@/three/scenes/CinematicHero').then(() => {}), import('@/three/scenes/AtelierObjects').then(() => {}), import('@/three/scenes/LiquidDrops').then(() => {}),
+      // The pavilion model (the heaviest asset) and its scene code load with the page, so its section never stalls.
+      import('@/three/scenes/Pavilion').then(() => {}), fetch('/models/pavilion/pavilion.glb').then(r => r.arrayBuffer()).then(() => {}))
     tasks.forEach(task => task.catch(() => {}).finally(() => { completed++ }))
-    const total = tasks.length + 4
+    // Five scenes report readiness: hero, collection, ribbon, signature and the pavilion.
+    const total = tasks.length + 5
     const timer = window.setInterval(() => {
       if (!alive) return
       const target = Math.floor((completed + readyScenes.size) / total * 100)

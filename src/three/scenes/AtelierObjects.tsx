@@ -33,7 +33,8 @@ const finishes: Record<Finish, FinishLook> = {
   brass: { color: '#c99a4a', metalness: 1, roughness: .3, clearcoat: .4, sheen: 0, sheenColor: '#000000', glow: '#ffd27a' },
   velvet: { color: '#2337a8', metalness: 0, roughness: .9, clearcoat: 0, sheen: 1, sheenColor: '#7f9bff', glow: '#8aa2ff' },
 }
-const FIGURES = [.10, .32, .57, .81]
+// Where each figure stands along the ribbon (0 top, .86 foot); the last sits on the turn that faces the viewer.
+const FIGURES = [.10, .32, .57, .72]
 
 function ribbonGeometry() {
   const positions: number[] = [], indices: number[] = [], along: number[] = []
@@ -111,7 +112,7 @@ function applyFinish(material: MeshPhysicalMaterial, look: FinishLook) {
   material.clearcoat = look.clearcoat; material.sheen = look.sheen; material.sheenColor.set(look.sheenColor)
 }
 
-function Ribbon({ progress, active, reduced, finish, entered }: { progress: MutableRefObject<number>; active: number; reduced: boolean; finish: Finish; entered: boolean }) {
+function Ribbon({ progress, reduced, finish, entered }: { progress: MutableRefObject<number>; active: number; reduced: boolean; finish: Finish; entered: boolean }) {
   const group = useRef<Group>(null), entrance = useRef(reduced ? 1 : 0), people = useRef<(Group | null)[]>([])
   const shared = useMemo(() => ({ uReveal: { value: reduced ? 1 : 0 }, uSweep: { value: 0 }, uGlow: { value: new Color(finishes[finish].glow) } }), []) // eslint-disable-line react-hooks/exhaustive-deps
   const [outgoing, incoming] = useMemo(() => [sweepMaterial(0, shared), sweepMaterial(1, shared)], [shared])
@@ -159,8 +160,8 @@ function Ribbon({ progress, active, reduced, finish, entered }: { progress: Muta
       {FIGURES.map((t,i) => {
         const a=t*Math.PI*6.6
         return <group key={t} ref={el => { people.current[i] = el }} position={[Math.cos(a)*1.2, 3.1-t*6.2+.36, Math.sin(a)*1.2]} scale={.12}>
-          <mesh position={[0,.8,0]}><sphereGeometry args={[.19,12,8]} /><meshStandardMaterial color={active===i?'#f5e7cf':'#152232'} /></mesh>
-          <mesh position={[0,.35,0]}><capsuleGeometry args={[.15,.45,4,8]} /><meshStandardMaterial color={active===i?'#f5e7cf':'#152232'} /></mesh>
+          <mesh position={[0,.8,0]}><sphereGeometry args={[.19,12,8]} /><meshStandardMaterial color="#152232" /></mesh>
+          <mesh position={[0,.35,0]}><capsuleGeometry args={[.15,.45,4,8]} /><meshStandardMaterial color="#152232" /></mesh>
           {[-1,1].map(side=><mesh key={side} position={[side*.12,-.15,0]} rotation={[0,0,side*.1]}><capsuleGeometry args={[.06,.42,4,6]} /><meshStandardMaterial color="#152232" /></mesh>)}
         </group>
       })}
@@ -169,7 +170,7 @@ function Ribbon({ progress, active, reduced, finish, entered }: { progress: Muta
 }
 
 export function RibbonCanvas(props: { progress: MutableRefObject<number>; active: number; reduced: boolean; finish: Finish; entered: boolean; running?: boolean }) {
-  return <Canvas frameloop={props.running ? 'always' : 'demand'} dpr={[1,1.5]} camera={{ position:[0,.1,10.5], fov:40 }} gl={{ alpha:true, antialias:true }} fallback={<img src="/images/redesign/spiral-reference.jpg" alt="Red spiral sculpture" />}><StudioEnvironment/><Ribbon {...props} /><Prepared name="ribbon"/></Canvas>
+  return <Canvas frameloop={props.running ? 'always' : 'demand'} dpr={[1,1.25]} camera={{ position:[0,.1,10.5], fov:40 }} gl={{ alpha:true, antialias:true }} fallback={<img src="/images/redesign/spiral-reference.jpg" alt="Red spiral sculpture" />}><StudioEnvironment/><Ribbon {...props} /><Prepared name="ribbon"/></Canvas>
 }
 
 // Blueprint → as-built reveal: the architectural study and the finished interior fill the stage, each moving on its own depth map.

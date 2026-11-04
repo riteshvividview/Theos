@@ -219,8 +219,16 @@ function Pavilion({ reduced, onRoom, hold }: Props) {
     cam.lookAt(TARGET)
   }, [camera, size])
 
+  // Warm up while the page loader is still showing: compile every shader and upload every texture with one frame drawn
+  // now, even though the canvas does not run until it is near, so reaching the section never stalls the page.
+  useEffect(() => {
+    if (prepared.current) return
+    prepared.current = true
+    const frame = requestAnimationFrame(() => { gl.compile(scene, camera); gl.render(scene, camera); sceneReady('pavilion') })
+    return () => cancelAnimationFrame(frame)
+  }, [gl, scene, camera])
+
   useFrame(({ clock }, delta) => {
-    if (!prepared.current) { prepared.current = true; requestAnimationFrame(() => sceneReady('pavilion')) }
     const dragging = drag.current
     let hovered: Room | undefined = dragging?.room ?? (hold && rooms.find(room => room.id === hold))
     let overCloth = false
