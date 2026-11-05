@@ -291,7 +291,7 @@
 .story-description .story-expand { position:relative; z-index:6; transition:color .35s ease, border-color .35s ease; }
 .story-description .story-expand[data-on-navy] { color:#f5f0e7; border-color:#f5f0e766; }
 
-/* Type roles: Altheria Mystique for display lines (and the accents inside them), Maveryn for short bold titles, Poppins for
+/* Type roles: Poppins for display lines (and the accents inside them), Maveryn for short bold titles, Poppins for
    UI, Poppins Light for sublines and paragraphs. The faces have no italics, so nothing is slanted or bolded synthetically. */
 .atelier-editorial, .atelier-outro, .collection-dialog { font-family:var(--font-body); }
 .atelier-editorial p:not(.focus-statement), .atelier-outro p, .collection-dialog p, .collection-subline, .process-step h3 { font-family:var(--font-body); font-weight:300; }
@@ -302,7 +302,7 @@
 .process-index > span, .focus-point h2 { font-family:var(--font-title); font-weight:400; }
 .process-index > span { font-size:15px; letter-spacing:.08em; }
 .process-step h3 { font-size:24px; line-height:1.35; color:#5d6274; }
-/* Lighter than Maveryn (which has a single heavy weight): the titles in Altheria Mystique, like their accent line. */
+/* Lighter than Maveryn (which has a single heavy weight): the titles in Poppins, like their accent line. */
 .focus-point h2 { font-size:48px; font-family:var(--font-display); font-weight:400; letter-spacing:0; }
 /* The accent line under each title is a subline: Poppins Light, a little smaller than before. */
 .atelier-editorial .focus-point h2 em { font-family:var(--font-body); font-weight:300; font-size:.42em; letter-spacing:.01em; }

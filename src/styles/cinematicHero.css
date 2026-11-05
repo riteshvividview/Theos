@@ -1,8 +1,8 @@
-/* Type: Altheria Mystique for display lines, Maveryn for short bold titles, Poppins (Google Fonts, index.html) for UI,
+/* Type: Poppins for display lines, Maveryn for short bold titles, Poppins (Google Fonts, index.html) for UI,
    with Poppins Light for sublines and paragraphs. */
-@font-face { font-family: 'Altheria Mystique'; src: url('/fonts/altheriamystique.regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Maveryn'; src: url('/fonts/Maveryn.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
-:root { --font-display: 'Altheria Mystique', 'Poppins', serif; --font-title: 'Maveryn', 'Poppins', sans-serif; --font-body: 'Poppins', sans-serif; }
+@font-face { font-family: 'Rink'; src: url('/fonts/rink.regular.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+:root { --font-display: 'Rink', 'Poppins', sans-serif; --font-title: 'Maveryn', 'Poppins', sans-serif; --font-body: 'Poppins', sans-serif; }
 
 .atelier-home {
   --atelier-ivory: #f6f3eb;
@@ -140,7 +140,7 @@
 .atelier-bottom, .atelier-meters { opacity: calc(1 - var(--hero-outro, 0)); }
 
 /* Script lines are set in Rouge Script: upright (the face is already cursive), no synthetic slant or bold, natural spacing so the letters join. */
-/* Hero: the headline in Altheria Mystique, its subline in Poppins Light. */
+/* Hero: the headline in Poppins, its subline in Poppins Light. */
 .atelier-line, .atelier-contact > a { font-family: var(--font-display); font-style: normal; font-weight: 400; font-synthesis: none; letter-spacing: 0; }
 .atelier-line { font-size: clamp(40px, 4.2vw, 80px); }
 .atelier-line-second, .atelier-title-1 .atelier-line-second, .atelier-title-3 .atelier-line-second { font-family: var(--font-body); font-weight: 300; font-size: clamp(17px, 1.55vw, 28px); letter-spacing: .02em; line-height: 1.4; }
@@ -170,17 +170,22 @@
 /* World 3 (the turtle bath, bottom-anchored): ink at the upper right, over the pale curtains above the turtle's head. */
 .atelier-title-2 .atelier-line-first { left: auto; right: 4%; top: 12%; max-width: 30vw; text-align: right; font-size: clamp(36px, 3.4vw, 64px); }
 .atelier-title-2 .atelier-line-second { left: auto; right: 4.2%; top: 31%; text-align: right; }
-.atelier-stage.is-light .atelier-title-0 .atelier-line, .atelier-stage.is-light .atelier-title-2 .atelier-line { color: var(--atelier-ink); text-shadow: 0 0 18px #ffffffb3; }
-/* A soft white mist on the image behind each text block, fading out on every side so it reads as light in the room. */
-.atelier-title-0::before, .atelier-title-2::before { content: ''; position: absolute; pointer-events: none; border-radius: 50%; filter: blur(30px); }
-.atelier-title-0::before { left: -6%; top: 8%; width: 50%; height: 50%; background: radial-gradient(closest-side, #ffffffd9, #ffffff99 45%, #ffffff00); }
-.atelier-title-2::before { right: -6%; top: 2%; width: 48%; height: 46%; background: radial-gradient(closest-side, #ffffffd9, #ffffff99 45%, #ffffff00); }
+.atelier-stage.is-light .atelier-title-0 .atelier-line, .atelier-stage.is-light .atelier-title-2 .atelier-line { color: var(--atelier-ink); text-shadow: none; }
 /* Each subline sits a fixed distance under its two-line headline, measured from the headline's own size, so the gap is
    the same on every screen shape. */
 .atelier-title-0 .atelier-line-second { top: calc(19% + clamp(38px, 3.8vw, 72px) * 2.5); }
 .atelier-title-1 .atelier-line-second { top: calc(14% + clamp(40px, 4.2vw, 80px) * 2.5); }
 .atelier-title-2 .atelier-line-second { top: calc(12% + clamp(36px, 3.4vw, 64px) * 2.5); }
-/* A soft dark mist behind the (always white) logo on the first world only, fading out on every side. */
-.atelier-logo { position: relative; isolation: isolate; }
-.atelier-logo::before { content: ''; position: absolute; z-index: -1; left: 50%; top: 50%; width: 260%; height: 320%; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, #0b1628a6, #0b162859 45%, #0b16281f 75%, #0b162800); filter: blur(14px); opacity: 0; transition: opacity .8s ease; }
-.atelier-journey[data-world="beyond-ordinary"] .atelier-logo::before { opacity: 1; }
+/* World 1: a soft white fade on the image's top-left corner, behind the headline. */
+.atelier-shade::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .8s ease; background: radial-gradient(ellipse 52% 62% at 0% 18%, #ffffffd1, #ffffff8c 42%, #ffffff00 100%); }
+.atelier-journey[data-world="beyond-ordinary"] .atelier-shade::after { opacity: 1; }
+/* World 1 only: a soft dark shadow that follows the logo's letters, so the white logo reads on the bright window wall. */
+.atelier-journey[data-world="beyond-ordinary"] .atelier-logo img { filter: drop-shadow(0 1px 1px #0b1628e6) drop-shadow(0 2px 2px #0b1628b3); }
+/* Smaller hero headlines (Rink sets taller than the earlier faces and ran into its subline); the subline keeps a fixed
+   gap below each. The sizes before this change are in docs/snapshots/hero-title-size/. */
+.atelier-title-0 .atelier-line-first { font-size: clamp(30px, 2.9vw, 56px); }
+.atelier-title-1 .atelier-line-first { font-size: clamp(32px, 3.2vw, 62px); }
+.atelier-title-2 .atelier-line-first { font-size: clamp(28px, 2.7vw, 50px); }
+.atelier-title-0 .atelier-line-second { top: calc(19% + clamp(30px, 2.9vw, 56px) * 2.9); }
+.atelier-title-1 .atelier-line-second { top: calc(14% + clamp(32px, 3.2vw, 62px) * 2.9); }
+.atelier-title-2 .atelier-line-second { top: calc(12% + clamp(28px, 2.7vw, 50px) * 2.9); }

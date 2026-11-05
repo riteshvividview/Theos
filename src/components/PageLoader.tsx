@@ -141,7 +141,7 @@ export function PageLoader({ onComplete }: { onComplete: () => void }) {
   useEffect(() => {
     let alive = true, completed = 0, displayed = 1, stalledSince = 0
     const tasks = [...images, '/theos-logo.avif'].map(loadImage)
-    tasks.push(document.fonts.load('400 16px "Altheria Mystique"').then(() => {}), document.fonts.load('400 16px Maveryn').then(() => {}), document.fonts.load('300 16px Poppins').then(() => {}))
+    tasks.push(document.fonts.load('400 16px Rink').then(() => {}), document.fonts.load('400 16px Maveryn').then(() => {}), document.fonts.load('300 16px Poppins').then(() => {}))
     tasks.push(import('@/three/scenes/CinematicHero').then(() => {}), import('@/three/scenes/AtelierObjects').then(() => {}),
       // The pavilion model (the heaviest asset) and its scene code load with the page, so its section never stalls.
       import('@/three/scenes/Pavilion').then(() => {}), fetch('/models/pavilion/pavilion.glb').then(r => r.arrayBuffer()).then(() => {}))
