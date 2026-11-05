@@ -148,12 +148,14 @@ function Timeline({reduced}:{reduced:boolean}) {
     <div className="process-heading editorial-reveal"><h2>The Journey from<br/>Vision to Living.</h2></div>
     <div className="process-stage">
       <div ref={ref} className="process-sculpture" aria-hidden="true"><ArtBoundary fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}><Suspense fallback={<img src="/images/redesign/spiral-reference.jpg" alt=""/>}>{<RibbonCanvas running={near} progress={progress} active={active} reduced={reduced} finish={finish} entered={entered}/>}</Suspense></ArtBoundary></div>
+      {/* Phones: the finishes sit right under the ribbon they change (the copy below the steps is hidden there). */}
+      <div className="material-controls material-controls-near"><span>One form. Different feelings.</span><div>{finishOptions.map(([id,label])=><button key={id} onClick={()=>setFinish(id)} aria-pressed={finish===id}><i className={`material-swatch material-${id}`}/>{label}</button>)}</div></div>
       {stages.map((stage,i)=><button key={stage.label} className={`process-step process-step-${i}${active===i?' is-active':''}`} onPointerEnter={()=>setHovered(i)} onPointerLeave={()=>setHovered(null)} onFocus={()=>setHovered(i)} onBlur={()=>setHovered(null)} onClick={()=>setHovered(i)} aria-pressed={active===i}>
         <span className="process-index">0{i+1}<span>— {stage.label}</span></span><h3>{stage.title}</h3><p>{stage.body}</p><span className="process-rule"/>
       </button>)}
       <div className="process-axis" aria-hidden="true"><span>IDEA</span><i/><span>EXPERIENCE</span></div>
     </div>
-    <div className="material-controls"><span>One form. Different feelings.</span><div>{finishOptions.map(([id,label])=><button key={id} onClick={()=>setFinish(id)} aria-pressed={finish===id}><i className={`material-swatch material-${id}`}/>{label}</button>)}</div></div>
+    <div className="material-controls material-controls-far"><span>One form. Different feelings.</span><div>{finishOptions.map(([id,label])=><button key={id} onClick={()=>setFinish(id)} aria-pressed={finish===id}><i className={`material-swatch material-${id}`}/>{label}</button>)}</div></div>
   </section>
 }
 
@@ -167,8 +169,9 @@ function Architecture({reduced}:{reduced:boolean}) {
     <div className="architecture-heading editorial-reveal"><h2>Theos. A better standard<br/>of living, <em>by design.</em></h2></div>
     <div ref={ref} className="pavilion-stage" data-room={room??undefined} role="img" aria-label="A glass pavilion study. Hover a room to light it and draw its curtains.">
       <span className="pavilion-word" aria-hidden="true">Interior</span>
+      <span className="pavilion-swipe" aria-hidden="true">Swipe to walk through the rooms <i>→</i></span>
       <ArtBoundary fallback={still}><Suspense fallback={still}><PavilionCanvas running={near} reduced={reduced} onRoom={setRoom}/></Suspense></ArtBoundary>
-      <div className="pavilion-caption" aria-live="polite"><span>THEOS / PAVILION 001 · VISUAL STUDY</span><strong>{room?pavilionRooms[room]:'Hover a room'}</strong></div>
+      <div className="pavilion-caption" aria-live="polite"><span>THEOS / PAVILION 001 · VISUAL STUDY</span><strong>{room?pavilionRooms[room]:<><span className="caption-fine">Hover a room</span><span className="caption-touch">Tap a room · swipe to explore</span></>}</strong></div>
       {/* About Theos sits beside the caption, in the stage's lower right, instead of in a block of its own below. */}
       <p className="pavilion-about">At Theos, we believe exceptional interiors should never come at the cost of quality, time or value. With design at the heart of everything we do, we bring together an experienced team, in-house manufacturing and end-to-end execution to shape spaces with precision and purpose. Rooted in craftsmanship and driven by innovation, we bring together thoughtful design, uncompromising quality and timely delivery.</p>
     </div>
@@ -225,6 +228,16 @@ export function AtelierSections({reduced}:{reduced:boolean}) {
       gsap.to(el.querySelector('.collection-image'),{yPercent:i%2?4:-4,ease:'none',scrollTrigger:{trigger:'.collection-composition',start:'top bottom',end:'bottom top',scrub:true}})
     })
     gsap.utils.toArray<SVGPathElement>('.draw-line').forEach(path=>{const length=path.getTotalLength();gsap.fromTo(path,{strokeDasharray:length,strokeDashoffset:length},{strokeDashoffset:0,ease:'none',scrollTrigger:{trigger:path.closest('section'),start:'top 80%',end:'bottom 65%',scrub:true}})})
+    // Phones (no hover): the icon plays its hover movement once as the point reaches the middle of the screen, holds, and
+    // eases back when it leaves. Driven by GSAP so the shapes' own entrance tweens can't override it.
+    if(matchMedia('(max-width: 760px)').matches)gsap.utils.toArray<HTMLElement>('.focus-point').forEach((el,i)=>{
+      const shapes=el.querySelectorAll<SVGElement>('.focus-icon > *'), odd=[...shapes].filter((_,k)=>k%2===0)
+      const play=gsap.timeline({paused:true,defaults:{duration:.9,ease:'power2.out'}})
+      if(i===0)play.to(shapes,{rotateY:28,x:5,stroke:'#bd2b20'})
+      else if(i===1)play.to(shapes,{rotate:-18,stroke:'#bd2b20'})
+      else play.to(odd,{rotate:45,stroke:'#bd2b20'}).to(shapes,{stroke:'#bd2b20'},0)
+      ScrollTrigger.create({trigger:el,start:'top 75%',end:'bottom 25%',onToggle:self=>{if(self.isActive)play.play();else play.reverse()}})
+    })
     gsap.utils.toArray<HTMLElement>('.focus-point').forEach((el,i)=>{gsap.from(el,{y:65,opacity:0,duration:1,delay:i*.12,scrollTrigger:{trigger:'.focus-grid',start:'top 80%'}});gsap.from(el.querySelectorAll('svg > *'),{opacity:0,scale:.75,transformOrigin:'50% 50%',stagger:.045,duration:1.2,clearProps:'transform,opacity',ease:'power2.out',scrollTrigger:{trigger:el,start:'top 80%'}})})
     gsap.from('.story-aperture',{y:90,scale:.9,duration:1.4,ease:'power3.out',scrollTrigger:{trigger:'.stories-stage',start:'top 85%'}})
   },root);let alive=true;document.fonts.ready.then(()=>{if(alive)ScrollTrigger.refresh()});return()=>{alive=false;ctx.revert()}},[reduced])

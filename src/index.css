@@ -24,6 +24,10 @@ body {
   overscroll-behavior: none;
 }
 
+/* No browser tap flash (the blue/grey highlight on touch) anywhere; keyboard focus rings stay. */
+* { -webkit-tap-highlight-color: transparent; }
+button, a, [role="button"], canvas { -webkit-touch-callout: none; }
+
 ::selection {
   background: var(--color-ember);
   color: var(--color-ink);

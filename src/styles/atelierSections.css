@@ -329,3 +329,6 @@
 .pavilion-caption strong { font-size: 22px; }
 /* The footer preview appears only while the cursor is over the right half of the link list. */
 .footer-index.is-hovering:not(.lens-right) .footer-lens { opacity: 0; scale: .6; }
+/* The caption speaks to the input in use: hover with a mouse, tap and swipe on touch screens. */
+.caption-touch { display: none; }
+@media (hover: none) { .caption-fine { display: none; } .caption-touch { display: inline; } }

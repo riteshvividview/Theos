@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { HERO_END, LAST_WORLD, TRANSITION_START, cinematicWorlds } from '@/config/cinematicHero'
 import { holdScrollAt, scrollPageTo } from '@/hooks/useSmoothScroll'
+import { onReveal } from '@/loading/readiness'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -15,7 +16,7 @@ export function useCinematicJourney(root: RefObject<HTMLElement | null>, reduced
   useLayoutEffect(() => {
     if (!root.current) return
     const element = root.current
-    let paceRef: (() => void) | null = null
+    let paceRef: (() => void) | null = null, stopIntro: (() => void) | null = null
     const ctx = gsap.context(() => {
       const titles = gsap.utils.toArray<HTMLElement>('.atelier-title')
       const meters = gsap.utils.toArray<HTMLElement>('.atelier-meter-fill')
@@ -80,15 +81,22 @@ export function useCinematicJourney(root: RefObject<HTMLElement | null>, reduced
       gsap.ticker.add(pace)
       paceRef = pace
       if (!reduced) {
-        gsap.from('.atelier-header', { y: -16, opacity: 0, duration: 1.05, ease: 'power3.out', delay: .15 })
-        gsap.from('.atelier-title:first-child .atelier-line > span', { yPercent: 115, rotate: 2, stagger: .16, duration: 1.25, ease: 'power3.out', delay: .28 })
-        gsap.from('.atelier-bottom', { opacity: 0, y: 10, duration: 1, delay: .8 })
+        // On first sight (when the loader starts to dissolve): the white fade pours down from the top and settles, then
+        // the headline rises in, then its subline. Everything waits hidden until then. The fade is revealed with a clip
+        // (not its opacity), so the per-world CSS that shows and hides it is untouched.
+        const intro = gsap.timeline({ paused: true })
+        intro.from('.atelier-header', { y: -16, opacity: 0, duration: 1.05, ease: 'power3.out' }, 0)
+          .fromTo('.atelier-mist', { clipPath: 'inset(0 0 100% 0)', yPercent: -8 }, { clipPath: 'inset(0 0 0% 0)', yPercent: 0, duration: 1.3, ease: 'power2.out', clearProps: 'clipPath,transform' }, .05)
+          .from('.atelier-title:first-child .atelier-line > span', { yPercent: 115, rotate: 2, stagger: .22, duration: 1.2, ease: 'power3.out' }, 1.0)
+          .from('.atelier-bottom', { opacity: 0, y: 10, duration: 1 }, 1.45)
+        intro.progress(0).pause()
+        stopIntro = onReveal(() => intro.play())
       }
     }, element)
     // The section has explicit viewport sizing; refresh after fonts settle.
     let alive = true
     void document.fonts.ready.then(() => { if (alive) ScrollTrigger.refresh() })
-    return () => { alive = false; if (paceRef) gsap.ticker.remove(paceRef); ctx.revert(); trigger.current = null }
+    return () => { alive = false; stopIntro?.(); if (paceRef) gsap.ticker.remove(paceRef); ctx.revert(); trigger.current = null }
   }, [root, reduced])
 
   const goToWorld = useCallback((index: number) => {

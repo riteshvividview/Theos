@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theos mobile image prompts</title>
+<style>
+:root{--ink:#1d2a44;--paper:#faf9f5;--line:#1d2a4422;--red:#bf291b}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:40px 20px 80px}
+h1{font-size:28px;margin:0 0 6px}h2{font-size:20px;margin:44px 0 6px;border-top:1px solid var(--line);padding-top:28px}
+h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin:22px 0 6px}
+.meta{font-size:13px;opacity:.75}
+pre{white-space:pre-wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;font:13px/1.6 ui-monospace,Consolas,monospace;position:relative}
+button{float:right;font:12px system-ui;border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:4px 10px;cursor:pointer}
+code{background:#fff;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+li{margin:4px 0}
+</style></head><body><main>
+<h1>Mobile hero images</h1>
+<p class="meta">On a phone the hero is tall and narrow (about 9:19), so the wide desktop images lose most of their width. These portrait versions keep the subject whole. For each one, attach the desktop image named below as the reference, then make its depth map from the new portrait image.</p>
+<ul>
+<li>Size: <b>1080 × 1920</b> (9:16), portrait. The site trims a little from the top and bottom on taller phones, so keep the subject in the middle 80%.</li>
+<li>Leave the area named in each prompt plain and light: the headline sits there.</li>
+<li>Depth maps: same size as their image, <b>near = dark, far = light</b> (the site reads them this way round).</li>
+<li>Save as the file names given, in <code>public/images/redesign/</code>, and tell me.</li>
+</ul>
+
+<h2>1. Home: the elephant hall</h2>
+<p class="meta">Reference: <code>public/images/redesign/sectionimgs1.png</code> → save as <code>mobile-world1.jpg</code></p>
+<h3>Image prompt</h3>
+<pre><button>Copy</button>Recreate the attached interior as a tall portrait image, exactly 1080 × 1920 pixels, keeping the same place, materials, light and style: a white carved-stone hall with a monumental elephant head sculpted into the rock wall, thin waterfalls falling from the rock into a turquoise indoor pool, hanging vines, white sofas with navy cushions, blue-leaved plants in white planters, and a floor-to-ceiling glass wall onto a sunlit forest. Re-compose it vertically: the elephant head and its tusks centred in the middle third of the frame, the pool and one lounge chair with a lantern in the lower third, and the upper third mostly the bright glass wall and soft forest light, plain and airy so a headline can sit there. Photorealistic architectural render, soft daylight, high detail, no people, no text, no logos.</pre>
+<h3>Depth map prompt</h3>
+<p class="meta">Attach the new <code>mobile-world1.jpg</code> → save as <code>mobile-world1-depth.png</code></p>
+<pre><button>Copy</button>Create a depth map of the attached image. Output a single grayscale image, pixel-aligned with it: exactly 1080 × 1920 pixels, same framing, nothing cropped, moved, added or removed. Near objects are near-black, the farthest areas near-white, with smooth continuous gradients. The pool's front edge, the lounge chair and lantern are darkest; the water and planters mid-dark; the elephant head and rock wall mid-grey, the trunk and tusks slightly darker than the wall; the glass wall and forest lightest. Smooth, soft depth only: no surface texture, no wrinkles or stone grain, no lighting, colour, text or border.</pre>
+
+<h2>2. Perspective: the carved eye</h2>
+<p class="meta">Reference: <code>public/images/redesign/eye.jpg</code> → save as <code>mobile-world2.jpg</code></p>
+<h3>Image prompt</h3>
+<pre><button>Copy</button>Recreate the attached interior as a tall portrait image, exactly 1080 × 1920 pixels, keeping the same place, materials, light and style: a monumental human eye carved into a textured ivory plaster wall, with a vivid red iris, in a tall pale hall with pillars and soft side light; on an open-book platform below stand red-headed figures in red and charcoal coats, red sculpted foxes and white curved sofas around a round white table. Re-compose it vertically: the carved eye large in the upper-middle of the frame, the platform with two or three figures, two foxes and the sofas in the lower third, and a calm stretch of plain plaster wall at the very top for a headline. Photorealistic, warm soft light, high detail, no text, no logos.</pre>
+<h3>Depth map prompt</h3>
+<p class="meta">Attach the new <code>mobile-world2.jpg</code> → save as <code>mobile-world2-depth.png</code></p>
+<pre><button>Copy</button>Create a depth map of the attached image. Output a single grayscale image, pixel-aligned with it: exactly 1080 × 1920 pixels, same framing, nothing cropped, moved, added or removed. Near objects are near-black, the farthest areas near-white, with smooth continuous gradients. The front of the platform, the nearest fox and figures are darkest; the sofas and table mid-dark; the carved eye and plaster wall mid-grey to light, the wall behind lightest. Smooth, soft depth only: no plaster texture, no lighting, colour, text or border.</pre>
+
+<h2>3. Imagination: the turtle bath</h2>
+<p class="meta">Reference: <code>public/images/redesign/sectionimgs2.png</code> → save as <code>mobile-world3.jpg</code></p>
+<h3>Image prompt</h3>
+<pre><button>Copy</button>Recreate the attached interior as a tall portrait image, exactly 1080 × 1920 pixels, keeping the same place, materials, light and style: a white bathing hall with tall arched windows hung with sheer white curtains, gold coral sconces and a shell lamp, white panelled walls, a glossy white marble floor, a palm in a white planter, and a bathtub sculpted as a sea turtle in blue marble with gilded shell edges and gold-tiled flippers, gold taps at its head. Re-compose it vertically: the turtle bathtub large in the lower half, its head turned toward the right, the front flipper reaching toward the bottom of the frame; the arched curtained windows filling the upper half, soft and bright, plain enough for a headline. Photorealistic, soft daylight, high detail, no people, no text, no logos.</pre>
+<h3>Depth map prompt</h3>
+<p class="meta">Attach the new <code>mobile-world3.jpg</code> → save as <code>mobile-world3-depth.png</code></p>
+<pre><button>Copy</button>Create a depth map of the attached image. Output a single grayscale image, pixel-aligned with it: exactly 1080 × 1920 pixels, same framing, nothing cropped, moved, added or removed. Near objects are near-black, the farthest areas near-white, with smooth continuous gradients. The front flipper and the floor at the bottom are darkest; the turtle's shell mid-dark, its head a little lighter; the floor lightening smoothly toward the back; the palm mid-dark; the arched windows and back wall lightest. Smooth, soft depth only: no shell pattern, no curtain folds, no reflections, lighting, colour, text or border.</pre>
+
+<h2>Not needed</h2>
+<p class="meta">The gallery, process ribbon, pavilion, testimonials and footer are drawn in code or already fit a phone, so they need no new images.</p>
+</main>
+<script>document.querySelectorAll('pre button').forEach(b=>b.onclick=()=>{navigator.clipboard.writeText(b.parentElement.textContent.replace(/^Copy/,'').trim());b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1500)})</script>
+</body></html>

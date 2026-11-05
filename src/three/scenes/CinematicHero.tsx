@@ -13,6 +13,9 @@ export interface CinematicHeroProps {
   running?: boolean
 }
 
+// Phone-width screens: no cursor to steer the depth parallax, so it drifts by itself.
+const touchOnly = typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches
+
 function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps, 'onFailure'>) {
   // The worlds (image, depth), then the eye world with its wall opened into an arch (used by the eye → third-world passage).
   const textures = useLoader(TextureLoader, [...cinematicWorlds.flatMap(world => [world.image, world.depth]), '/images/redesign/eye-portal.jpg', '/images/redesign/eye-portal-depth.png'])
@@ -32,6 +35,8 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
     uPortraitCurrent: { value: 0 }, uPortraitNext: { value: 0 },
     uAspectCurrent: { value: cinematicWorlds[0].aspect }, uAspectNext: { value: cinematicWorlds[1].aspect },
     uDepthPass: { value: 0 },
+    // Phones drift on their own, so the depth movement is made stronger there to be seen.
+    uParallax: { value: touchOnly ? 3.2 : 1 },
   }), [textures, portal])
 
   useEffect(() => {
@@ -95,8 +100,13 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
     u.uPortraitNext.value = 0
     u.uTime.value = clock.elapsedTime
     const p = u.uPointer.value as Vector2
-    p.x = MathUtils.damp(p.x, reduced ? 0 : pointer.current.x, 9, delta)
-    p.y = MathUtils.damp(p.y, reduced ? 0 : pointer.current.y, 9, delta)
+    // On phones there is no cursor, so the 3D view drifts by itself in a slow, smooth loop (a gentle orbit).
+    // Every 4.6 s: a quick 2.4 s sway out and back (eased), then a pause at rest; each sway turns a different way.
+    const t = clock.elapsedTime, cycle = Math.floor(t / 4.6), phase = (t % 4.6) / 2.4
+    const swing = phase < 1 ? Math.sin(phase * Math.PI) ** 2 : 0, angle = cycle * 2.4
+    const drift = touchOnly ? [Math.cos(angle) * swing, Math.sin(angle) * swing * .6] : null
+    p.x = MathUtils.damp(p.x, reduced ? 0 : drift ? drift[0] : pointer.current.x, drift ? 6 : 9, delta)
+    p.y = MathUtils.damp(p.y, reduced ? 0 : drift ? drift[1] : pointer.current.y, drift ? 6 : 9, delta)
   })
 
   return <mesh frustumCulled={false}>

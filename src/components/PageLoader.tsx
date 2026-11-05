@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { readyScenes } from '@/loading/readiness'
+import { readyScenes, reveal } from '@/loading/readiness'
+import { cinematicWorlds } from '@/config/cinematicHero'
 import '@/styles/pageLoader.css'
 
-const images = Object.keys(import.meta.glob('/public/images/redesign/*.{jpg,png}')).map(path => path.replace('/public', ''))
+// Only what this screen uses: the hero worlds (desktop or phone versions), their depth maps and the eye-wall bridge.
+const images = [...cinematicWorlds.flatMap(world => [world.image, world.depth]), '/images/redesign/eye-portal.jpg', '/images/redesign/eye-portal-depth.png']
 function loadImage(url: string) {
   return new Promise<void>(resolve => {
     const image = new Image()
@@ -100,7 +102,7 @@ function Stage({ mark, progress, enter, ready }: { mark: { current: [number, num
     const buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
     const loc = gl.getAttribLocation(program, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
     const u = (n: string) => gl.getUniformLocation(program, n)
-    const textures = ['/images/redesign/world1.jpg', '/theos-logo.avif'].map((src, i) => {
+    const textures = [cinematicWorlds[0].image, '/theos-logo.avif'].map((src, i) => {
       const texture = gl.createTexture()!, image = new Image()
       gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, texture)
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(i === 1 ? [0, 0, 0, 0] : [11, 22, 40, 255]))
@@ -176,7 +178,7 @@ export function PageLoader({ onComplete }: { onComplete: () => void }) {
     setEntering(true)
     const state = { v: 0 }
     gsap.to(state, { v: 1, duration: reduced ? .2 : 2.6, ease: 'power1.inOut', onUpdate: () => { enter.current = state.v },
-      onComplete: () => { gsap.to(root.current, { opacity: 0, duration: reduced ? .05 : .5, ease: 'power1.out', onComplete: () => { onComplete(); requestAnimationFrame(() => ScrollTrigger.refresh()) } }) } })
+      onComplete: () => { reveal(); gsap.to(root.current, { opacity: 0, duration: reduced ? .05 : .5, ease: 'power1.out', onComplete: () => { onComplete(); requestAnimationFrame(() => ScrollTrigger.refresh()) } }) } })
   }, [entering, onComplete, reduced])
   useEffect(() => {
     if (!ready || entering) return

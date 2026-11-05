@@ -37,6 +37,7 @@ uniform float uPortraitNext;
 uniform float uAspectCurrent;
 uniform float uAspectNext;
 uniform float uDepthPass;
+uniform float uParallax;
 
 // The worlds are not all the same shape, so each is covered by its own aspect.
 vec2 imageScale(float imageAspect) {
@@ -53,7 +54,7 @@ vec4 photograph(sampler2D photo, sampler2D depthMap, vec2 uv, float pool, float 
   // These generated depth maps encode near objects as dark. Read the actual
   // map convention rather than assuming a model's nominal output polarity.
   float nearDepth = 1.0 - texture2D(depthMap, uv).r;
-  vec2 offset = uPointer * (nearDepth - .30) * .006 * (1.0 - uReduced);
+  vec2 offset = uPointer * (nearDepth - .30) * .006 * uParallax * (1.0 - uReduced);
   // Keep the bedroom figure intact across sharp depth boundaries. This
   // coherent projective movement retains depth without warping her face.
   vec2 planarOffset = uPointer * .002 - (uv-.5) * dot(uv-.5,uPointer) * .009;

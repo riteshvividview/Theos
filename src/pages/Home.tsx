@@ -6,6 +6,7 @@ import { useCinematicJourney } from '@/animations/useCinematicJourney'
 import { scrollPageTo } from '@/hooks/useSmoothScroll'
 import { AtelierSections, AtelierOutro } from '@/components/AtelierSections'
 import '@/styles/cinematicHero.css'
+import '@/styles/responsive.css'
 
 export function Home() {
   const root = useRef<HTMLElement>(null)
@@ -57,7 +58,7 @@ export function Home() {
           {cinematicWorlds.map((scene, i) => <img key={scene.id} src={scene.image} alt="" fetchPriority={i === 0 ? 'high' : 'auto'} className={active === i ? 'is-current' : ''} style={{ objectPosition: `${scene.portraitFocus * 100}% ${(scene.verticalFocus ?? .5) * 100}%` }} />)}
         </div>
         {!failed && <div className="atelier-canvas" aria-hidden="true"><CinematicCanvas progress={progress} reduced={reduced} onReady={onReady} onFailure={onFailure} running={heroVisible} /></div>}
-        <div className="atelier-shade" aria-hidden="true" />
+        <div className="atelier-shade" aria-hidden="true"><span className="atelier-mist" /></div>
 
         <header className="atelier-header">
           <a className="atelier-logo" href="#" onClick={e => { e.preventDefault(); navigate(0) }} aria-label="Theos home"><img className="atelier-logo-white" src="/theos-logo.avif" alt="" /><img className="atelier-logo-black" src="/theos-logo-black.webp" alt="" /></a>
@@ -76,7 +77,7 @@ export function Home() {
         <h1 className="sr-only">Theos. For interiors that don’t do ordinary.</h1>
         <div className="atelier-titles">
           {cinematicWorlds.map((scene, i) => <div key={scene.id} className={`atelier-title atelier-title-${i}`} aria-hidden={active !== i}>
-            <h2 className="atelier-line atelier-line-first"><span>{scene.lines[0]}</span></h2>
+            <h2 className="atelier-line atelier-line-first"><span>{scene.id === 'beyond-ordinary' ? <>Designed <br className="tablet-break" />Around Real <br className="tablet-break" />Living</> : scene.lines[0]}</span></h2>
             <p className="atelier-line atelier-line-second"><span>{scene.lines[1]}</span></p>
           </div>)}
         </div>

@@ -1,0 +1,145 @@
+/* Phone and tablet layout. Loaded last, and every rule sits inside a small-screen breakpoint, so the desktop view is
+   untouched. Built and checked at 360px wide (down to 350px). */
+
+@media (max-width: 760px) {
+  html, body { overflow-x: clip; }
+
+  /* ---- Hero ------------------------------------------------------------------------------------------------------ */
+  /* Every world: headline at the upper left across the full width, its subline right under it, left aligned. */
+  .atelier-title .atelier-line-first,
+  .atelier-title-0 .atelier-line-first, .atelier-title-1 .atelier-line-first, .atelier-title-2 .atelier-line-first {
+    left: 6%; right: 6%; top: 17%; max-width: none; text-align: center; font-size: clamp(28px, 8.6vw, 38px); line-height: 1.12;
+  }
+  .atelier-title .atelier-line-second,
+  .atelier-title-0 .atelier-line-second, .atelier-title-1 .atelier-line-second, .atelier-title-2 .atelier-line-second {
+    left: 6%; right: 6%; top: calc(17% + clamp(28px, 8.6vw, 38px) * 2.55); max-width: none; text-align: center;
+    font-size: clamp(14px, 4.1vw, 17px); line-height: 1.45;
+  }
+
+  /* ---- Page-wide ------------------------------------------------------------------------------------------------- */
+  /* The chapter marks on the right edge would sit on the content; the sections are reached by scrolling. */
+  .chapter-rail { display: none; }
+  .editorial-section { padding-left: 20px; padding-right: 20px; }
+  .editorial-label { gap: 14px; }
+  .editorial-label-line { margin-left: 8px; }
+
+  /* ---- 01 Gallery ------------------------------------------------------------------------------------------------- */
+  /* The orbit's stats panel and compass are decoration; on a phone they would cover the title and the images. */
+  .orbit-hud, .orbit-dial, .orbit-mark { display: none; }
+  .collection-composition:has(.collection-orbit-stage) { height: 600px; margin-bottom: 70px; }
+  .collection-composition:has(.collection-orbit-stage) .collection-left { left: 0; top: 2%; }
+  .collection-orbit-stage { top: 128px; }
+  .collection-orbit-caption { bottom: -64px; width: 100%; }
+  .collection-foot { flex-wrap: wrap; gap: 10px; padding: 22px 0; }
+
+  /* ---- 02 The process flow ---------------------------------------------------------------------------------------- */
+  /* Stacked: the ribbon as a block, then the four steps full width. The thin Idea → Experience axis is hidden. */
+  .process-heading { margin-top: 36px; }
+  .process-stage { height: auto; display: flex; flex-direction: column; margin-top: 10px; }
+  .process-sculpture { position: relative; left: auto; top: auto; width: 100%; height: 440px; }
+  .process-step, .process-step-0, .process-step-1, .process-step-2, .process-step-3 {
+    position: relative; left: auto; right: auto; top: auto; width: 100%; padding: 18px 0 8px;
+  }
+  .process-step p { max-width: none; line-height: 1.6; }
+  .process-step h3 { line-height: 1.2; }
+  .process-axis { display: none; }
+  .material-controls { margin: 30px auto 28px; }
+  .material-controls > div { flex-wrap: wrap; justify-content: center; gap: 8px 14px; }
+  .material-controls button { padding: 8px 6px; }
+
+  /* ---- 03 About Theos --------------------------------------------------------------------------------------------- */
+  /* A taller stage frames about two rooms; swipe sideways to travel along the house, tap a room to light it, drag a
+     curtain. Vertical swipes still scroll the page. The About paragraph moves below the stage. */
+  .architecture-heading { flex-direction: column; align-items: flex-start; gap: 14px; margin: 36px 0 22px; }
+  .pavilion-stage { aspect-ratio: auto; height: auto; overflow: visible; margin: 0 -20px; }
+  .pavilion-stage > div:not(.pavilion-caption) { height: 74vw !important; }
+  .pavilion-stage canvas { touch-action: pan-y; }
+  /* "Interior" sits above the house, its lower half tucked behind the roof. */
+  .pavilion-word { top: -1%; font-size: 21cqw; }
+  .pavilion-caption { position: static; padding: 4px 20px 0; gap: 6px; }
+  .pavilion-caption span { font-size: 9px; }
+  .atelier-editorial .pavilion-about { position: static; width: auto; margin: 18px 20px 0; }
+  .atelier-architecture { padding-bottom: 36px; }
+
+  /* ---- 04 The Essence of Theos ------------------------------------------------------------------------------------ */
+  /* One point per row, icon beside nothing: icon, title, line, text. */
+  .focus-grid { grid-template-columns: 1fr; margin: 30px 0 24px; }
+  .focus-point, .focus-point:last-child { padding: 28px 0 30px; border-left: 0; border-right: 0; border-top: 1px solid #29355122; }
+  .focus-icon { width: 150px; height: 110px; margin-bottom: 18px; }
+  .focus-point > p { min-height: 0; max-width: none; }
+  .focus-number { margin-top: 16px; }
+  .focus-statement { padding: 0 0 6px; }
+  .atelier-focus { padding-bottom: 28px; }
+
+  /* ---- 05 Client stories ----------------------------------------------------------------------------------------- */
+  /* Stacked: the ring (film and client) on top, then the quote, client, "See the space" and the arrows. The vertical
+     "In their words." note on the right edge is hidden. */
+  .atelier-stories .stories-stage { display: flex; flex-direction: column; min-height: 0; margin-top: 26px; }
+  .atelier-stories .story-ring-stage { position: relative; right: auto; top: auto; width: 100%; max-width: 360px; margin: 0 auto; order: -1; }
+  .atelier-stories .story-description { position: relative; top: auto; left: auto; width: 100%; margin-top: 26px; pointer-events: auto; }
+  .story-description blockquote { margin: 16px 0 14px; }
+  .story-side-note { display: none; }
+  .story-description .story-navigation { margin: 30px 0 0; }
+  .atelier-stories { padding-bottom: 60px; }
+
+  /* ---- Footer ---------------------------------------------------------------------------------------------------- */
+  /* Stacked: title and email, the page links (number, label, arrow; the short notes beside them are hidden to keep each
+     link on one line), then the Studio and Connect columns. The hover preview is a pointer effect, so it is hidden. */
+  .outro-top { flex-direction: column; gap: 8px; padding-bottom: 18px; }
+  .atelier-outro { padding-top: 24px; }
+  .outro-main { min-height: 0; }
+  .outro-main:has(.footer-index) { flex-direction: column; align-items: stretch; gap: 30px; padding: 30px 0 34px; }
+  .outro-main:has(.footer-index) .outro-copy { width: 100%; padding-top: 0; }
+  .footer-links > button { grid-template-columns: 34px 1fr 26px; gap: 10px; padding: 15px 0; }
+  .footer-links > button.is-active { padding-left: 0; }
+  .footer-link-note, .footer-lens { display: none; }
+  .footer-columns { grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 30px; }
+  .footer-columns a { overflow-wrap: anywhere; }
+
+  /* ---- Hero, phone only -------------------------------------------------------------------------------------------- */
+  /* World 1: a wide, strong white fade from the top of the image, behind the headline (instead of the top-left one). */
+  .atelier-mist { background: linear-gradient(180deg, #ffffffcc 0%, #ffffffc2 30%, #ffffff8c 40%, #ffffff00 52%); }
+  /* World 2: the subline in dark ink over the pale plaster. */
+  .atelier-title-1 .atelier-line-second { color: var(--atelier-ink); text-shadow: 0 1px 12px #ffffff99; }
+  .outro-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
+}
+
+/* Tablets and small laptops: the desktop layout, with the hero text given room so headline and subline never meet. */
+@media (min-width: 761px) and (max-width: 1100px) {
+  html, body { overflow-x: clip; }
+  .atelier-title-0 .atelier-line-first, .atelier-title-1 .atelier-line-first, .atelier-title-2 .atelier-line-first { max-width: 46vw; font-size: clamp(32px, 4.4vw, 46px); }
+  .atelier-title-0 .atelier-line-second { top: calc(19% + clamp(32px, 4.4vw, 46px) * 2.5); }
+  .atelier-title-1 .atelier-line-second { top: calc(14% + clamp(32px, 4.4vw, 46px) * 2.5); }
+  .atelier-title-2 .atelier-line-first { top: 19%; }
+  .atelier-title-2 .atelier-line-second { top: calc(19% + clamp(32px, 4.4vw, 46px) * 2.5); }
+  .chapter-rail { display: none; }
+}
+
+/* Tablets: the first headline breaks as "Designed / Around Real / Living", clear of the elephant. The breaks exist only
+   here, so desktop and phones wrap as before. */
+.tablet-break { display: none; }
+@media (min-width: 761px) and (max-width: 1100px) {
+  .tablet-break { display: inline; }
+  .atelier-title-0 .atelier-line-first { max-width: none; }
+  .atelier-title-0 .atelier-line-second { top: calc(19% + clamp(32px, 4.4vw, 46px) * 3.6); }
+}
+
+/* The finish swatches: one copy beside the steps on desktop and tablet, one right under the ribbon on phones. */
+.material-controls-near { display: none; }
+@media (max-width: 760px) {
+  .material-controls-near { display: flex; margin: 6px auto 26px; }
+  .material-controls-far { display: none; }
+}
+
+/* Phones: a gentle hint over the stage that the house can be walked through; it nudges right in a slow loop. */
+.pavilion-swipe { display: none; }
+@media (max-width: 760px) {
+  .pavilion-swipe { display: flex; align-items: center; gap: 6px; position: absolute; z-index: 3; right: 20px; top: calc(74vw - 56px); color: #f5f0e7; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; opacity: .85; pointer-events: none; text-shadow: 0 1px 6px #0b162880; }
+  .pavilion-swipe i { font-style: normal; font-size: 12px; animation: pavilion-swipe 1.8s ease-in-out infinite; }
+  .pavilion-stage[data-room] .pavilion-swipe { opacity: 0; transition: opacity .5s; }
+}
+@keyframes pavilion-swipe { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
+@media (prefers-reduced-motion: reduce) { .pavilion-swipe i { animation: none; } }
+
+/* Essence: the icons centred on phones. */
+@media (max-width: 760px) { .focus-icon { display: block; margin-left: auto; margin-right: auto; } }

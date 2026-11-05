@@ -177,8 +177,8 @@
 .atelier-title-1 .atelier-line-second { top: calc(14% + clamp(40px, 4.2vw, 80px) * 2.5); }
 .atelier-title-2 .atelier-line-second { top: calc(12% + clamp(36px, 3.4vw, 64px) * 2.5); }
 /* World 1: a soft white fade on the image's top-left corner, behind the headline. */
-.atelier-shade::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .8s ease; background: radial-gradient(ellipse 52% 62% at 0% 18%, #ffffffd1, #ffffff8c 42%, #ffffff00 100%); }
-.atelier-journey[data-world="beyond-ordinary"] .atelier-shade::after { opacity: 1; }
+.atelier-mist { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .8s ease; background: radial-gradient(ellipse 52% 62% at 0% 18%, #ffffffd1, #ffffff8c 42%, #ffffff00 100%); }
+.atelier-journey[data-world="beyond-ordinary"] .atelier-mist { opacity: 1; }
 /* Smaller hero headlines (Rink sets taller than the earlier faces and ran into its subline); the subline keeps a fixed
    gap below each. The sizes before this change are in docs/snapshots/hero-title-size/. */
 .atelier-title-0 .atelier-line-first { font-size: clamp(30px, 2.9vw, 56px); }

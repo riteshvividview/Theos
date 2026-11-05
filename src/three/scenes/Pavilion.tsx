@@ -45,6 +45,9 @@ const FINISH: Record<string, { color: string; roughness: number; metalness?: num
 // Straight front elevation, eye a little above the floor slab.
 const TARGET = new Vector3(0, 2.5, 0), VIEW = new Vector3(0, .06, 1).normalize(), HALF_WIDTH = 18.4
 const TURN = .2, ZOOM = .1, PAN = 1.2
+// Narrow (phone) framing: below this stage aspect the camera shows about two rooms (COMPACT_HALF metres each side) and
+// is swiped along the house within PAN_LIMIT of its centre.
+const COMPACT_ASPECT = 1.4, COMPACT_HALF = 4.4, PAN_LIMIT = 13.6
 // Cloth: a resting breeze, how much a pull makes the fabric ripple and lag, and how far a drag (in screen widths) pulls.
 // WIND: how far (metres) the gusts carry the hem.
 const WIND = .8
@@ -103,6 +106,7 @@ function Pavilion({ reduced, onRoom, hold }: Props) {
   const { gl, scene, camera, raycaster, pointer, size } = useThree()
   const inside = useRef(false), current = useRef<PavilionRoomId | null>(null), prepared = useRef(false), sway = useRef(0), zoom = useRef(0), distance = useRef(40)
   const drag = useRef<{ room: Room; cloth: Cloth; x: number; open: number; plane: Plane } | null>(null), cursor = useRef('')
+  const compact = useRef(false), pan = useRef(0), panShown = useRef(0), panDrag = useRef<{ x: number; start: number } | null>(null)
 
   const environment = useMemo(() => {
     const generator = new PMREMGenerator(gl), room = new RoomEnvironment(), target = generator.fromScene(room, .04)
@@ -189,7 +193,8 @@ function Pavilion({ reduced, onRoom, hold }: Props) {
       raycaster.setFromCamera(at(e), camera)
       const hit = raycaster.intersectObjects(cloths.map(c => c.cloth.mesh), false)[0]
       const found = hit && cloths.find(c => c.cloth.mesh === hit.object)
-      if (!found) return
+      // In the narrow (phone) framing a swipe off the curtains travels along the house.
+      if (!found) { if (compact.current) panDrag.current = { x: e.clientX, start: pan.current }; return }
       const { cloth } = found
       cloth.uniforms.uGrab.value.copy(cloth.mesh.worldToLocal(hit.point.clone()))
       // The hand moves on a plane through the grip, facing the camera.
@@ -199,6 +204,12 @@ function Pavilion({ reduced, onRoom, hold }: Props) {
     }
     const move = (e: PointerEvent) => {
       inside.current = true
+      const p = panDrag.current
+      if (p) {
+        const width = element.getBoundingClientRect().width
+        pan.current = MathUtils.clamp(p.start - (e.clientX - p.x) / width * COMPACT_HALF * 2, -PAN_LIMIT, PAN_LIMIT)
+        return
+      }
       const d = drag.current
       if (!d) return
       d.room.manual = MathUtils.clamp(d.open + d.cloth.dir * (at(e).x - d.x) * DRAG, 0, 1)
@@ -208,7 +219,7 @@ function Pavilion({ reduced, onRoom, hold }: Props) {
       pull.x *= PULL_SIDE; pull.z = 0
       d.cloth.target.copy(pull.clampLength(0, PULL_MAX))
     }
-    const up = () => { drag.current?.cloth.target.set(0, 0, 0); drag.current = null }
+    const up = () => { drag.current?.cloth.target.set(0, 0, 0); drag.current = null; panDrag.current = null }
     const leave = () => { inside.current = false }
     element.addEventListener('pointerdown', down); element.addEventListener('pointermove', move)
     element.addEventListener('pointerup', up); element.addEventListener('pointercancel', up); element.addEventListener('pointerleave', leave)
@@ -223,7 +234,9 @@ function Pavilion({ reduced, onRoom, hold }: Props) {
     const cam = camera as PerspectiveCamera
     const halfH = Math.atan(Math.tan(MathUtils.degToRad(cam.fov / 2)) * cam.aspect)
     // Fitted for the closest the camera comes (zoomed in, model turned) so the ends never leave the stage.
-    distance.current = HALF_WIDTH / Math.tan(halfH) / (1 - ZOOM) + 2.5
+    // A narrow stage (phones) frames about two rooms instead, and is swiped along the house.
+    compact.current = cam.aspect < COMPACT_ASPECT
+    distance.current = (compact.current ? COMPACT_HALF : HALF_WIDTH) / Math.tan(halfH) / (1 - ZOOM) + 2.5
     cam.position.copy(VIEW).multiplyScalar(distance.current).add(TARGET)
     cam.lookAt(TARGET)
   }, [camera, size])
@@ -293,6 +306,15 @@ function Pavilion({ reduced, onRoom, hold }: Props) {
         if (dict.Half !== undefined) influences[dict.Half] = half
         if (dict.Open !== undefined) influences[dict.Open] = open
       }
+    }
+    // Narrow framing: the camera glides to where the house has been swiped, square on, no turn.
+    if (compact.current) {
+      panShown.current += (pan.current - panShown.current) * (reduced ? 1 : 1 - Math.exp(-delta * 8))
+      gltf.scene.rotation.y = 0
+      camera.position.copy(VIEW).multiplyScalar(distance.current).add(TARGET)
+      camera.position.x += panShown.current
+      camera.lookAt(TARGET.x + panShown.current, TARGET.y, TARGET.z)
+      return
     }
     // The model turns toward the cursor while the camera eases in a little and drifts the same way (held still mid-drag).
     if (!reduced) {
