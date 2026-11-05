@@ -116,7 +116,7 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
 }
 
 export function CinematicHero(props: CinematicHeroProps) {
-  return <Canvas className="atelier-webgl" frameloop={props.running === false ? 'never' : 'always'} flat dpr={[1, 1.25]} gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }} fallback={null} onCreated={({ gl }) => {
+  return <Canvas className="atelier-webgl" frameloop={props.running === false ? 'never' : 'always'} flat dpr={touchOnly ? 1 : [1, 1.25]} gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }} fallback={null} onCreated={({ gl }) => {
     gl.setClearAlpha(0)
     gl.domElement.addEventListener('webglcontextlost', props.onFailure, { once: true })
   }}>

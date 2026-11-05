@@ -1,0 +1,198 @@
+/* Type: Poppins for display lines, Maveryn for short bold titles, Poppins (Google Fonts, index.html) for UI,
+   with Poppins Light for sublines and paragraphs. */
+@font-face { font-family: 'Maveryn'; src: url('/fonts/Maveryn.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Rink'; src: url('/fonts/rink.regular.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+:root { --font-display: 'Rink', 'Poppins', sans-serif; --font-title: 'Maveryn', 'Poppins', sans-serif; --font-body: 'Poppins', sans-serif; }
+
+.atelier-home {
+  --atelier-ivory: #f6f3eb;
+  --atelier-blue: #173e67;
+  --atelier-ink: #172c40;
+  --atelier-red: #d33125;
+  background: var(--atelier-ivory);
+  font-family: var(--font-body);
+  color: var(--atelier-ivory);
+}
+.atelier-journey { position: relative; height: 717svh; margin-bottom: -100svh; }
+.atelier-stage { position: sticky; top: 0; height: 100svh; min-height: 480px; overflow: hidden; isolation: isolate; background: var(--atelier-blue); }
+.atelier-poster,.atelier-canvas,.atelier-shade { position: absolute; inset: 0; }
+.atelier-poster img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.atelier-poster img.is-current { opacity: 1; }
+.atelier-canvas { opacity: 0; transition: opacity .6s ease; pointer-events: none; }
+.atelier-stage.is-ready .atelier-canvas { opacity: 1; }
+.atelier-stage canvas { display: block; }
+.atelier-shade { pointer-events: none; background: linear-gradient(180deg, #071b2e20, transparent 22%, transparent 78%, #0b223233); }
+/* Header: three floating pieces instead of a boxed bar. The logo stands free; the worlds sit in a frosted capsule where an ivory
+   pill slides behind the active one; the factory link is its own capsule that fills on hover. */
+.atelier-header { position: absolute; z-index: 5; top: 4.2%; left: 3.15%; right: 3.15%; height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 24px; color: var(--atelier-ivory); }
+.atelier-logo { display: flex; align-items: center; height: 100%; padding: 0 6px; }
+.atelier-logo img { display: block; width: 112px; height: auto; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+.atelier-logo:hover img { transform: translateY(-2px); }
+.atelier-desktop-nav { --active: 0; position: relative; display: grid; grid-template-columns: repeat(3, 150px); height: 100%; padding: 5px; border-radius: 999px; background: #0b1f381f; border: 1px solid #ffffff38; box-shadow: inset 0 1px 0 #ffffff30, 0 12px 40px #04122230; backdrop-filter: blur(16px) saturate(1.5); -webkit-backdrop-filter: blur(16px) saturate(1.5); }
+.atelier-nav-pill { position: absolute; top: 5px; bottom: 5px; left: 5px; width: 150px; border-radius: 999px; background: var(--atelier-ivory); box-shadow: 0 6px 18px #04122238; transform: translateX(calc(var(--active) * 100%)); transition: transform .7s cubic-bezier(.65,0,.15,1); }
+.atelier-desktop-nav button,.atelier-factory { font-size: 11px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; }
+.atelier-desktop-nav button { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 9px; border-radius: 999px; cursor: pointer; color: inherit; transition: color .45s ease .1s, opacity .3s; opacity: .82; }
+.atelier-desktop-nav button small { font-size: 9px; letter-spacing: .06em; opacity: .55; font-variant-numeric: tabular-nums; }
+.atelier-desktop-nav button:hover { opacity: 1; }
+.atelier-desktop-nav button[aria-current] { color: var(--atelier-blue); opacity: 1; }
+.atelier-desktop-nav button[aria-current] small { opacity: .7; color: #bf291b; }
+.atelier-factory { display: flex; align-items: center; gap: 14px; height: 100%; padding: 0 7px 0 26px; border-radius: 999px; border: 1px solid #ffffff59; background: #0b1f381f; backdrop-filter: blur(16px) saturate(1.5); -webkit-backdrop-filter: blur(16px) saturate(1.5); transition: background .4s ease, color .4s ease, border-color .4s ease; }
+.atelier-factory i { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--atelier-ivory); color: var(--atelier-blue); transition: transform .5s cubic-bezier(.2,.8,.2,1), background .4s ease, color .4s ease; }
+.atelier-factory:hover { background: var(--atelier-ivory); border-color: var(--atelier-ivory); color: var(--atelier-blue); }
+.atelier-factory:hover i { background: #bf291b; color: #fff; transform: rotate(45deg); }
+.atelier-desktop-nav button:focus-visible,.atelier-factory:focus-visible,.atelier-logo:focus-visible { outline: 2px solid var(--atelier-ivory); outline-offset: 3px; }
+.atelier-menu-toggle { display: none; }
+.atelier-titles,.atelier-title { position: absolute; inset: 0; pointer-events: none; }
+.atelier-title { visibility: hidden; }
+.atelier-title-0 { visibility: visible; }
+.atelier-line { position: absolute; margin: 0; padding: .04em .07em .18em; overflow: hidden; font-family: 'Raleway', sans-serif; font-style: italic; font-weight: 400; font-size: clamp(44px, 5.1vw, 96px); letter-spacing: -.04em; line-height: 1.09; text-shadow: 0 2px 20px #2337471c; }
+.atelier-line > span { display: block; }
+.atelier-line-first { left: 5.8%; top: 45%; }
+.atelier-line-second { right: 5.6%; top: 70.5%; }
+/* World 1: both lines sit in white inside the plain navy niche, top right, clear of the seated woman. */
+/* World 2: ink, top left over the shaded side wall and the plain plaster above the carved eye, clear of the figures. */
+.atelier-title-1 .atelier-line-first { top: 14%; left: 14%; max-width: 32vw; }
+.atelier-title-1 .atelier-line-second { left: 14.3%; right: auto; top: 35%; }
+/* White, lifted off the pale plaster by a soft dark halo so it stays legible. */
+.atelier-title-1 .atelier-line { color: var(--atelier-ivory); text-shadow: 0 1px 3px #0b162866, 0 2px 22px #0b162873; }
+/* World 3: ink on the plain white back wall, right of the woman's hat and above the sofa. */
+/* World 4: white on the open blue sky, the subline directly under the headline, clear of the bather. */
+.atelier-title-3 .atelier-line-first { top: 21%; left: 6%; }
+.atelier-title-3 .atelier-line-second { left: 6.3%; right: auto; top: 31%; }
+.atelier-title-2 .atelier-line-second { color: var(--atelier-ink); text-shadow: 0 1px 16px #ffffff30; }
+.atelier-bottom { text-shadow: 0 1px 6px #071b2eb3; }
+.atelier-bottom { position: absolute; z-index: 3; left: 3.2%; right: 3.2%; bottom: 4.3%; display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
+.atelier-world-caption { display: flex; gap: 14px; align-items: center; font-size: 10px; letter-spacing: .11em; text-transform: uppercase; line-height: 1.8; }
+.atelier-world-caption small { font-size: 8px; letter-spacing: .12em; opacity: .8; }
+.atelier-star { font-size: 30px; font-weight: 200; line-height: 1; }
+.atelier-scroll { display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 9px; text-transform: uppercase; letter-spacing: .18em; padding: 10px; }
+.atelier-scroll svg { transition: transform .3s ease; }
+.atelier-scroll:hover svg { transform: translateY(4px); }
+.atelier-scene-controls { display: flex; align-items: center; gap: 19px; font-size: 11px; font-variant-numeric: tabular-nums; }
+.atelier-scene-controls button { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #fff6; border-radius: 50%; cursor: pointer; transition: background .3s ease; }
+.atelier-scene-controls button:hover:not(:disabled) { background: #fff3; }
+.atelier-scene-controls button:disabled { opacity: .35; cursor: default; }
+.atelier-count-divider { display: inline-block; margin: 0 10px; opacity: .45; }
+.atelier-meters { position: absolute; bottom: 0; left: 0; right: 0; display: flex; gap: 3px; z-index: 4; padding: 0 3.15%; }
+.atelier-meters button { flex: 1; height: 16px; position: relative; cursor: pointer; }
+.atelier-meters button::before,.atelier-meter-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #fff4; }
+.atelier-meters button::before { content: ''; }
+.atelier-meter-fill { background: var(--atelier-ivory); transform: scaleX(0); transform-origin: left; }
+.atelier-contact { padding: 95px 6% 35px; background: var(--atelier-ivory); color: var(--atelier-ink); }
+.atelier-contact-label { display: block; font-size: 10px; letter-spacing: .2em; }
+.atelier-contact > a { font-family: 'Raleway', sans-serif; font-style: italic; font-size: clamp(40px,6vw,90px); line-height: 1.1; letter-spacing: -.04em; margin: 35px 0 65px; display: flex; justify-content: space-between; align-items: center; }
+.atelier-contact > a > svg { width: 75px; height: 75px; transition: transform .35s ease; }
+.atelier-contact > a:hover > svg { transform: translate(8px,-8px); }
+.atelier-contact > div { border-top: 1px solid #173e6733; padding-top: 24px; display: flex; justify-content: space-between; gap: 20px; font-size: 11px; }
+.atelier-contact button { cursor: pointer; display: flex; gap: 15px; align-items: center; }
+.atelier-skip { position: fixed; left: 20px; top: 10px; z-index: 100; padding: 14px; background: var(--atelier-ivory); color: var(--atelier-ink); transform: translateY(-150%); }
+.atelier-skip:focus { transform: translateY(0); }
+.atelier-home :focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+.atelier-mobile-menu { display: none; }
+
+@media (min-aspect-ratio: 2/1) {
+  .atelier-line { font-size: clamp(40px, 8.3vh, 90px); }
+  .atelier-line-first { top: 38%; }
+  .atelier-line-second { top: 66%; }
+}
+@media (max-width: 760px) {
+  .atelier-journey { height: 487svh; }
+  .atelier-stage { min-height: 420px; }
+  .atelier-header { top: 20px; left: 16px; right: 16px; height: 46px; gap: 10px; }
+  .atelier-logo img { width: 92px; }
+  .atelier-desktop-nav { display: none; }
+  .atelier-factory { margin-left: auto; padding: 0 5px 0 16px; font-size: 9px; gap: 9px; }
+  .atelier-factory i { width: 34px; height: 34px; }
+  .atelier-menu-toggle { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; border: 1px solid #ffffff59; background: #0b1f381f; backdrop-filter: blur(16px); cursor: pointer; }
+  .atelier-mobile-menu { display: flex; flex-direction: column; position: absolute; z-index: 6; left: 20px; right: 20px; top: 86px; padding: 12px 22px; color: var(--atelier-ivory); background: #173e67f5; backdrop-filter: blur(16px); border: 1px solid #fff7; }
+  .atelier-mobile-menu button,.atelier-mobile-menu > a { display: flex; align-items: center; gap: 16px; padding: 18px 0; border-bottom: 1px solid #fff3; text-align: left; font-size: 14px; }
+  .atelier-mobile-menu > a { border-bottom: 0; font-size: 11px; }
+  .atelier-mobile-menu button > span { font-size: 9px; opacity: .55; }
+  .atelier-mobile-menu svg { margin-left: auto; }
+  .atelier-line { font-size: clamp(36px, 9vw, 60px); line-height: 1.1; }
+  .atelier-line-first { left: 6%; top: 24%; max-width: 88%; }
+  .atelier-line-second { right: 6%; top: 76%; max-width: 88%; text-align: right; }
+  .atelier-title-1 .atelier-line-first { top: 18%; }
+  .atelier-title-1 .atelier-line-second { top: 74%; font-size: 8.2vw; max-width: 85%; }
+  .atelier-title-2 .atelier-line-first { top: 22%; left: 6%; max-width: 70%; }
+  .atelier-title-2 .atelier-line-second { top: 77%; right: 6%; }
+  .atelier-title-3 .atelier-line-first { top: 22%; }
+  .atelier-title-3 .atelier-line-second { top: 74%; font-size: 8.6vw; max-width: 85%; }
+  .atelier-bottom { left: 22px; right: 22px; bottom: 25px; align-items: center; gap: 8px; }
+  .atelier-world-caption { display: none; }
+  .atelier-scroll { font-size: 8px; gap: 7px; padding: 10px 0; letter-spacing: .12em; }
+  .atelier-scene-controls { gap: 9px; font-size: 10px; }
+  .atelier-scene-controls button { width: 30px; height: 30px; }
+  .atelier-count-divider { margin: 0 6px; }
+  .atelier-contact { padding: 65px 24px 26px; }
+  .atelier-contact > a { font-size: 41px; margin: 30px 0 45px; }
+  .atelier-contact > a > svg { width: 39px; height: 39px; min-width: 39px; }
+  .atelier-contact > div { font-size: 9px; align-items: flex-start; }
+  .atelier-contact > div > span { max-width: 46%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atelier-journey { height: 416svh; }
+  .atelier-canvas { transition: none; }
+}
+
+/* As the pool water rises into the cream of the next section, the stage overlays step back. */
+.atelier-shade { opacity: calc(1 - var(--hero-outro, 0)); }
+.atelier-bottom, .atelier-meters { opacity: calc(1 - var(--hero-outro, 0)); }
+
+/* Script lines are set in Rouge Script: upright (the face is already cursive), no synthetic slant or bold, natural spacing so the letters join. */
+/* Hero: the headline in Poppins, its subline in Poppins Light. */
+.atelier-line, .atelier-contact > a { font-family: var(--font-display); font-style: normal; font-weight: 400; font-synthesis: none; letter-spacing: 0; }
+.atelier-line { font-size: clamp(40px, 4.2vw, 80px); }
+.atelier-line-second, .atelier-title-1 .atelier-line-second, .atelier-title-3 .atelier-line-second { font-family: var(--font-body); font-weight: 300; font-size: clamp(17px, 1.55vw, 28px); letter-spacing: .02em; line-height: 1.4; }
+
+/* The first world is a pale interior, so while it shows the hero's text, header and controls turn to ink. */
+.atelier-header, .atelier-line, .atelier-bottom, .atelier-logo img, .atelier-desktop-nav, .atelier-nav-pill, .atelier-factory, .atelier-factory i, .atelier-meter-fill, .atelier-meters button::before { transition: color .6s ease, background-color .6s ease, border-color .6s ease, filter .6s ease, transform .7s cubic-bezier(.65,0,.15,1); }
+.atelier-stage.is-light .atelier-header,
+.atelier-stage.is-light .atelier-line,
+.atelier-stage.is-light .atelier-bottom { color: var(--atelier-ink); }
+.atelier-stage.is-light .atelier-line { text-shadow: 0 1px 18px #ffffff66; }
+/* …except the first world's lines, which sit on its navy niche. */
+/* The logo is never recoloured: it always shows as in theos-logo.avif (white lettering, red dot). */
+.atelier-stage.is-light .atelier-desktop-nav { background: #ffffff59; border-color: #17284026; box-shadow: inset 0 1px 0 #ffffff80, 0 12px 40px #1728401a; }
+.atelier-stage.is-light .atelier-nav-pill { background: var(--atelier-ink); }
+.atelier-stage.is-light .atelier-desktop-nav button[aria-current] { color: var(--atelier-ivory); }
+.atelier-stage.is-light .atelier-desktop-nav button[aria-current] small { color: #ff8a7e; }
+.atelier-stage.is-light .atelier-factory { background: #ffffff59; border-color: #17284033; }
+.atelier-stage.is-light .atelier-factory i { background: var(--atelier-ink); color: var(--atelier-ivory); }
+.atelier-stage.is-light .atelier-factory:hover { background: var(--atelier-ink); border-color: var(--atelier-ink); color: var(--atelier-ivory); }
+.atelier-stage.is-light .atelier-factory:hover i { background: #bf291b; color: #fff; }
+.atelier-stage.is-light .atelier-meters button::before { background: #1728402e; }
+.atelier-stage.is-light .atelier-meter-fill { background: var(--atelier-ink); }
+.atelier-stage.is-light .atelier-menu-toggle { border-color: #17284033; background: #ffffff59; color: var(--atelier-ink); }
+/* World 1 (the elephant hall): ink at the left, over the bright glass wall and the trees behind it. */
+.atelier-title-0 .atelier-line-first { left: 5.5%; right: auto; top: 19%; max-width: 30vw; text-align: left; font-size: clamp(38px, 3.8vw, 72px); }
+.atelier-title-0 .atelier-line-second { left: 5.8%; right: auto; top: 40%; text-align: left; }
+/* World 3 (the turtle bath, bottom-anchored): ink at the upper right, over the pale curtains above the turtle's head. */
+.atelier-title-2 .atelier-line-first { left: auto; right: 4%; top: 12%; max-width: 30vw; text-align: right; font-size: clamp(36px, 3.4vw, 64px); }
+.atelier-title-2 .atelier-line-second { left: auto; right: 4.2%; top: 31%; text-align: right; }
+.atelier-stage.is-light .atelier-title-0 .atelier-line, .atelier-stage.is-light .atelier-title-2 .atelier-line { color: var(--atelier-ink); text-shadow: none; }
+/* Each subline sits a fixed distance under its two-line headline, measured from the headline's own size, so the gap is
+   the same on every screen shape. */
+.atelier-title-0 .atelier-line-second { top: calc(19% + clamp(38px, 3.8vw, 72px) * 2.5); }
+.atelier-title-1 .atelier-line-second { top: calc(14% + clamp(40px, 4.2vw, 80px) * 2.5); }
+.atelier-title-2 .atelier-line-second { top: calc(12% + clamp(36px, 3.4vw, 64px) * 2.5); }
+/* World 1: a soft white fade on the image's top-left corner, behind the headline. */
+.atelier-mist { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .8s ease; background: radial-gradient(ellipse 52% 62% at 0% 18%, #ffffffd1, #ffffff8c 42%, #ffffff00 100%); }
+.atelier-journey[data-world="beyond-ordinary"] .atelier-mist { opacity: 1; }
+/* Smaller hero headlines (Rink sets taller than the earlier faces and ran into its subline); the subline keeps a fixed
+   gap below each. The sizes before this change are in docs/snapshots/hero-title-size/. */
+.atelier-title-0 .atelier-line-first { font-size: clamp(30px, 2.9vw, 56px); }
+.atelier-title-1 .atelier-line-first { font-size: clamp(32px, 3.2vw, 62px); }
+.atelier-title-2 .atelier-line-first { font-size: clamp(28px, 2.7vw, 50px); }
+.atelier-title-0 .atelier-line-second { top: calc(19% + clamp(30px, 2.9vw, 56px) * 2.45); }
+.atelier-title-1 .atelier-line-second { top: calc(14% + clamp(32px, 3.2vw, 62px) * 2.45); }
+.atelier-title-2 .atelier-line-second { top: calc(12% + clamp(28px, 2.7vw, 50px) * 2.45); }
+/* The black logo (theos-logo-black) on the first world only, the white one on the others;
+   both files share the same margins, so they are drawn at the same size. */
+.atelier-logo { position: relative; }
+.atelier-logo .atelier-logo-black { position: absolute; left: 50%; top: 50%; width: 112px; transform: translate(-50%, -50%); opacity: 0; transition: opacity .6s ease; }
+.atelier-logo .atelier-logo-white { transition: opacity .6s ease, transform .5s cubic-bezier(.2,.8,.2,1); }
+.atelier-journey[data-world="beyond-ordinary"] .atelier-logo .atelier-logo-black { opacity: 1; }
+.atelier-journey[data-world="beyond-ordinary"] .atelier-logo .atelier-logo-white { opacity: 0; }
+/* Hero sublines a little smaller. */
+.atelier-title-0 .atelier-line-second, .atelier-title-1 .atelier-line-second, .atelier-title-2 .atelier-line-second { font-size: clamp(15px, 1.3vw, 24px); }

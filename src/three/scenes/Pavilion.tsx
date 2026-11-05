@@ -207,7 +207,8 @@ function Pavilion({ reduced, onRoom, hold }: Props) {
       const p = panDrag.current
       if (p) {
         const width = element.getBoundingClientRect().width
-        pan.current = MathUtils.clamp(p.start - (e.clientX - p.x) / width * COMPACT_HALF * 2, -PAN_LIMIT, PAN_LIMIT)
+        // A swipe across the screen travels about two rooms (was one).
+        pan.current = MathUtils.clamp(p.start - (e.clientX - p.x) / width * COMPACT_HALF * 4, -PAN_LIMIT, PAN_LIMIT)
         return
       }
       const d = drag.current
@@ -309,7 +310,7 @@ function Pavilion({ reduced, onRoom, hold }: Props) {
     }
     // Narrow framing: the camera glides to where the house has been swiped, square on, no turn.
     if (compact.current) {
-      panShown.current += (pan.current - panShown.current) * (reduced ? 1 : 1 - Math.exp(-delta * 8))
+      panShown.current += (pan.current - panShown.current) * (reduced ? 1 : 1 - Math.exp(-delta * 16))
       gltf.scene.rotation.y = 0
       camera.position.copy(VIEW).multiplyScalar(distance.current).add(TARGET)
       camera.position.x += panShown.current

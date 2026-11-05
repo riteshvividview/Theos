@@ -24,6 +24,8 @@ export function scrollPageTo(top: number, immediate = false, duration = 1.35) {
 }
 
 gsap.registerPlugin(ScrollTrigger)
+// iOS resizes the viewport as its toolbars show and hide while scrolling; recalculating every trigger then causes jumps.
+ScrollTrigger.config({ ignoreMobileResize: true })
 
 /**
  * Drives Lenis from GSAP's own ticker so there is exactly one rAF loop

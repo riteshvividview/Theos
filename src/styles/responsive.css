@@ -98,7 +98,7 @@
 
   /* ---- Hero, phone only -------------------------------------------------------------------------------------------- */
   /* World 1: a wide, strong white fade from the top of the image, behind the headline (instead of the top-left one). */
-  .atelier-mist { background: linear-gradient(180deg, #ffffffcc 0%, #ffffffc2 30%, #ffffff8c 40%, #ffffff00 52%); }
+  .atelier-mist { background: linear-gradient(180deg, #ffffffcc 0%, #ffffffc2 27%, #ffffff8c 34%, #ffffff00 42%); }
   /* World 2: the subline in dark ink over the pale plaster. */
   .atelier-title-1 .atelier-line-second { color: var(--atelier-ink); text-shadow: 0 1px 12px #ffffff99; }
   .outro-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
@@ -143,3 +143,12 @@
 
 /* Essence: the icons centred on phones. */
 @media (max-width: 760px) { .focus-icon { display: block; margin-left: auto; margin-right: auto; } }
+
+/* Phones: the pinned hero fills the largest viewport (Safari's bars collapsed), so no strip of page shows beneath it
+   when the toolbars hide; the image is covered, never letterboxed. The journey is shorter so each world takes fewer
+   swipes. Before: stage 100svh, journey 487svh. */
+@media (max-width: 760px) {
+  .atelier-stage { height: 100lvh; }
+  .atelier-journey { height: 420svh; }
+  .atelier-poster img { object-fit: cover; }
+}

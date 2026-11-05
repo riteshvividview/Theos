@@ -22,14 +22,17 @@ export function useCinematicJourney(root: RefObject<HTMLElement | null>, reduced
       const meters = gsap.utils.toArray<HTMLElement>('.atelier-meter-fill')
       // Scroll sets where the journey should be; the journey travels there at its own calm pace (MAX_SPEED worlds per second),
       // so a hard flick still plays every passage at the same speed.
-      const MAX_SPEED = .32
+      // Phones scroll natively with momentum, so there the journey runs faster and never holds the page (holding fights
+      // iOS momentum and feels stuck). Previous phone values were the desktop ones: .32, .2, .3 and LEAD .25.
+      const phone = matchMedia("(max-width: 760px)").matches
+      const MAX_SPEED = phone ? .85 : .32
       // The wall-opening and cloud passages are the slowest, so the crumble, the walk and the clouds read clearly.
       // The flood past the last world rises and drains at the same calm, even pace in both directions.
       const slow = cinematicWorlds.flatMap((world, i) => world.passage === 'portal' || world.passage === 'clouds' ? [i] : [])
-      const speedAt = (p: number) => p > LAST_WORLD + .2 ? .3 : slow.some(i => p > i + .4 && p < i + 1.05) ? .2 : MAX_SPEED
+      const speedAt = (p: number) => p > LAST_WORLD + .2 ? (phone ? .8 : .3) : slow.some(i => p > i + .4 && p < i + 1.05) ? (phone ? .55 : .2) : MAX_SPEED
       // However hard the page is scrolled, it may run at most LEAD worlds ahead of (or behind) the animation; past that it is
       // held, so every passage plays in full and nothing is skipped. Programmatic navigation (the world buttons) is exempt.
-      const LEAD = .25
+      const LEAD = phone ? Infinity : .25
       const target = { value: 0 }, shown = { value: 0 }
       const render = () => {
         const p = shown.value
