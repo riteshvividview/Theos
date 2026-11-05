@@ -50,16 +50,12 @@
 .atelier-line-first { left: 5.8%; top: 45%; }
 .atelier-line-second { right: 5.6%; top: 70.5%; }
 /* World 1: both lines sit in white inside the plain navy niche, top right, clear of the seated woman. */
-.atelier-title-0 .atelier-line-first { left: auto; right: 4%; top: 15%; max-width: 34vw; text-align: right; }
-.atelier-title-0 .atelier-line-second { right: 4.2%; top: 35%; }
 /* World 2: ink, top left over the shaded side wall and the plain plaster above the carved eye, clear of the figures. */
 .atelier-title-1 .atelier-line-first { top: 14%; left: 14%; max-width: 32vw; }
 .atelier-title-1 .atelier-line-second { left: 14.3%; right: auto; top: 35%; }
 /* White, lifted off the pale plaster by a soft dark halo so it stays legible. */
 .atelier-title-1 .atelier-line { color: var(--atelier-ivory); text-shadow: 0 1px 3px #0b162866, 0 2px 22px #0b162873; }
 /* World 3: ink on the plain white back wall, right of the woman's hat and above the sofa. */
-.atelier-title-2 .atelier-line-first { left: 38%; top: 14%; max-width: 33vw; }
-.atelier-title-2 .atelier-line-second { left: 38.3%; right: auto; top: 35%; }
 /* World 4: white on the open blue sky, the subline directly under the headline, clear of the bather. */
 .atelier-title-3 .atelier-line-first { top: 21%; left: 6%; }
 .atelier-title-3 .atelier-line-second { left: 6.3%; right: auto; top: 31%; }
@@ -156,9 +152,6 @@
 .atelier-stage.is-light .atelier-bottom { color: var(--atelier-ink); }
 .atelier-stage.is-light .atelier-line { text-shadow: 0 1px 18px #ffffff66; }
 /* …except the first world's lines, which sit on its navy niche. */
-.atelier-stage.is-light .atelier-title-0 .atelier-line { color: var(--atelier-ivory); text-shadow: 0 1px 14px #06122633; }
-.atelier-title-0 .atelier-line-first { top: 13%; font-size: clamp(38px, 3.8vw, 72px); }
-.atelier-title-0 .atelier-line-second { top: 33.5%; }
 /* The logo is never recoloured: it always shows as in theos-logo.avif (white lettering, red dot). */
 .atelier-stage.is-light .atelier-desktop-nav { background: #ffffff59; border-color: #17284026; box-shadow: inset 0 1px 0 #ffffff80, 0 12px 40px #1728401a; }
 .atelier-stage.is-light .atelier-nav-pill { background: var(--atelier-ink); }
@@ -171,3 +164,19 @@
 .atelier-stage.is-light .atelier-meters button::before { background: #1728402e; }
 .atelier-stage.is-light .atelier-meter-fill { background: var(--atelier-ink); }
 .atelier-stage.is-light .atelier-menu-toggle { border-color: #17284033; background: #ffffff59; color: var(--atelier-ink); }
+/* World 1 (the elephant hall): ink at the left, over the bright glass wall and the trees behind it. */
+.atelier-title-0 .atelier-line-first { left: 5.5%; right: auto; top: 19%; max-width: 30vw; text-align: left; font-size: clamp(38px, 3.8vw, 72px); }
+.atelier-title-0 .atelier-line-second { left: 5.8%; right: auto; top: 40%; text-align: left; }
+/* World 3 (the turtle bath, bottom-anchored): ink at the upper right, over the pale curtains above the turtle's head. */
+.atelier-title-2 .atelier-line-first { left: auto; right: 4%; top: 12%; max-width: 30vw; text-align: right; font-size: clamp(36px, 3.4vw, 64px); }
+.atelier-title-2 .atelier-line-second { left: auto; right: 4.2%; top: 31%; text-align: right; }
+.atelier-stage.is-light .atelier-title-0 .atelier-line, .atelier-stage.is-light .atelier-title-2 .atelier-line { color: var(--atelier-ink); text-shadow: 0 0 18px #ffffffb3; }
+/* A soft white mist on the image behind each text block, fading out on every side so it reads as light in the room. */
+.atelier-title-0::before, .atelier-title-2::before { content: ''; position: absolute; pointer-events: none; border-radius: 50%; filter: blur(30px); }
+.atelier-title-0::before { left: -6%; top: 8%; width: 50%; height: 50%; background: radial-gradient(closest-side, #ffffffd9, #ffffff99 45%, #ffffff00); }
+.atelier-title-2::before { right: -6%; top: 2%; width: 48%; height: 46%; background: radial-gradient(closest-side, #ffffffd9, #ffffff99 45%, #ffffff00); }
+/* Each subline sits a fixed distance under its two-line headline, measured from the headline's own size, so the gap is
+   the same on every screen shape. */
+.atelier-title-0 .atelier-line-second { top: calc(19% + clamp(38px, 3.8vw, 72px) * 2.5); }
+.atelier-title-1 .atelier-line-second { top: calc(14% + clamp(40px, 4.2vw, 80px) * 2.5); }
+.atelier-title-2 .atelier-line-second { top: calc(12% + clamp(36px, 3.4vw, 64px) * 2.5); }

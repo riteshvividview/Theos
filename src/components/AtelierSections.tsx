@@ -282,7 +282,7 @@ function OutroRise({level,reduced}:{level:MutableRefObject<number>;reduced:boole
 // that section in a round frame that trails the cursor; clicking glides to the section. Studio and social links are
 // placeholders (#) until their pages exist. The liquid drops that sat here are kept in docs/snapshots/outro-liquid/.
 const footerIndex=[
-  {label:'Home',note:'Designed Around Real Living',target:'top',image:'/images/redesign/section1.jpg'},
+  {label:'Home',note:'Designed Around Real Living',target:'top',image:'/images/redesign/world1.jpg'},
   {label:'Gallery',note:'The Theos Promise',target:'collection',image:'/images/redesign/gallery-salon.jpg'},
   {label:'The process flow',note:'From vision to living',target:'process',image:'/images/redesign/spiral-reference.jpg'},
   {label:'About Theos',note:'A better standard of living',target:'philosophy',image:'/models/pavilion/preview_front_3q.png'},
