@@ -179,13 +179,20 @@
 /* World 1: a soft white fade on the image's top-left corner, behind the headline. */
 .atelier-shade::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .8s ease; background: radial-gradient(ellipse 52% 62% at 0% 18%, #ffffffd1, #ffffff8c 42%, #ffffff00 100%); }
 .atelier-journey[data-world="beyond-ordinary"] .atelier-shade::after { opacity: 1; }
-/* World 1 only: a soft dark shadow that follows the logo's letters, so the white logo reads on the bright window wall. */
-.atelier-journey[data-world="beyond-ordinary"] .atelier-logo img { filter: drop-shadow(0 1px 1px #0b1628e6) drop-shadow(0 2px 2px #0b1628b3); }
 /* Smaller hero headlines (Rink sets taller than the earlier faces and ran into its subline); the subline keeps a fixed
    gap below each. The sizes before this change are in docs/snapshots/hero-title-size/. */
 .atelier-title-0 .atelier-line-first { font-size: clamp(30px, 2.9vw, 56px); }
 .atelier-title-1 .atelier-line-first { font-size: clamp(32px, 3.2vw, 62px); }
 .atelier-title-2 .atelier-line-first { font-size: clamp(28px, 2.7vw, 50px); }
-.atelier-title-0 .atelier-line-second { top: calc(19% + clamp(30px, 2.9vw, 56px) * 2.9); }
-.atelier-title-1 .atelier-line-second { top: calc(14% + clamp(32px, 3.2vw, 62px) * 2.9); }
-.atelier-title-2 .atelier-line-second { top: calc(12% + clamp(28px, 2.7vw, 50px) * 2.9); }
+.atelier-title-0 .atelier-line-second { top: calc(19% + clamp(30px, 2.9vw, 56px) * 2.45); }
+.atelier-title-1 .atelier-line-second { top: calc(14% + clamp(32px, 3.2vw, 62px) * 2.45); }
+.atelier-title-2 .atelier-line-second { top: calc(12% + clamp(28px, 2.7vw, 50px) * 2.45); }
+/* The black logo (theos-logo-black) on the first world only, the white one on the others;
+   both files share the same margins, so they are drawn at the same size. */
+.atelier-logo { position: relative; }
+.atelier-logo .atelier-logo-black { position: absolute; left: 50%; top: 50%; width: 112px; transform: translate(-50%, -50%); opacity: 0; transition: opacity .6s ease; }
+.atelier-logo .atelier-logo-white { transition: opacity .6s ease, transform .5s cubic-bezier(.2,.8,.2,1); }
+.atelier-journey[data-world="beyond-ordinary"] .atelier-logo .atelier-logo-black { opacity: 1; }
+.atelier-journey[data-world="beyond-ordinary"] .atelier-logo .atelier-logo-white { opacity: 0; }
+/* Hero sublines a little smaller. */
+.atelier-title-0 .atelier-line-second, .atelier-title-1 .atelier-line-second, .atelier-title-2 .atelier-line-second { font-size: clamp(15px, 1.3vw, 24px); }

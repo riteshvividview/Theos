@@ -299,14 +299,15 @@ function FooterIndex({reduced,onBeginning}:{reduced:boolean;onBeginning:()=>void
   useEffect(()=>{
     const el=area.current,frame=lens.current;if(!el||!frame)return
     let x=0,y=0,tx=0,ty=0,raf=0
-    const move=(e:PointerEvent)=>{const b=el.getBoundingClientRect();tx=e.clientX-b.left;ty=e.clientY-b.top}
+    // It shows only while the cursor is in the right half of the list, and stays there, clear of the link titles.
+    const move=(e:PointerEvent)=>{const b=el.getBoundingClientRect();const x=e.clientX-b.left;el.classList.toggle("lens-right",x>b.width*.5);const list=el.querySelector('.footer-links')?.getBoundingClientRect();tx=Math.max(x,b.width*.62+125);ty=Math.min(e.clientY-b.top,list?list.bottom-b.top-60:1e4)}
     const tick=()=>{raf=requestAnimationFrame(tick);x+=(tx-x)*(reduced?1:.14);y+=(ty-y)*(reduced?1:.14);frame.style.transform=`translate(${x}px,${y}px) translate(-50%,-50%)`}
     el.addEventListener('pointermove',move);raf=requestAnimationFrame(tick)
     return()=>{el.removeEventListener('pointermove',move);cancelAnimationFrame(raf)}
   },[reduced])
   const go=(target:string)=>{if(target==='top'){onBeginning();return}const el=document.getElementById(target);if(el)scrollPageTo(el.getBoundingClientRect().top+scrollY,reduced)}
-  return <div ref={area} className={`footer-index${hover!==null?' is-hovering':''}`} onPointerLeave={()=>setHover(null)}>
-    <nav className="footer-links" aria-label="On this page">{footerIndex.map((item,i)=><button key={item.label} className={hover===i?'is-active':''} onPointerEnter={()=>setHover(i)} onFocus={()=>setHover(i)} onBlur={()=>setHover(null)} onClick={()=>go(item.target)}>
+  return <div ref={area} className={`footer-index${hover!==null?' is-hovering':''}`}>
+    <nav className="footer-links" aria-label="On this page" onPointerLeave={()=>setHover(null)}>{footerIndex.map((item,i)=><button key={item.label} className={hover===i?'is-active':''} onPointerEnter={()=>setHover(i)} onFocus={()=>setHover(i)} onBlur={()=>setHover(null)} onClick={()=>go(item.target)}>
       <span className="footer-link-number">0{i+1}</span><span className="footer-link-label">{item.label}</span><span className="footer-link-note">{item.note}</span><ArrowUpRight className="footer-link-arrow" size={26} strokeWidth={1.2}/>
     </button>)}</nav>
     <div className="footer-columns">{footerColumns.map(([title,links])=><div key={title}><span>{title}</span>{links.map(([label,href])=><a key={label} href={href}>{label}</a>)}</div>)}</div>

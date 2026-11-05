@@ -90,8 +90,9 @@ function CinematicPlane({ progress, reduced, onReady }: Omit<CinematicHeroProps,
     u.uReduced.value = reduced ? 1 : 0
     u.uPoolCurrent.value = world.id === 'extraordinary-living' ? 1 : 0
     u.uPoolNext.value = next.id === 'extraordinary-living' ? 1 : 0
-    u.uPortraitCurrent.value = world.id === 'imagination' ? 1 : 0
-    u.uPortraitNext.value = next.id === 'imagination' ? 1 : 0
+    // No world needs the flat (portrait-safe) movement any more; every world moves by its depth map.
+    u.uPortraitCurrent.value = 0
+    u.uPortraitNext.value = 0
     u.uTime.value = clock.elapsedTime
     const p = u.uPointer.value as Vector2
     p.x = MathUtils.damp(p.x, reduced ? 0 : pointer.current.x, 9, delta)

@@ -60,7 +60,7 @@ export function Home() {
         <div className="atelier-shade" aria-hidden="true" />
 
         <header className="atelier-header">
-          <a className="atelier-logo" href="#" onClick={e => { e.preventDefault(); navigate(0) }} aria-label="Theos home"><img src="/theos-logo.avif" alt="" /></a>
+          <a className="atelier-logo" href="#" onClick={e => { e.preventDefault(); navigate(0) }} aria-label="Theos home"><img className="atelier-logo-white" src="/theos-logo.avif" alt="" /><img className="atelier-logo-black" src="/theos-logo-black.webp" alt="" /></a>
           <nav className="atelier-desktop-nav" aria-label="Explore the worlds" style={{ '--active': active } as CSSProperties}>
             <span className="atelier-nav-pill" aria-hidden="true" />
             {cinematicWorlds.map((scene, i) => <button key={scene.id} onClick={() => navigate(i)} aria-current={active === i ? 'step' : undefined}><small>0{i + 1}</small>{scene.navigation}</button>)}
