@@ -180,6 +180,7 @@
 .atelier-title-0 .atelier-line-second { top: calc(19% + clamp(38px, 3.8vw, 72px) * 2.5); }
 .atelier-title-1 .atelier-line-second { top: calc(14% + clamp(40px, 4.2vw, 80px) * 2.5); }
 .atelier-title-2 .atelier-line-second { top: calc(12% + clamp(36px, 3.4vw, 64px) * 2.5); }
-/* A soft dark mist behind the (always white) logo, fading out on every side, so it reads on bright images too. */
+/* A soft dark mist behind the (always white) logo on the first world only, fading out on every side. */
 .atelier-logo { position: relative; isolation: isolate; }
-.atelier-logo::before { content: ''; position: absolute; z-index: -1; left: 50%; top: 50%; width: 260%; height: 320%; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, #0b1628a6, #0b162859 45%, #0b16281f 75%, #0b162800); filter: blur(14px); }
+.atelier-logo::before { content: ''; position: absolute; z-index: -1; left: 50%; top: 50%; width: 260%; height: 320%; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, #0b1628a6, #0b162859 45%, #0b16281f 75%, #0b162800); filter: blur(14px); opacity: 0; transition: opacity .8s ease; }
+.atelier-journey[data-world="beyond-ordinary"] .atelier-logo::before { opacity: 1; }
