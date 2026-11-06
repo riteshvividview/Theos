@@ -149,6 +149,8 @@
    swipes. Before: stage 100svh, journey 487svh. */
 @media (max-width: 760px) {
   .atelier-stage { height: 100lvh; }
-  .atelier-journey { height: 420svh; }
+  .atelier-journey { height: 340svh; }
   .atelier-poster img { object-fit: cover; }
 }
+/* iPhones never hold the page, so they get a little more scroll: time for the paced journey before the next section arrives. */
+@supports (-webkit-touch-callout: none) { @media (max-width: 760px) { .atelier-journey { height: 420svh; } } }

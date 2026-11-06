@@ -22,17 +22,18 @@ export function useCinematicJourney(root: RefObject<HTMLElement | null>, reduced
       const meters = gsap.utils.toArray<HTMLElement>('.atelier-meter-fill')
       // Scroll sets where the journey should be; the journey travels there at its own calm pace (MAX_SPEED worlds per second),
       // so a hard flick still plays every passage at the same speed.
-      // Phones scroll natively with momentum, so there the journey runs faster and never holds the page (holding fights
-      // iOS momentum and feels stuck). Previous phone values were the desktop ones: .32, .2, .3 and LEAD .25.
+      // Phones get the same paced journey as desktop, a little quicker and over a shorter scroll. iPhones never hold the page
+      // (it fights iOS momentum); there the animation keeps its transitions and just catches up, at up to three times its pace.
       const phone = matchMedia("(max-width: 760px)").matches
-      const MAX_SPEED = phone ? .85 : .32
+      const iphone = /iPhone|iPod/.test(navigator.userAgent)
+      const MAX_SPEED = phone ? .42 : .32
       // The wall-opening and cloud passages are the slowest, so the crumble, the walk and the clouds read clearly.
       // The flood past the last world rises and drains at the same calm, even pace in both directions.
       const slow = cinematicWorlds.flatMap((world, i) => world.passage === 'portal' || world.passage === 'clouds' ? [i] : [])
-      const speedAt = (p: number) => p > LAST_WORLD + .2 ? (phone ? .8 : .3) : slow.some(i => p > i + .4 && p < i + 1.05) ? (phone ? .55 : .2) : MAX_SPEED
+      const speedAt = (p: number) => p > LAST_WORLD + .2 ? (phone ? .4 : .3) : slow.some(i => p > i + .4 && p < i + 1.05) ? (phone ? .3 : .2) : MAX_SPEED
       // However hard the page is scrolled, it may run at most LEAD worlds ahead of (or behind) the animation; past that it is
       // held, so every passage plays in full and nothing is skipped. Programmatic navigation (the world buttons) is exempt.
-      const LEAD = phone ? Infinity : .25
+      const LEAD = iphone ? Infinity : phone ? .35 : .25
       const target = { value: 0 }, shown = { value: 0 }
       const render = () => {
         const p = shown.value
@@ -72,7 +73,9 @@ export function useCinematicJourney(root: RefObject<HTMLElement | null>, reduced
         const dt = gsap.ticker.deltaRatio(60) / 60
         // Eased approach with a small floor so it always arrives, never faster than MAX_SPEED and never past the target.
         const step = Math.abs(gap) * (1 - Math.exp(-4.5 * dt)) + .02 * dt
-        shown.value += Math.sign(gap) * Math.min(step, speedAt(shown.value) * dt, Math.abs(gap))
+        // Far behind on an iPhone the pace rises gradually, with no jump, so a hard flick never leaves the journey stranded.
+        const catchUp = iphone ? Math.min(3, 1 + Math.max(0, Math.abs(gap) - .35) * 1.6) : 1
+        shown.value += Math.sign(gap) * Math.min(step * catchUp, speedAt(shown.value) * catchUp * dt, Math.abs(gap))
         render()
         const st = trigger.current
         if (st && navigating.current === null && Math.abs(target.value - shown.value) > LEAD) {
