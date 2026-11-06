@@ -22,14 +22,3 @@ images, unused hero images and depth maps, old pavilion previews, unused fonts, 
 moved to `tools/pavilion/pavilion.blend` and the content brief to `docs/Theos Website Content.pdf`.
 
 To revert everything: copy the files here back to `src/` (paths in their headers), or check out `96d8b29`.
-
-## Update 2026-11-06: phone pacing
-
-The fast, unheld phone hero followed the scroll too closely. Phones are paced and held again: MAX_SPEED .42, slow
-passages .3, closing flood .4, LEAD .35, journey `340svh`. The values before this update were .85 / .55 / .8,
-LEAD Infinity and `420svh` (commit `a233707`).
-
-iPhones (user agent iPhone/iPod) then dropped the page hold again (LEAD Infinity): the journey stays paced and speeds up
-gradually to at most 2x when far behind the scroll. Other phones keep LEAD .35.
-
-Final iPhone tuning: catch-up up to 3x, and iPhones keep the `420svh` journey (`@supports (-webkit-touch-callout: none)` in `responsive.css`).
